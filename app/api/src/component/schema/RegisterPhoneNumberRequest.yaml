@@ -1,0 +1,8 @@
+type: object
+required:
+  - phoneNo
+properties:
+  phoneNo:
+    type: string
+    description: User phone number
+    example: 6281234567890

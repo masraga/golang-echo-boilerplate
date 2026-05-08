@@ -1,0 +1,8 @@
+type: object
+required:
+  - id
+properties:
+  id:
+    type: string
+    description: The unique identifier for the newly created account
+    example: 123e4567-e89b-12d3-a456-426

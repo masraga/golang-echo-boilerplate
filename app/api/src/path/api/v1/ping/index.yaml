@@ -1,0 +1,10 @@
+get:
+  operationId: GetPing
+  summary: Check the health of the API
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../component/schema/GetPingResponse.yaml'

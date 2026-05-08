@@ -1,0 +1,60 @@
+openapi: 3.0.0
+info:
+  title: Koderpedia ERP API
+  version: '1.0'
+paths:
+  /api/v1/ping:
+    get:
+      operationId: GetPing
+      summary: Check the health of the API
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPingResponse'
+  /api/v1/auth/register/phone:
+    post:
+      operationId: RegisterPhoneNumber
+      summary: Register user phone number to app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNewAccountRequest'
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateNewAccountResponse'
+components:
+  schemas:
+    GetPingResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: The response message for the ping endpoint
+          example: PONG
+    CreateNewAccountRequest:
+      type: object
+      required:
+        - phoneNo
+      properties:
+        phoneNo:
+          type: string
+          description: User phone number
+          example: 6281234567890
+    CreateNewAccountResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the newly created account
+          example: 123e4567-e89b-12d3-a456-426

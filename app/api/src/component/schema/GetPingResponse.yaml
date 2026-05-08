@@ -1,0 +1,6 @@
+type: object
+properties:
+  message:
+    type: string
+    description: The response message for the ping endpoint
+    example: "PONG"

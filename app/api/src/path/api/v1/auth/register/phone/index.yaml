@@ -1,0 +1,16 @@
+post:
+  operationId: RegisterPhoneNumber
+  summary: Register user phone number to app
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../../../component/schema/RegisterPhoneNumberRequest.yaml'
+  responses:
+    '201':
+      description: Account created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/RegisterPhoneNumberResponse.yaml'
