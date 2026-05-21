@@ -19,6 +19,7 @@ func InitializeService(config *Config) (*server.Server, error) {
 		wire.Struct(new(auth.AuthRepositoryOpts), "*"),
 		auth.NewAuthRepository,
 		wire.Bind(new(auth.AuthRepositoryWriterInterface), new(*auth.AuthRepository)),
+		wire.Bind(new(auth.AuthRepositoryReaderInterface), new(*auth.AuthRepository)),
 		wire.Struct(new(auth.AuthServiceOpts), "*"),
 		auth.NewAuthService,
 		wire.Bind(new(auth.AuthServiceInterface), new(*auth.AuthService)),

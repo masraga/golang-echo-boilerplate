@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS public.auth (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     phone_no varchar(15) NOT NULL UNIQUE,
     pin varchar(255),
     is_verified boolean DEFAULT FALSE,

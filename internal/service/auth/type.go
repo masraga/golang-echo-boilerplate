@@ -6,6 +6,7 @@ type JwtExpirationType int64
 
 type CreateNewAccountInput struct {
 	TokenType
+	Id      string
 	PhoneNo string
 }
 
@@ -40,4 +41,13 @@ type CreateJWTTokenMetadata struct {
 type CreateJWTTokenOutput struct {
 	UserId string
 	Token  string
+}
+
+type FindAuthInput struct {
+	PhoneNo string
+}
+
+type FindAuthOutput struct {
+	Id      string
+	PhoneNo string
 }

@@ -8,6 +8,7 @@ type AuthService struct {
 
 	dbtx.DbTxInterface
 	AuthRepositoryWriter AuthRepositoryWriterInterface
+	AuthRepositoryReader AuthRepositoryReaderInterface
 }
 
 type AuthServiceOpts struct {
@@ -16,6 +17,7 @@ type AuthServiceOpts struct {
 
 	dbtx.DbTxInterface
 	AuthRepositoryWriter AuthRepositoryWriterInterface
+	AuthRepositoryReader AuthRepositoryReaderInterface
 }
 
 func NewAuthService(opts AuthServiceOpts) *AuthService {
@@ -24,5 +26,6 @@ func NewAuthService(opts AuthServiceOpts) *AuthService {
 		JwtExpiration:        opts.JwtExpiration,
 		DbTxInterface:        opts.DbTxInterface,
 		AuthRepositoryWriter: opts.AuthRepositoryWriter,
+		AuthRepositoryReader: opts.AuthRepositoryReader,
 	}
 }

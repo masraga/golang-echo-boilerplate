@@ -16,3 +16,7 @@ type AuthRepositoryWriterInterface interface {
 	dbtx.DbTxInterface
 	CreateNewAccount(ctx context.Context, input CreateNewAccountInput) (output CreateNewAccountOutput, err error)
 }
+
+type AuthRepositoryReaderInterface interface {
+	FindAuth(ctx context.Context, input FindAuthInput) (output FindAuthOutput, err error)
+}
