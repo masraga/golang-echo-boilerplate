@@ -16,7 +16,8 @@ func (s *DbTx) Begin(ctx context.Context, opt *sql.TxOptions) (context.Context, 
 	if err != nil {
 		return ctx, err
 	}
-	return context.WithValue(ctx, DbTxId, tx), nil
+	ctx = context.WithValue(ctx, DbTxId, tx)
+	return ctx, nil
 }
 
 func (s *DbTx) TxFromContext(ctx context.Context) (tx *sql.Tx, ok bool) {

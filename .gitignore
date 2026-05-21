@@ -2,6 +2,7 @@ generated
 
 app/backend/__debug*
 app/backend/wire_gen.go
+internal/**/interface.mock.gen.go
 
 .vscode
 .env

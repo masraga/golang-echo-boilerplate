@@ -1,13 +1,20 @@
 package auth
 
-import "context"
+import (
+	"context"
+	"errors"
+)
 
 func (r *AuthRepository) CreateNewAccount(ctx context.Context, input CreateNewAccountInput) (output CreateNewAccountOutput, err error) {
 	stmt := r.Sql.InsertInto(TableAuth).
-		Set("phone_no", "08234567890").
-		Set("pin", "123456").
-		Set("otp_code", "1234")
+		Set("id", input.Id).
+		Set("phone_no", input.PhoneNo)
 
 	_, err = stmt.ExecAndClose(ctx, r.UseTx(ctx))
+	if err != nil {
+		err = errors.Join(err, ErrCreateNewAccount)
+		return
+	}
+	output.Id = input.PhoneNo
 	return
 }

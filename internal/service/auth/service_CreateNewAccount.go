@@ -6,9 +6,22 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/masraga/kerp-api/internal/util/generator"
+	"github.com/masraga/kerp-api/internal/util/pointer"
 )
 
 func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccountInput) (output CreateNewAccountOutput, err error) {
+
+	authUser, err := s.AuthRepositoryReader.FindAuth(ctx, FindAuthInput{
+		PhoneNo: input.PhoneNo,
+	})
+	if err != nil && !errors.Is(err, ErrAuthNotFound) {
+		return
+	}
+	if authUser.Id != "" {
+		err = ErrDuplicateUser
+		return
+	}
 
 	ctx, err = s.AuthRepositoryWriter.Begin(ctx, nil)
 	if err != nil {
@@ -20,18 +33,29 @@ func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccou
 		err = s.AuthRepositoryWriter.CommitOrRollback(ctx, err)
 	}()
 
-	token, err := s.CreateToken(ctx, UserTokenClaimInput{
-		TokenType:     TokenTypeJwt,
-		UserId:        uuid.NewString(),
-		ExpiredAtUtc0: time.Now().Add(time.Duration(s.JwtExpiration) * time.Minute).UnixMilli(),
-	})
-	if err != nil {
-		return
-	}
+	input.Id = uuid.NewString()
+
 	_, err = s.AuthRepositoryWriter.CreateNewAccount(ctx, input)
 	if err != nil {
 		return
 	}
-	output.Id = token.Token
+
+	otpCode, err := generator.GenerateRandom(6, true)
+	if err != nil {
+		return
+	}
+
+	otpSvc, err := s.CreateOTP(ctx, CreateOTPInput{
+		UserId:        input.Id,
+		Note:          pointer.String("OTP for new account register"),
+		ExpiredAtUtc0: time.Now().Add(time.Duration(OtpExpiredDuration) * time.Minute).UnixMilli(),
+		OtpCode:       otpCode,
+	})
+	if err != nil {
+		return
+	}
+
+	output.Id = input.Id
+	output.OtpCode = otpSvc.OtpCode
 	return
 }
