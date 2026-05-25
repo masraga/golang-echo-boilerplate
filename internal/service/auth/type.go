@@ -12,7 +12,8 @@ type CreateNewAccountInput struct {
 
 type CreateNewAccountOutput struct {
 	TokenType
-	Id string
+	Id      string
+	OtpCode string
 }
 
 type UserTokenClaimInput struct {
@@ -44,10 +45,39 @@ type CreateJWTTokenOutput struct {
 }
 
 type FindAuthInput struct {
+	UserId  string
 	PhoneNo string
 }
 
 type FindAuthOutput struct {
 	Id      string
 	PhoneNo string
+}
+
+type CreateOTPInput struct {
+	OtpCode       string
+	UserId        string
+	Note          *string
+	ExpiredAtUtc0 int64
+}
+
+type CreateOTPOutput struct {
+	OtpCode string
+}
+
+type FindOTPInput struct {
+	UserId string
+}
+
+type FindOTPOutput struct {
+	Id      string
+	OtpCode string
+}
+
+type DeleteAllUserOTPInput struct {
+	UserId string
+}
+
+type DeleteAllUserOTPOutput struct {
+	IsSuccess bool
 }
