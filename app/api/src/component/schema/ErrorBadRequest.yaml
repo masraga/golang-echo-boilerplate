@@ -1,0 +1,8 @@
+type: object
+required:
+  - error
+properties:
+  error:
+    type: string
+    description: The error message describing the bad request
+    example: "Invalid input data"

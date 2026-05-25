@@ -31,6 +31,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateNewAccountResponse'
+        '400':
+          description: Bad request due to invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+  /api/v1/auth/otp/verify:
+    post:
+      summary: Verify OTP code for user authentication
+      operationId: VerifyOTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOTPRequest'
+      responses:
+        '200':
+          description: OTP verification successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyOTPResponse200'
+        '400':
+          description: 'Bad request, invalid input data'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '401':
+          description: 'Unauthorized, invalid OTP code'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user does not have permission to access this resource'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
 components:
   schemas:
     GetPingResponse:
@@ -58,3 +99,62 @@ components:
           type: string
           description: The unique identifier for the newly created account
           example: 123e4567-e89b-12d3-a456-426
+    VerifyOTPRequest:
+      type: object
+      required:
+        - otp
+        - phoneNo
+      properties:
+        otp:
+          type: string
+          description: The OTP code sent to the user's phone number for verification
+          example: '123456'
+        phoneNo:
+          type: string
+          description: The user's phone number associated with the OTP code
+          example: 081234567890
+    VerifyOTPResponse200:
+      type: object
+      required:
+        - isValid
+        - phoneNo
+      properties:
+        isValid:
+          type: boolean
+          description: Indicates whether the provided OTP code is valid or not
+          example: true
+        phoneNo:
+          type: string
+          description: The user's phone number associated with the OTP code
+          example: 081234567890
+        note:
+          type: string
+          description: Additional information or notes regarding the OTP verification result
+          example: OTP code is valid and has not expired
+    ErrorBadRequest:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: The error message describing the bad request
+          example: Invalid input data
+    ErrorUnauthorized:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: The error message describing the unauthorized access
+          example: 'Unauthorized, invalid OTP code'
+    ErrorForbidden:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: The error message describing the forbidden access
+          example: 'Forbidden, you do not have permission to access this resource'

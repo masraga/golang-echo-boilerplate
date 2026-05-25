@@ -4,10 +4,23 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/masraga/kerp-api/generated/api"
 )
 
+func (s *Server) returnBadRequest(e echo.Context, data interface{}) error {
+	return e.JSON(http.StatusBadRequest, api.ErrorBadRequest{Error: data.(string)})
+}
+
+func (s *Server) returnCreated(e echo.Context, data interface{}) error {
+	return e.JSON(http.StatusCreated, data)
+}
+
 func (s *Server) returnOk(e echo.Context, data interface{}) error {
-	return e.JSON(200, data)
+	return e.JSON(http.StatusOK, data)
+}
+
+func (s *Server) returnNotImplemented(e echo.Context) error {
+	return e.JSON(http.StatusNotImplemented, "not implemented")
 }
 
 func (s *Server) bindOrReturnBadRequest(e echo.Context, i any) error {
@@ -15,4 +28,22 @@ func (s *Server) bindOrReturnBadRequest(e echo.Context, i any) error {
 		return e.JSON(http.StatusBadRequest, "")
 	}
 	return nil
+}
+
+func (s *Server) returnError(e echo.Context, err error) error {
+	status, ok := mapError[err.Error()]
+	if !ok {
+		return e.JSON(http.StatusInternalServerError, "unknown error")
+	}
+
+	switch status {
+	case http.StatusBadRequest:
+		return e.JSON(status, api.ErrorBadRequest{Error: err.Error()})
+	case http.StatusUnauthorized:
+		return e.JSON(status, api.ErrorUnauthorized{Error: err.Error()})
+	case http.StatusForbidden:
+		return e.JSON(status, api.ErrorForbidden{Error: err.Error()})
+	default:
+		return e.JSON(status, map[string]string{"error": err.Error()})
+	}
 }

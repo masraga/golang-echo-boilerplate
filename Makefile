@@ -1,7 +1,13 @@
-.PHONY: generate-api generate-backend init generate-wire generate-mocks
+.PHONY: generate-api generate-backend init generate-wire generate-mocks clean
 
 api.yaml:
 	@swagger-cli bundle app/api/src/main.yaml -o app/api/api.yaml -t yaml
+
+validate-api:
+	@swagger-cli validate app/api/api.yaml
+
+api-docs:
+	@redocly build-docs app/api/api.yaml -o api-docs.html
 
 generate-api:
 	@mkdir -p ./generated/api
@@ -17,26 +23,23 @@ generate-backend:
 generate-wire:
 	wire ./...
 
-generate-mocks:
-	@find . -type f -name "interface.go" | while read f; do \
-		dir=$$(dirname "$$f"); \
-		base=$$(basename "$$f" .go); \
-		mock_file="$$dir/$${base}.mock.gen.go"; \
-		echo "Generating mock for $$mock_file"; \
-		mockgen -source="$$f" -destination="$$mock_file" -package=$$(basename "$$dir"); \
-	done
+INTERFACE_GO_FILES := $(shell find internal -type f -name "interface.go")
+INTERFACE_MOCK_GO_FILES := $(INTERFACE_GO_FILES:%.go=%.mock.gen.go)
 
-init: api.yaml generate-api generate-mocks generate-wire generate-backend
+# Generate mocks for interfaces
+generate-mocks: $(INTERFACE_MOCK_GO_FILES)
+
+$(INTERFACE_MOCK_GO_FILES): %.mock.gen.go: %.go
+	@echo "Generating mocks $@ for $<"
+	@mockgen -source=$< -destination=$@ -package=$(shell basename $(dir $<))
+
+init: api.yaml generate-api generate-wire generate-backend generate-mocks
 
 clean:
+	@rm -rf ./api-docs.html
 	@rm -rf ./generated
 	@rm -rf ./app/backend/wire_gen.go 
-	@find . -type f -name "interface.go" | while read f; do \
-		dir=$$(dirname "$$f"); \
-		base=$$(basename "$$f" .go); \
-		mock_file="$$dir/$${base}.mock.gen.go"; \
-		rm -f "$$mock_file"; \
-	done
+	@find . -name "*.mock.gen.go" -type f -delete
 
 migrate_up:
 	@migrate -path ./migrations -database $(db) up

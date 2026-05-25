@@ -1,0 +1,34 @@
+post:
+  summary: Verify OTP code for user authentication
+  operationId: VerifyOTP
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../../../component/schema/VerifyOTPRequest.yaml'
+  responses:
+    '200':
+      description: OTP verification successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/VerifyOTPResponse200.yaml'
+    '400':
+      description: Bad request, invalid input data
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorBadRequest.yaml'
+    '401':
+      description: Unauthorized, invalid OTP code
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user does not have permission to access this resource
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorForbidden.yaml'

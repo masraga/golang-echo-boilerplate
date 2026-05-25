@@ -1,0 +1,13 @@
+type: object
+required:
+  - otp
+  - phoneNo
+properties:
+  otp:
+    type: string
+    description: The OTP code sent to the user's phone number for verification
+    example: "123456"
+  phoneNo:
+    type: string
+    description: The user's phone number associated with the OTP code
+    example: "081234567890"

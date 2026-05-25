@@ -19,7 +19,7 @@ func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccou
 		return
 	}
 	if authUser.Id != "" {
-		err = ErrDuplicateUser
+		err = s.Err.Wrap(ErrDuplicateUser)
 		return
 	}
 

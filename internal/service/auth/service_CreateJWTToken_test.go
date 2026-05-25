@@ -2,13 +2,11 @@ package auth_test
 
 import (
 	"context"
-	"strings"
 	"testing"
 
 	"github.com/go-faker/faker/v4"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
-	"github.com/masraga/kerp-api/internal/util/traceerr"
 	"go.uber.org/mock/gomock"
 )
 
@@ -73,17 +71,6 @@ func TestAuthService_CreateJWTTOken(t *testing.T) {
 
 			res, err := svc.CreateJWTToken(tt.args.ctx, tt.args.input)
 			testutil.RequireResult(t, err, tt.expected, res)
-
-			file, line, ok := traceerr.Location(err)
-			if !ok {
-				t.Fatalf("expected traced error location")
-			}
-			if !strings.HasSuffix(file, "service_CreateJWTToken.go") {
-				t.Fatalf("expected service_CreateJWTToken.go, got %s", file)
-			}
-			if line == 0 {
-				t.Fatalf("expected non-zero line")
-			}
 		})
 	}
 }

@@ -24,7 +24,3 @@ type AuthRepositoryReaderInterface interface {
 	FindAuth(ctx context.Context, input FindAuthInput) (output FindAuthOutput, err error)
 	FindOTP(ctx context.Context, input FindOTPInput) (output FindOTPOutput, err error)
 }
-
-type AuthRepositoryReaderInterface interface {
-	FindAuth(ctx context.Context, input FindAuthInput) (output FindAuthOutput, err error)
-}

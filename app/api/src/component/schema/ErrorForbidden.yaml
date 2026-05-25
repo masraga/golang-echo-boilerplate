@@ -1,0 +1,8 @@
+type: object
+required:
+  - error
+properties:
+  error:
+    type: string
+    description: The error message describing the forbidden access
+    example: "Forbidden, you do not have permission to access this resource"

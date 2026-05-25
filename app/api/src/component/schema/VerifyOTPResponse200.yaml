@@ -1,0 +1,17 @@
+type: object
+required:
+  - isValid
+  - phoneNo
+properties:
+  isValid:
+    type: boolean
+    description: Indicates whether the provided OTP code is valid or not
+    example: true
+  phoneNo:
+    type: string
+    description: The user's phone number associated with the OTP code
+    example: "081234567890"
+  note:
+    type: string
+    description: Additional information or notes regarding the OTP verification result
+    example: "OTP code is valid and has not expired"

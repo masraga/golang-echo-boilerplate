@@ -5,11 +5,9 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/masraga/kerp-api/internal/util/traceerr"
 )
 
 func (s *AuthService) CreateJWTToken(ctx context.Context, input CreateJWTTokenInput) (output CreateJWTTokenOutput, err error) {
-	defer traceerr.WrapReturn(&err)
 
 	invalidExpired := input.ExpiredAtUtc0 == 0
 	invalidUserId := input.UserId == ""

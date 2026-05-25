@@ -1,11 +1,9 @@
 package middleware
 
 import (
-	"fmt"
 	"runtime/debug"
 
 	"github.com/labstack/echo/v4"
-	"github.com/masraga/kerp-api/internal/util/traceerr"
 )
 
 func HTTPErrorHandler(err error, c echo.Context) {
@@ -21,7 +19,6 @@ func HTTPErrorHandler(err error, c echo.Context) {
 		c.Path(),
 		requestID(c),
 		err,
-		errorOrigin(err),
 		debug.Stack(),
 	)
 
@@ -34,12 +31,4 @@ func requestID(c echo.Context) string {
 		return requestID
 	}
 	return c.Response().Header().Get(echo.HeaderXRequestID)
-}
-
-func errorOrigin(err error) string {
-	file, line, ok := traceerr.Location(err)
-	if !ok {
-		return "unknown"
-	}
-	return fmt.Sprintf("%s:%d", file, line)
 }
