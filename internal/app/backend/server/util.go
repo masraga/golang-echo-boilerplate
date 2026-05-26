@@ -24,7 +24,7 @@ func returnNotImplemented(e echo.Context) error {
 }
 
 func bindOrReturnBadRequest(e echo.Context, i any) error {
-	if err := e.Bind(&i); err != nil {
+	if err := e.Bind(i); err != nil {
 		return e.JSON(http.StatusBadRequest, "")
 	}
 	return nil

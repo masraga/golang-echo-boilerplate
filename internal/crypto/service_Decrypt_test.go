@@ -56,13 +56,13 @@ func TestCryptoService_Decrypt(t *testing.T) {
 			name:        "should fail when decoded value is shorter than nonce",
 			key:         validKey,
 			hashCode:    base64.StdEncoding.EncodeToString([]byte("short")),
-			expectedErr: crypto.ErrDecodeHashString,
+			expectedErr: crypto.ErrDecryptHashString,
 		},
 		{
 			name:        "should fail when ciphertext is modified",
 			key:         validKey,
 			hashCode:    tamperedCiphertext,
-			expectedErr: crypto.ErrDecodeHashString,
+			expectedErr: crypto.ErrDecryptHashString,
 		},
 		{
 			name:        "should fail when crypto key is invalid",
@@ -81,7 +81,7 @@ func TestCryptoService_Decrypt(t *testing.T) {
 				}),
 			})
 
-			output, err := svc.Decrypt(context.Background(), crypto.DEncryptInput{
+			output, err := svc.Decrypt(context.Background(), crypto.DecryptInput{
 				HashCode: tt.hashCode,
 			})
 

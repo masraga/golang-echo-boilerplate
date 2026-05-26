@@ -52,7 +52,7 @@ func TestCryptoService_Encrypt(t *testing.T) {
 			require.NoError(t, err)
 			require.NotEmpty(t, output.Result)
 
-			decrypted, err := svc.Decrypt(context.Background(), crypto.DEncryptInput{
+			decrypted, err := svc.Decrypt(context.Background(), crypto.DecryptInput{
 				HashCode: output.Result,
 			})
 			require.NoError(t, err)

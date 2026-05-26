@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/masraga/kerp-api/generated/api"
+	"github.com/masraga/kerp-api/internal/crypto"
 	"github.com/masraga/kerp-api/internal/service/auth"
 )
 
@@ -27,7 +28,13 @@ func (s *Server) bindRequestToCreateNewAccountInput(ctx echo.Context) (input aut
 	if err != nil {
 		return
 	}
-	input.PhoneNo = reqBody.PhoneNo
+	phone, err := s.CryptoService.Decrypt(ctx.Request().Context(), crypto.DecryptInput{
+		HashCode: reqBody.PhoneNo,
+	})
+	if err != nil {
+		return
+	}
+	input.PhoneNo = phone.Result
 	return
 }
 

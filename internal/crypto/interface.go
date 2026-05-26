@@ -4,5 +4,5 @@ import "context"
 
 type CryptoServiceInterface interface {
 	Encrypt(ctx context.Context, input EncryptInput) (output EncryptOutput, err error)
-	Decrypt(ctx context.Context, input DEncryptInput) (output DecryptOutput, err error)
+	Decrypt(ctx context.Context, input DecryptInput) (output DecryptOutput, err error)
 }

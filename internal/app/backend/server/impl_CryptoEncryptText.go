@@ -9,7 +9,7 @@ import (
 func (s *Server) CryptoEncryptText(ctx echo.Context) error {
 	var reqBody api.CryptoEncryptTextRequest
 
-	err := bindOrReturnBadRequest(ctx, reqBody)
+	err := bindOrReturnBadRequest(ctx, &reqBody)
 	if err != nil {
 		return err
 	}

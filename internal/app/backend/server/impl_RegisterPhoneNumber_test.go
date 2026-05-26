@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/masraga/kerp-api/generated/api"
 	"github.com/masraga/kerp-api/internal/app/backend/server"
+	"github.com/masraga/kerp-api/internal/crypto"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
 	"go.uber.org/mock/gomock"
@@ -28,7 +29,8 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 	}
 
 	type fields struct {
-		AuthService *auth.MockAuthServiceInterface
+		AuthService   *auth.MockAuthServiceInterface
+		CryptoService *crypto.MockCryptoServiceInterface
 	}
 
 	type test struct {
@@ -48,6 +50,13 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 				},
 			},
 			mock: func(ctx echo.Context, tt *test, ctrl *gomock.Controller) {
+				mockCryptoService := crypto.NewMockCryptoServiceInterface(ctrl)
+				mockCryptoService.EXPECT().
+					Decrypt(ctx.Request().Context(), crypto.DecryptInput{
+						HashCode: tt.args.input.PhoneNo,
+					}).
+					Return(crypto.DecryptOutput{Result: tt.args.input.PhoneNo}, nil)
+
 				mockAuthService := auth.NewMockAuthServiceInterface(ctrl)
 				mockAuthService.EXPECT().
 					CreateNewAccount(ctx.Request().Context(), auth.CreateNewAccountInput{
@@ -55,6 +64,7 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 					}).
 					Return(auth.CreateNewAccountOutput{Id: expectedId}, nil)
 				tt.fields.AuthService = mockAuthService
+				tt.fields.CryptoService = mockCryptoService
 
 				result, _ := json.Marshal(api.CreateNewAccountResponse{
 					Id: expectedId,
@@ -73,6 +83,13 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 				},
 			},
 			mock: func(ctx echo.Context, tt *test, ctrl *gomock.Controller) {
+				mockCryptoService := crypto.NewMockCryptoServiceInterface(ctrl)
+				mockCryptoService.EXPECT().
+					Decrypt(ctx.Request().Context(), crypto.DecryptInput{
+						HashCode: tt.args.input.PhoneNo,
+					}).
+					Return(crypto.DecryptOutput{Result: tt.args.input.PhoneNo}, nil)
+
 				mockAuthService := auth.NewMockAuthServiceInterface(ctrl)
 				mockAuthService.EXPECT().
 					CreateNewAccount(ctx.Request().Context(), auth.CreateNewAccountInput{
@@ -80,6 +97,7 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 					}).
 					Return(auth.CreateNewAccountOutput{}, auth.ErrDuplicateUser)
 				tt.fields.AuthService = mockAuthService
+				tt.fields.CryptoService = mockCryptoService
 
 				result, _ := json.Marshal(api.ErrorBadRequest{Error: auth.ErrDuplicateUser.Error()})
 				tt.expected = testutil.HttpResult{
@@ -109,7 +127,8 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 			}
 
 			svc := server.NewServer(server.ServerOpts{
-				AuthService: tt.fields.AuthService,
+				AuthService:   tt.fields.AuthService,
+				CryptoService: tt.fields.CryptoService,
 			})
 			svc.RegisterPhoneNumber(context)
 

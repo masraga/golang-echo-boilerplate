@@ -10,7 +10,7 @@ type EncryptOutput struct {
 	Result string
 }
 
-type DEncryptInput struct {
+type DecryptInput struct {
 	HashCode string
 }
 

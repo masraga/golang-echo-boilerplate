@@ -5,30 +5,32 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
+	"errors"
 )
 
-func (s *CryptoService) Decrypt(ctx context.Context, input DEncryptInput) (output DecryptOutput, err error) {
+func (s *CryptoService) Decrypt(ctx context.Context, input DecryptInput) (output DecryptOutput, err error) {
 	data, err := base64.StdEncoding.DecodeString(input.HashCode)
 	if err != nil {
-		err = s.Err.Wrap(ErrDecodeHashString)
+		err = s.Err.Wrap(errors.Join(err, ErrDecodeHashString))
 		return
 	}
 
 	block, err := aes.NewCipher([]byte(s.ConfigCryptoKey))
 	if err != nil {
-		err = s.Err.Wrap(ErrCreateChipher)
+		err = s.Err.Wrap(errors.Join(err, ErrCreateChipher))
 		return
 	}
 
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-		err = s.Err.Wrap(ErrCreateChiperGCM)
+		err = s.Err.Wrap(errors.Join(err, ErrCreateChiperGCM))
 		return
 	}
 
 	nonceSize := gcm.NonceSize()
-	if len(data) < nonceSize {
-		err = s.Err.Wrap(ErrDecodeHashString)
+	dataLen := len(data)
+	if dataLen < nonceSize {
+		err = s.Err.Wrap(ErrDecryptHashString)
 		return
 	}
 
@@ -36,7 +38,7 @@ func (s *CryptoService) Decrypt(ctx context.Context, input DEncryptInput) (outpu
 
 	plaintext, err := gcm.Open(nil, nonce, cipherText, nil)
 	if err != nil {
-		err = s.Err.Wrap(ErrDecodeHashString)
+		err = s.Err.Wrap(errors.Join(err, ErrDecryptHashString))
 		return
 	}
 
