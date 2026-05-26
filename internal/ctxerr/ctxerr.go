@@ -25,6 +25,6 @@ func (c *CtxErr) Wrap(err error) error {
 	if err == nil {
 		return nil
 	}
-	c.Logger.Error().Msg(err.Error())
+	c.Logger.Error().CallerSkipFrame(1).Caller().Msg(err.Error())
 	return err
 }

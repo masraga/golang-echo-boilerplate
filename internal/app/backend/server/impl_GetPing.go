@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Server) GetPing(ctx echo.Context) error {
-	return s.returnOk(ctx, api.GetPingResponse{
+	return returnOk(ctx, api.GetPingResponse{
 		Message: pointer.String("PONG"),
 	})
 }

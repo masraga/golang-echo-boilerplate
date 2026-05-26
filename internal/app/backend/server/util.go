@@ -7,30 +7,30 @@ import (
 	"github.com/masraga/kerp-api/generated/api"
 )
 
-func (s *Server) returnBadRequest(e echo.Context, data interface{}) error {
+func returnBadRequest(e echo.Context, data interface{}) error {
 	return e.JSON(http.StatusBadRequest, api.ErrorBadRequest{Error: data.(string)})
 }
 
-func (s *Server) returnCreated(e echo.Context, data interface{}) error {
+func returnCreated(e echo.Context, data interface{}) error {
 	return e.JSON(http.StatusCreated, data)
 }
 
-func (s *Server) returnOk(e echo.Context, data interface{}) error {
+func returnOk(e echo.Context, data interface{}) error {
 	return e.JSON(http.StatusOK, data)
 }
 
-func (s *Server) returnNotImplemented(e echo.Context) error {
+func returnNotImplemented(e echo.Context) error {
 	return e.JSON(http.StatusNotImplemented, "not implemented")
 }
 
-func (s *Server) bindOrReturnBadRequest(e echo.Context, i any) error {
+func bindOrReturnBadRequest(e echo.Context, i any) error {
 	if err := e.Bind(&i); err != nil {
 		return e.JSON(http.StatusBadRequest, "")
 	}
 	return nil
 }
 
-func (s *Server) returnError(e echo.Context, err error) error {
+func returnError(e echo.Context, err error) error {
 	status, ok := mapError[err.Error()]
 	if !ok {
 		return e.JSON(http.StatusInternalServerError, "unknown error")

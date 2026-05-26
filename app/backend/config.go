@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/masraga/kerp-api/internal/crypto"
 	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/service/auth"
 )
@@ -12,6 +13,7 @@ type Config struct {
 	DatabaseUrl   string                 `env:"DATABASE_URL"`
 	JwtSecret     auth.JwtSecretType     `env:"JWT_SECRET"`
 	JwtExpiration auth.JwtExpirationType `env:"JWT_EXPIRATION"`
+	CryptoKey     crypto.ConfigCryptoKey `env:"CRYPTO_KEY"`
 }
 
 func LoadConfig() *Config {

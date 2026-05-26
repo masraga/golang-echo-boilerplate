@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/masraga/kerp-api/internal/crypto"
 	"github.com/masraga/kerp-api/internal/ctxerr"
 )
 
@@ -11,6 +12,7 @@ type AuthService struct {
 
 	AuthRepositoryWriter AuthRepositoryWriterInterface
 	AuthRepositoryReader AuthRepositoryReaderInterface
+	CryptoService        crypto.CryptoServiceInterface
 }
 
 type AuthServiceOpts struct {
@@ -20,6 +22,7 @@ type AuthServiceOpts struct {
 
 	AuthRepositoryWriter AuthRepositoryWriterInterface
 	AuthRepositoryReader AuthRepositoryReaderInterface
+	CryptoService        crypto.CryptoServiceInterface
 }
 
 func NewAuthService(opts AuthServiceOpts) *AuthService {
@@ -30,5 +33,6 @@ func NewAuthService(opts AuthServiceOpts) *AuthService {
 
 		AuthRepositoryWriter: opts.AuthRepositoryWriter,
 		AuthRepositoryReader: opts.AuthRepositoryReader,
+		CryptoService:        opts.CryptoService,
 	}
 }

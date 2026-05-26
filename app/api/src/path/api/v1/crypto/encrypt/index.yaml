@@ -1,0 +1,22 @@
+post:
+  operationId: CryptoEncryptText
+  summary: encrypt plain text to aes encryption
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../../../../component/schema/CryptoEncryptTextRequest.yaml
+  responses:
+    '200':
+      description: Result ecnrypted text that already encode to base64
+      content:
+        application/json:
+          schema:
+            $ref: ../../../../../component/schema/CryptoEncryptTextResponse.yaml
+    '400':
+      description: Bad request error
+      content:
+        application/json:
+          schema:
+            $ref: ../../../../../component/schema/ErrorBadRequest.yaml

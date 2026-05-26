@@ -8,6 +8,8 @@ paths:
     $ref: './path/api/v1/ping/index.yaml'
   /api/v1/auth/register/phone:
     $ref: './path/api/v1/auth/register/phone/index.yaml'
+  /api/v1/crypto/encrypt:
+    $ref: './path/api/v1/crypto/encrypt/index.yaml'
   /api/v1/auth/otp/verify:
     $ref: './path/api/v1/auth/otp/verify/index.yaml'
 
@@ -29,3 +31,7 @@ components:
       $ref: './component/schema/ErrorUnauthorized.yaml'
     ErrorForbidden:
       $ref: './component/schema/ErrorForbidden.yaml'
+    CryptoEncryptTextRequest:
+      $ref: './component/schema/CryptoEncryptTextRequest.yaml'
+    CryptoEncryptTextResponse:
+      $ref: './component/schema/CryptoEncryptTextResponse.yaml'

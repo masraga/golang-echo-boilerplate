@@ -108,7 +108,9 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 				tt.mock(context, &tt, ctrl)
 			}
 
-			svc := server.NewServer(tt.fields.AuthService)
+			svc := server.NewServer(server.ServerOpts{
+				AuthService: tt.fields.AuthService,
+			})
 			svc.RegisterPhoneNumber(context)
 
 			testutil.RequireHttpResultJson(t, tt.expected, rec)

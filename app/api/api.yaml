@@ -37,6 +37,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorBadRequest'
+  /api/v1/crypto/encrypt:
+    post:
+      operationId: CryptoEncryptText
+      summary: encrypt plain text to aes encryption
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CryptoEncryptTextRequest'
+      responses:
+        '200':
+          description: Result ecnrypted text that already encode to base64
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CryptoEncryptTextResponse'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
   /api/v1/auth/otp/verify:
     post:
       summary: Verify OTP code for user authentication
@@ -158,3 +181,21 @@ components:
           type: string
           description: The error message describing the forbidden access
           example: 'Forbidden, you do not have permission to access this resource'
+    CryptoEncryptTextRequest:
+      type: object
+      required:
+        - plainText
+      properties:
+        plainText:
+          type: string
+          description: The text that should be encrypted and encoding to base64
+          example: VVBLd2JIS0ZJSGlyWlRCWQ==
+    CryptoEncryptTextResponse:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: encrypted code that already encoded to base64
+          example: AzzasSaasdf==

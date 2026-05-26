@@ -1,0 +1,9 @@
+type: object
+required:
+  - plainText
+properties:
+  plainText:
+    type: string
+    description: The text that should be encrypted and encoding to base64
+    example: VVBLd2JIS0ZJSGlyWlRCWQ==
+  

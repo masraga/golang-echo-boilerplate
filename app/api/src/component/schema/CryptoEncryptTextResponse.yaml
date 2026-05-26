@@ -1,0 +1,9 @@
+type: object
+required:
+  - code
+properties:
+  code:
+    type: string
+    description: encrypted code that already encoded to base64
+    example:
+      AzzasSaasdf==
