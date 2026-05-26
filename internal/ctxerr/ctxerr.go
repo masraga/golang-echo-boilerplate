@@ -5,16 +5,19 @@ import (
 )
 
 type CtxErr struct {
-	Logger zerolog.Logger
+	ConfigShowErrMode ShowErrMode
+	Logger            zerolog.Logger
 }
 
 type CtxErrOpts struct {
-	Logger zerolog.Logger
+	ConfigShowErrMode ShowErrMode
+	Logger            zerolog.Logger
 }
 
 func NewCtxErr(opt CtxErrOpts) *CtxErr {
 	return &CtxErr{
-		Logger: opt.Logger,
+		ConfigShowErrMode: opt.ConfigShowErrMode,
+		Logger:            opt.Logger,
 	}
 }
 

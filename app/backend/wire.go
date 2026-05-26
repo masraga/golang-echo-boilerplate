@@ -18,7 +18,7 @@ func InitializeService(config *Config) (*server.Server, error) {
 		ProvideZerolog,
 		wire.Struct(new(ctxerr.CtxErrOpts), "*"),
 
-		wire.FieldsOf(new(*Config), "JwtSecret", "JwtExpiration"),
+		wire.FieldsOf(new(*Config), "JwtSecret", "JwtExpiration", "ShowErrMode"),
 		wire.Struct(new(auth.AuthRepositoryOpts), "*"),
 		auth.NewAuthRepository,
 		wire.Bind(new(auth.AuthRepositoryWriterInterface), new(*auth.AuthRepository)),

@@ -13,7 +13,7 @@ func (r *AuthRepository) CreateOTP(ctx context.Context, input CreateOTPInput) (o
 		Set("expired_at_utc0", input.ExpiredAtUtc0)
 	_, err = stmt.ExecAndClose(ctx, r.UseTx(ctx))
 	if err != nil {
-		err = errors.Join(err, ErrCreateNewOTP)
+		err = r.Err.Wrap(errors.Join(err, ErrCreateNewOTP))
 	}
 	return
 }

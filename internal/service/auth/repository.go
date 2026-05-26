@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/leporo/sqlf"
+	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/dbtx"
 )
 
@@ -11,12 +12,14 @@ type AuthRepository struct {
 	dbtx.DbTxInterface
 	Sql *sqlf.Dialect
 	Db  *sql.DB
+	Err *ctxerr.CtxErr
 }
 
 type AuthRepositoryOpts struct {
 	dbtx.DbTxInterface
 	Sql *sqlf.Dialect
 	Db  *sql.DB
+	Err *ctxerr.CtxErr
 }
 
 func NewAuthRepository(opts AuthRepositoryOpts) *AuthRepository {
@@ -24,5 +27,6 @@ func NewAuthRepository(opts AuthRepositoryOpts) *AuthRepository {
 		DbTxInterface: opts.DbTxInterface,
 		Sql:           opts.Sql,
 		Db:            opts.Db,
+		Err:           opts.Err,
 	}
 }

@@ -8,5 +8,8 @@ func (r *AuthRepository) DeleteAllUserOTP(ctx context.Context, input DeleteAllUs
 		Where("user_id = ? AND is_active = ?", input.UserId, true)
 	_, err = stmt.ExecAndClose(ctx, r.UseTx(ctx))
 	output.IsSuccess = err == nil
+	if err != nil {
+		err = r.Err.Wrap(err)
+	}
 	return
 }

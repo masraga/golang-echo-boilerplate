@@ -3,6 +3,7 @@ generated
 app/backend/__debug*
 app/backend/wire_gen.go
 internal/**/interface.mock.gen.go
+internal/log/error.log
 api-docs.html
 
 .vscode

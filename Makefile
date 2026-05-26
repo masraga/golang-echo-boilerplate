@@ -23,6 +23,12 @@ generate-backend:
 generate-wire:
 	wire ./...
 
+LOG_DIR=./internal/log
+LOG_FILE=$(LOG_DIR)/error.log
+generate-log:
+	@mkdir -p ./internal/log
+	@touch $(LOG_FILE)
+
 INTERFACE_GO_FILES := $(shell find internal -type f -name "interface.go")
 INTERFACE_MOCK_GO_FILES := $(INTERFACE_GO_FILES:%.go=%.mock.gen.go)
 
@@ -33,7 +39,7 @@ $(INTERFACE_MOCK_GO_FILES): %.mock.gen.go: %.go
 	@echo "Generating mocks $@ for $<"
 	@mockgen -source=$< -destination=$@ -package=$(shell basename $(dir $<))
 
-init: api.yaml generate-api generate-wire generate-backend generate-mocks
+init: api.yaml generate-api generate-wire generate-backend generate-mocks generate-log
 
 clean:
 	@rm -rf ./api-docs.html

@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 
 	"github.com/leporo/sqlf"
@@ -24,10 +25,24 @@ func ProvideSqlDialect() *sqlf.Dialect {
 	return sqlf.PostgreSQL
 }
 
-func ProvideZerolog() zerolog.Logger {
-	return zerolog.New(os.Stdout).
+func ProvideZerolog(config *Config) zerolog.Logger {
+	showLogMode := zerolog.New(os.Stdout).
 		With().
 		Timestamp().
 		Caller().
 		Logger()
+	if config.ShowErrMode {
+		return showLogMode
+	}
+	logFile, err := os.OpenFile(
+		"internal/log/error.log",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0666,
+	)
+	if err != nil {
+		fmt.Println(err)
+		return showLogMode
+	}
+	saveLogMode := zerolog.New(logFile).With().Timestamp().Caller().Logger()
+	return saveLogMode
 }

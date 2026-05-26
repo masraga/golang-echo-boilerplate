@@ -15,7 +15,7 @@ func (s *AuthService) CreateOTP(ctx context.Context, input CreateOTPInput) (outp
 		return
 	}
 	if authUser.Id == "" {
-		err = ErrAuthNotFound
+		err = s.Err.Wrap(ErrAuthNotFound)
 		return
 	}
 

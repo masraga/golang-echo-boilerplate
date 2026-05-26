@@ -25,13 +25,13 @@ func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccou
 
 	ctx, err = s.AuthRepositoryWriter.Begin(ctx, nil)
 	if err != nil {
-		err = errors.Join(err, ErrBeginDbTx)
+		err = s.Err.Wrap(errors.Join(err, ErrBeginDbTx))
 		return
 	}
 
 	defer func() {
 		commitErr := s.AuthRepositoryWriter.CommitOrRollback(ctx, err)
-		err = commitErr
+		err = s.Err.Wrap(commitErr)
 	}()
 
 	input.Id = uuid.NewString()

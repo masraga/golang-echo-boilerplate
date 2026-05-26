@@ -21,7 +21,7 @@ func (r *AuthRepository) FindAuth(ctx context.Context, input FindAuthInput) (out
 	err = stmt.QueryRowAndClose(ctx, r.UseTx(ctx))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			err = ErrAuthNotFound
+			err = r.Err.Wrap(ErrAuthNotFound)
 		}
 		return
 	}

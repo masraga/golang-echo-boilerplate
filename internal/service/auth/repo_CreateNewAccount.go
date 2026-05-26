@@ -16,5 +16,9 @@ func (r *AuthRepository) CreateNewAccount(ctx context.Context, input CreateNewAc
 		return
 	}
 	output.Id = input.PhoneNo
+	if err != nil {
+		err = r.Err.Wrap(err)
+		return
+	}
 	return
 }

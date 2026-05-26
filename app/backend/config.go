@@ -2,10 +2,12 @@ package main
 
 import (
 	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/service/auth"
 )
 
 type Config struct {
+	ShowErrMode   ctxerr.ShowErrMode     `env:"SHOW_ERR_MODE"`
 	AppPort       int64                  `env:"APP_PORT"`
 	DatabaseUrl   string                 `env:"DATABASE_URL"`
 	JwtSecret     auth.JwtSecretType     `env:"JWT_SECRET"`
