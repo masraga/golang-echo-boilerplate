@@ -1,0 +1,4 @@
+interface:
+  display_name: "KERP API Development"
+  short_description: "KERP API project conventions."
+  default_prompt: "Use this skill when changing the KERP API codebase."

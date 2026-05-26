@@ -40,5 +40,6 @@ func (s *Server) bindRequestToCreateNewAccountInput(ctx echo.Context) (input aut
 
 func (s *Server) bindOutputWithCreateNewAccountOutput(result auth.CreateNewAccountOutput) (output api.CreateNewAccountResponse, err error) {
 	output.Id = result.Id
+	output.OtpCode = result.OtpCode
 	return
 }

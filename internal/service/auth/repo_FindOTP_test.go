@@ -7,9 +7,11 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-faker/faker/v4"
 	"github.com/leporo/sqlf"
+	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/dbtx"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
+	"github.com/masraga/kerp-api/internal/util/pointer"
 )
 
 func TestAuthRepository_FindOTP(t *testing.T) {
@@ -28,8 +30,11 @@ func TestAuthRepository_FindOTP(t *testing.T) {
 	}
 
 	var (
-		expectedId      string = faker.UUIDHyphenated()
-		expectedOtpCode string = "123456"
+		expectedId        string  = faker.UUIDHyphenated()
+		expectedOtpCode   string  = "123456"
+		expectedNote      *string = pointer.String("test note")
+		expectedExpiredAt int64   = faker.RandomUnixTime()
+		expectedVerified  bool    = false
 	)
 
 	tests := []test{
@@ -38,7 +43,8 @@ func TestAuthRepository_FindOTP(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				input: auth.FindOTPInput{
-					UserId: "user-id",
+					UserId:  "user-id",
+					OtpCode: expectedOtpCode,
 				},
 			},
 			expected: expected{
@@ -47,7 +53,7 @@ func TestAuthRepository_FindOTP(t *testing.T) {
 			},
 			mock: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(``).
-					WithArgs(sqlmock.AnyArg()).
+					WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(auth.ErrFindOTPNotFound)
 			},
 		},
@@ -56,19 +62,26 @@ func TestAuthRepository_FindOTP(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				input: auth.FindOTPInput{
-					UserId: "user-id",
+					UserId:  "user-id",
+					OtpCode: expectedOtpCode,
 				},
 			},
 			expected: expected{
-				Err:   nil,
-				Value: auth.FindOTPOutput{Id: expectedId, OtpCode: expectedOtpCode},
+				Err: nil,
+				Value: auth.FindOTPOutput{
+					Id:            expectedId,
+					OtpCode:       expectedOtpCode,
+					Note:          expectedNote,
+					ExpiredAtUtc0: expectedExpiredAt,
+					IsVerified:    expectedVerified,
+				},
 			},
 			mock: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(``).
-					WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg()).
+					WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnRows(
-						sqlmock.NewRows([]string{"id", "otp_code"}).
-							AddRow(expectedId, expectedOtpCode),
+						sqlmock.NewRows([]string{"id", "otp_code", "note", "expired_at_utc0", "is_verified"}).
+							AddRow(expectedId, expectedOtpCode, expectedNote, expectedExpiredAt, expectedVerified),
 					)
 			},
 		},
@@ -91,6 +104,7 @@ func TestAuthRepository_FindOTP(t *testing.T) {
 				DbTxInterface: dbTx,
 				Sql:           sqlf.PostgreSQL,
 				Db:            dbMock,
+				Err:           ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
 			})
 
 			res, err := repo.FindOTP(tt.args.ctx, tt.args.input)

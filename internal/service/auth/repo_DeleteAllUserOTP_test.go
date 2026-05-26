@@ -7,6 +7,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-faker/faker/v4"
 	"github.com/leporo/sqlf"
+	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/dbtx"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
@@ -89,6 +90,7 @@ func TestAuthRepository_DeleteAllUerOTP(t *testing.T) {
 				DbTxInterface: dbtx,
 				Sql:           sqlf.PostgreSQL,
 				Db:            db,
+				Err:           ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
 			})
 			res, err := repo.DeleteAllUserOTP(tt.args.ctx, tt.args.input)
 			testutil.RequireResult(t, err, tt.expected, res)

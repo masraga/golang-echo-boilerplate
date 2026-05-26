@@ -9,7 +9,8 @@ import (
 
 func (s *AuthService) CreateOTP(ctx context.Context, input CreateOTPInput) (output CreateOTPOutput, err error) {
 	authUser, err := s.AuthRepositoryReader.FindAuth(ctx, FindAuthInput{
-		UserId: input.UserId,
+		PhoneNo: input.PhoneNo,
+		UserId:  input.UserId,
 	})
 	if err != nil {
 		return

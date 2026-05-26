@@ -1,0 +1,37 @@
+post:
+  tags:
+    - Authentication
+  operationId: AuthValidatePin
+  summary: Validate a PIN code for authentication.
+  description: Validate user pin code, if pin already provided login if not, create new pin
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../../../component/schema/AuthValidatePinRequest.yaml'
+  responses:
+    '200':
+      description: Successful authentication with valid PIN.
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/AuthValidatePinResponse.yaml'
+    '400':
+      description: Bad request, invalid input data.
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorBadRequest.yaml'
+    '401':
+      description: Unauthorized, invalid PIN or authentication failed.
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorUnauthorized.yaml'
+    '500':
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorInternalServer.yaml'

@@ -1,13 +1,24 @@
 openapi: 3.0.0
 info:
   title: Koderpedia ERP API
-  version: "1.0"
-
+  version: "1.0.0"
+servers:
+  - url: http://localhost:1323
+    description: Local development server
+tags:
+  - name: Health Check
+    description: Endpoints for checking the health of the API
+  - name: Authentication
+    description: Endpoints for user authentication and registration
+  - name: Crypto
+    description: Endpoints for cryptographic operations such as encryption and decryption
 paths:
   /api/v1/ping:
     $ref: './path/api/v1/ping/index.yaml'
   /api/v1/auth/register/phone:
     $ref: './path/api/v1/auth/register/phone/index.yaml'
+  /api/v1/auth/validate/pin:
+    $ref: './path/api/v1/auth/validate/pin/index.yaml'
   /api/v1/crypto/encrypt:
     $ref: './path/api/v1/crypto/encrypt/index.yaml'
   /api/v1/auth/otp/verify:
@@ -31,7 +42,13 @@ components:
       $ref: './component/schema/ErrorUnauthorized.yaml'
     ErrorForbidden:
       $ref: './component/schema/ErrorForbidden.yaml'
+    ErrorInternalServerError:
+      $ref: './component/schema/ErrorInternalServer.yaml'
     CryptoEncryptTextRequest:
       $ref: './component/schema/CryptoEncryptTextRequest.yaml'
     CryptoEncryptTextResponse:
       $ref: './component/schema/CryptoEncryptTextResponse.yaml'
+    AuthValidatePinRequest:
+      $ref: './component/schema/AuthValidatePinRequest.yaml'
+    AuthValidatePinResponse:
+      $ref: './component/schema/AuthValidatePinResponse.yaml'

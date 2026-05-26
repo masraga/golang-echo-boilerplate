@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-faker/faker/v4"
+	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
 	"go.uber.org/mock/gomock"
@@ -51,6 +52,7 @@ func TestAuthService_CreateToken(t *testing.T) {
 				auth.AuthServiceOpts{
 					JwtSecret:     auth.JwtSecretType(faker.Word()),
 					JwtExpiration: auth.JwtExpirationType(60),
+					Err:           ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
 				},
 			)
 

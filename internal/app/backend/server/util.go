@@ -33,7 +33,7 @@ func bindOrReturnBadRequest(e echo.Context, i any) error {
 func returnError(e echo.Context, err error) error {
 	status, ok := mapError[err.Error()]
 	if !ok {
-		return e.JSON(http.StatusInternalServerError, "unknown error")
+		return e.JSON(http.StatusInternalServerError, map[string]string{"error": "unknown error"})
 	}
 
 	switch status {

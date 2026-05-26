@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-faker/faker/v4"
+	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
 	"github.com/stretchr/testify/require"
@@ -139,6 +140,7 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 			authService := auth.NewAuthService(auth.AuthServiceOpts{
 				JwtSecret:            "secret",
 				JwtExpiration:        3600,
+				Err:                  ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
 				AuthRepositoryReader: tt.fields.AuthRepositoryReader,
 				AuthRepositoryWriter: tt.fields.AuthRepositoryWriter,
 			})
@@ -195,6 +197,7 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 		authService := auth.NewAuthService(auth.AuthServiceOpts{
 			JwtSecret:            "secret",
 			JwtExpiration:        3600,
+			Err:                  ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
 			AuthRepositoryReader: authRepoReader,
 			AuthRepositoryWriter: authRepoWriter,
 		})

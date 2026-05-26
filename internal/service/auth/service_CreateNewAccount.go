@@ -16,7 +16,7 @@ func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccou
 		PhoneNo: input.PhoneNo,
 	})
 	if err != nil && !errors.Is(err, ErrAuthNotFound) {
-		s.Err.Wrap(err)
+		err = s.Err.Wrap(err)
 		return
 	}
 	if authUser.Id != "" {
@@ -39,6 +39,7 @@ func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccou
 
 	_, err = s.AuthRepositoryWriter.CreateNewAccount(ctx, input)
 	if err != nil {
+		err = s.Err.Wrap(err)
 		return
 	}
 
@@ -49,6 +50,7 @@ func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccou
 
 	otpSvc, err := s.CreateOTP(ctx, CreateOTPInput{
 		UserId:        input.Id,
+		PhoneNo:       input.PhoneNo,
 		Note:          pointer.String("OTP for new account register"),
 		ExpiredAtUtc0: time.Now().Add(time.Duration(OtpExpiredDuration) * time.Minute).UnixMilli(),
 		OtpCode:       otpCode,

@@ -1,4 +1,6 @@
 get:
+  tags:
+    - Health Check
   operationId: GetPing
   summary: Check the health of the API
   responses:

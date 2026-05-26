@@ -2,6 +2,7 @@ type: object
 required:
   - isValid
   - phoneNo
+  - isNewUser
 properties:
   isValid:
     type: boolean
@@ -15,3 +16,7 @@ properties:
     type: string
     description: Additional information or notes regarding the OTP verification result
     example: "OTP code is valid and has not expired"
+  isNewUser:
+    type: boolean
+    description: Indicates whether the user is new or existing based on the phone number
+    example: true

@@ -7,7 +7,7 @@ validate-api:
 	@swagger-cli validate app/api/api.yaml
 
 api-docs:
-	@redocly build-docs app/api/api.yaml -o api-docs.html
+	@npx --yes @redocly/cli build-docs app/api/api.yaml -o api-docs.html
 
 generate-api:
 	@mkdir -p ./generated/api
@@ -18,7 +18,7 @@ generate-api:
 
 generate-backend:
 	@mkdir -p ./generated/app
-	@go build -o ./generated/app/backend ./app/backend
+	@go build -o ./make ./app/backend
 
 generate-wire:
 	wire ./...

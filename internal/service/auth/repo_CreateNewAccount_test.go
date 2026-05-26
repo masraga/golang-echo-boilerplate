@@ -6,6 +6,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/leporo/sqlf"
+	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/dbtx"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
@@ -78,6 +79,7 @@ func TestUserRepository_CreateNewAcccount(t *testing.T) {
 				DbTxInterface: &dbtx,
 				Db:            db,
 				Sql:           sqlf.PostgreSQL,
+				Err:           ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
 			})
 			res, err := repo.CreateNewAccount(tt.args.ctx, tt.args.input)
 			testutil.RequireResult(t, err, tt.expected, res)

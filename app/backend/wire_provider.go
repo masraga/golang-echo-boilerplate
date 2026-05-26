@@ -4,12 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/leporo/sqlf"
 	"github.com/masraga/kerp-api/internal/database"
 	"github.com/masraga/kerp-api/internal/dbtx"
 	"github.com/rs/zerolog"
 )
+
+const errorLogFilePath = "internal/log/error.log"
 
 func ProvideSqlDb(config *Config) (db *sql.DB, err error) {
 	database := database.NewConnection(config.DatabaseUrl)
@@ -34,8 +37,13 @@ func ProvideZerolog(config *Config) zerolog.Logger {
 	if config.ShowErrMode {
 		return showLogMode
 	}
+
+	if err := os.MkdirAll(filepath.Dir(errorLogFilePath), 0755); err != nil {
+		return showLogMode
+	}
+
 	logFile, err := os.OpenFile(
-		"internal/log/error.log",
+		errorLogFilePath,
 		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
 		0666,
 	)

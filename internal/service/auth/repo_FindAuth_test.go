@@ -7,15 +7,18 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-faker/faker/v4"
 	"github.com/leporo/sqlf"
+	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/dbtx"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
+	"github.com/masraga/kerp-api/internal/util/pointer"
 )
 
 func TestAuthRepository_FindAuth(t *testing.T) {
 	var (
-		expectedId      string = faker.UUIDHyphenated()
-		expectedPhoneNo string = "081234567890"
+		expectedId      string  = faker.UUIDHyphenated()
+		expectedPhoneNo string  = "081234567890"
+		expectedPinCode *string = pointer.String("123456")
 	)
 
 	type args struct {
@@ -64,6 +67,7 @@ func TestAuthRepository_FindAuth(t *testing.T) {
 				Value: auth.FindAuthOutput{
 					Id:      expectedId,
 					PhoneNo: expectedPhoneNo,
+					PinCode: expectedPinCode,
 				},
 			},
 			mock: func(mock sqlmock.Sqlmock) {
@@ -73,8 +77,9 @@ func TestAuthRepository_FindAuth(t *testing.T) {
 						[]string{
 							"id",
 							"phone_no",
+							"pin",
 						},
-					).AddRow(expectedId, expectedPhoneNo))
+					).AddRow(expectedId, expectedPhoneNo, expectedPinCode))
 			},
 		},
 	}
@@ -96,6 +101,7 @@ func TestAuthRepository_FindAuth(t *testing.T) {
 				DbTxInterface: dbtx,
 				Db:            dbMock,
 				Sql:           sqlf.PostgreSQL,
+				Err:           ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
 			})
 
 			res, err := repo.FindAuth(tt.args.ctx, tt.args.input)

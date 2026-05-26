@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-faker/faker/v4"
+	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
 	"go.uber.org/mock/gomock"
@@ -66,7 +67,9 @@ func TestAuthService_CreateJWTTOken(t *testing.T) {
 			}
 
 			svc := auth.NewAuthService(
-				auth.AuthServiceOpts{},
+				auth.AuthServiceOpts{
+					Err: ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
+				},
 			)
 
 			res, err := svc.CreateJWTToken(tt.args.ctx, tt.args.input)

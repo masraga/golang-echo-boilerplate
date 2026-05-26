@@ -8,6 +8,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-faker/faker/v4"
 	"github.com/leporo/sqlf"
+	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/dbtx"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
@@ -91,6 +92,7 @@ func TestAuthRepository_CreateOTP(t *testing.T) {
 				DbTxInterface: dbTx,
 				Db:            db,
 				Sql:           sqlf.PostgreSQL,
+				Err:           ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
 			})
 
 			res, err := repo.CreateOTP(tt.args.ctx, tt.args.input)

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-faker/faker/v4"
+	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
 	"github.com/masraga/kerp-api/internal/util/pointer"
@@ -172,6 +173,7 @@ func TestAuthService_CreateOTP(t *testing.T) {
 			s := auth.NewAuthService(auth.AuthServiceOpts{
 				JwtSecret:            "test-secret",
 				JwtExpiration:        15,
+				Err:                  ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
 				AuthRepositoryReader: tt.fields.AuthRepositoryReader,
 				AuthRepositoryWriter: tt.fields.AuthRepositoryWriter,
 			})

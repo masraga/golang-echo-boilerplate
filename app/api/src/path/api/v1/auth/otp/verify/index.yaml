@@ -1,6 +1,8 @@
 post:
+  tags:
+    - Authentication
   summary: Verify OTP code for user authentication
-  operationId: VerifyOTP
+  operationId: VerifyNewAuthUserOTP
   requestBody:
     required: true
     content:

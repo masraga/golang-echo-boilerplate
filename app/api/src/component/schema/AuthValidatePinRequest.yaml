@@ -1,0 +1,17 @@
+type: object
+required:
+  - pin
+  - phoneNo
+properties:
+  phoneNo:
+    type: string
+    description: The phone number associated with the PIN code.
+    example: "081234567890"
+  pin:
+    type: string
+    description: The PIN code to validate for authentication.
+    example: "1234"
+  retypePin:
+    type: string
+    description: The retype PIN code to validate for authentication.
+    example: "1234"
