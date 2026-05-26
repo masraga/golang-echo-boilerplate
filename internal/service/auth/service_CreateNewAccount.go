@@ -16,6 +16,7 @@ func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccou
 		PhoneNo: input.PhoneNo,
 	})
 	if err != nil && !errors.Is(err, ErrAuthNotFound) {
+		s.Err.Wrap(err)
 		return
 	}
 	if authUser.Id != "" {

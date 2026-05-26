@@ -11,13 +11,11 @@ func (r *AuthRepository) FindAuth(ctx context.Context, input FindAuthInput) (out
 		Select("ta.id").To(&output.Id).
 		Select("ta.phone_no").To(&output.PhoneNo)
 
-	if input.PhoneNo != "" {
-		stmt.Where("phone_no = ?", input.PhoneNo)
-	}
+	stmt.Where("phone_no = ?", input.PhoneNo)
 	if input.UserId != "" {
-		stmt.Where("id = ?", input.UserId)
+		stmt.Where("id", input.UserId)
 	}
-
+	stmt.Where("is_active = ?", true)
 	err = stmt.QueryRowAndClose(ctx, r.UseTx(ctx))
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

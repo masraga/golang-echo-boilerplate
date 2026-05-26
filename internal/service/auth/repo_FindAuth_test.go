@@ -47,7 +47,7 @@ func TestAuthRepository_FindAuth(t *testing.T) {
 			},
 			mock: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(``).
-					WithArgs(sqlmock.AnyArg()).
+					WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(auth.ErrAuthNotFound)
 			},
 		},
@@ -68,7 +68,7 @@ func TestAuthRepository_FindAuth(t *testing.T) {
 			},
 			mock: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(``).
-					WithArgs(sqlmock.AnyArg()).
+					WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnRows(sqlmock.NewRows(
 						[]string{
 							"id",
