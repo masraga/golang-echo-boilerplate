@@ -8,6 +8,7 @@ This directory is the application technical navigator. Read this file, `dictiona
 - Use `dictionary.md` for shared terms, layers, and naming conventions.
 - Use `features/*.md` for endpoint behavior, service flow, repository behavior, and tests.
 - If code behavior changes, update the feature doc in the same change.
+- If an interface is added or changed, run `make clean init` before gomock-dependent tests so generated files stay in sync.
 
 ## Feature Navigator
 

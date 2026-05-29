@@ -44,3 +44,4 @@ This dictionary defines shared application terms used across feature docs.
 | Table-driven test | Required test shape for new or changed tests in this project. |
 | `gomock` | Mocking tool used for service and handler dependency tests. |
 | `go-sqlmock` | SQL expectation tool used for repository tests. |
+| `make clean init` | Required regeneration command after adding or changing any interface so gomock and other generated artifacts are recreated before tests. |
