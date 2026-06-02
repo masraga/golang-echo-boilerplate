@@ -15,6 +15,7 @@ This directory is the application technical navigator. Read this file, `dictiona
 | Feature | Public API | Handler | Service | Repository | Docs |
 | --- | --- | --- | --- | --- | --- |
 | Auth Validate PIN | `POST /api/v1/auth/validate/pin` | `internal/app/backend/server/impl_AuthValidatePin.go` | `internal/service/auth/service_AuthValidatePin.go` | `internal/service/auth/repo_CreateNewPin.go`, `internal/service/auth/repo_StoreAccessToken.go` | `features/auth-validate-pin.md` |
+| Auth Token Validation | Protected routes not listed in the middleware skip map | `internal/echo/middleware/auth_validation_filter.go` | `internal/service/auth/service_ValidateJwtToken.go` | `internal/service/auth/repo_FindAccessToken.go` | `features/auth-token-validation.md` |
 
 ## Documentation Rules
 

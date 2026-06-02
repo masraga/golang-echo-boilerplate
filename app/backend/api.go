@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
 	api "github.com/masraga/kerp-api/generated/api"
+	"github.com/masraga/kerp-api/internal/app/backend/server"
 	"github.com/masraga/kerp-api/internal/echo/middleware"
 	oapimiddleware "github.com/oapi-codegen/echo-middleware"
 )
@@ -20,7 +21,7 @@ func InitApi() {
 	e := echo.New()
 
 	api.RegisterHandlers(e, server)
-	RegisterMiddlewares(e)
+	RegisterMiddlewares(e, server)
 
 	go func() {
 		sigChan := make(chan os.Signal, 1)
@@ -40,10 +41,11 @@ func InitApi() {
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", config.AppPort)))
 }
 
-func RegisterMiddlewares(e *echo.Echo) {
+func RegisterMiddlewares(e *echo.Echo, server *server.Server) {
 	e.Use(echomiddleware.RequestID())
 	e.Use(echomiddleware.RequestLogger())
 	e.Use(echomiddleware.Recover())
+	e.Use(middleware.AuthValidationFilterMiddleware(server.AuthService))
 	e.HTTPErrorHandler = middleware.HTTPErrorHandler
 	e.Use(oapimiddleware.OapiRequestValidatorWithOptions(middleware.OapiGetSwagger(), middleware.OapiValidatorOpt()))
 }

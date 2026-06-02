@@ -41,7 +41,7 @@ Response body:
 | Types | `internal/service/auth/type.go` | `AuthValidatePinInput`, `AuthValidatePinOutput`, `CreateNewPinInput`, `CreateNewPinOutput`, `StoreAccessTokenInput`, `StoreAccessTokenOutput` |
 | Constants | `internal/service/auth/const.go` | `MinPinLen`, `MaxPinLen`, `JwtTokenExpiredDuration` |
 | Errors | `internal/service/auth/error.go` | `ErrValidateRetypePin`, `ErrPinCodeNotMatch`, `ErrPinIsTooLongOrShort`, `ErrCreateNewPin`, `ErrStoreAccessToken` |
-| Migration | `migrations/202605300013_add_table_access_token.up.sql` | Creates `public.access_token` |
+| Migration | `migrations/202605300013_add_table_auth_access_token.up.sql` | Creates `public.auth_access_token` |
 
 ## Handler Flow
 
@@ -80,7 +80,7 @@ Current handler note: decrypt and service errors are returned directly by `Serve
 
 The update targets `id = CreateNewPinInput.UserId`. On SQL execution failure, it wraps the error with `ErrCreateNewPin`.
 
-`AuthRepository.StoreAccessToken` updates `public.access_token`:
+`AuthRepository.StoreAccessToken` updates `public.auth_access_token`:
 
 | Step | Behavior |
 | --- | --- |
@@ -89,7 +89,7 @@ The update targets `id = CreateNewPinInput.UserId`. On SQL execution failure, it
 
 On SQL execution failure, it wraps the error with `ErrStoreAccessToken`.
 
-The `public.access_token` table is created by `migrations/202605300013_add_table_access_token.up.sql`:
+The `public.auth_access_token` table is created by `migrations/202605300013_add_table_auth_access_token.up.sql`:
 
 | Column | Meaning |
 | --- | --- |

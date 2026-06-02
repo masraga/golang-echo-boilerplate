@@ -19,12 +19,13 @@ This dictionary defines shared application terms used across feature docs.
 | `AuthService` | Auth domain service type defined in `internal/service/auth/service.go`. |
 | `AuthRepository` | Auth domain repository type defined in `internal/service/auth/repository.go`. |
 | `FindAuth` | Repository lookup for an auth account by phone number or user id. |
+| `FindAccessToken` | Repository lookup for an active JWT row in `public.auth_access_token` by token id and user id. |
 | `CreateNewPin` | Repository operation that writes a PIN to `public.auth.pin`. |
-| `StoreAccessToken` | Repository operation that deactivates previous active tokens for a user and stores the current JWT in `public.access_token`. |
-| `access_token` | Table that stores JWT access tokens by token string id, auth user id, expiration, and active flag. |
+| `StoreAccessToken` | Repository operation that deactivates previous active tokens for a user and stores the current JWT in `public.auth_access_token`. |
+| `auth_access_token` | Table that stores JWT access tokens by token string id, auth user id, expiration, and active flag. |
 | `PinCode` | The PIN value supplied by the user. Current PIN length is controlled by `MinPinLen` and `MaxPinLen` in `internal/service/auth/const.go`. |
 | `RetypePinCode` | Optional confirmation PIN. Required when the account does not already have a PIN. |
-| JWT token | Auth token created through `AuthService.CreateToken` with `TokenTypeJwt` and stored after successful PIN validation. |
+| JWT token | Auth token returned by `POST /api/v1/auth/validate/pin` and validated by `AuthService.ValidateJwtToken` when protected routes receive `Authorization: Bearer <token>`. |
 
 ## Error Terms
 
@@ -36,6 +37,10 @@ This dictionary defines shared application terms used across feature docs.
 | `ErrPinIsTooLongOrShort` | Supplied PIN length is outside the configured bounds. |
 | `ErrCreateNewPin` | Repository failed while writing a new PIN. |
 | `ErrStoreAccessToken` | Repository failed while deactivating old tokens or storing the current access token. |
+| `ErrFindAccessTokenNotFound` | Active JWT row was not found in `public.auth_access_token` for the token id and user id. |
+| `ErrAuthSigInvalid` | JWT parsing failed or the token used an unsupported signing method. |
+| `ErrAuthTokenInvalid` | JWT parsed but was not valid. |
+| `ErrAuthTokenExpired` | JWT `ExpiredAtUtc0` is older than the current Unix millisecond time. |
 
 ## Testing Terms
 

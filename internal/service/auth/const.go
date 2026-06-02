@@ -7,7 +7,7 @@ const (
 	TableSchema       string = "public."
 	TableAuth         string = TableSchema + "auth"
 	AuthCodeTableName string = TableSchema + "auth_otp"
-	AccessTokenTable  string = TableSchema + "access_token"
+	AccessTokenTable  string = TableSchema + "auth_access_token"
 )
 
 // credential config

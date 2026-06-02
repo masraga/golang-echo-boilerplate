@@ -14,6 +14,7 @@ type AuthServiceInterface interface {
 	VerifyOtp(ctx context.Context, input VerifyOtpInput) (output VerifyOtpOutput, err error)
 	VerifyUserAccount(ctx context.Context, input VerifyUserAccountInput) (output VerifyUserAccountOutput, err error)
 	AuthValidatePin(ctx context.Context, input AuthValidatePinInput) (output AuthValidatePinOutput, err error)
+	ValidateJwtToken(ctx context.Context, input ValidateJwtTokenInput) (output ValidateJwtTokenOutput, err error)
 }
 
 type AuthRepositoryWriterInterface interface {
@@ -30,4 +31,5 @@ type AuthRepositoryWriterInterface interface {
 type AuthRepositoryReaderInterface interface {
 	FindAuth(ctx context.Context, input FindAuthInput) (output FindAuthOutput, err error)
 	FindOTP(ctx context.Context, input FindOTPInput) (output FindOTPOutput, err error)
+	FindAccessToken(ctx context.Context, input FindAccessTokenInput) (output FindAccessTokenOutput, err error)
 }

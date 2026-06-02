@@ -1,5 +1,7 @@
 package auth
 
+import "github.com/golang-jwt/jwt/v5"
+
 type JwtSecretType string
 
 type JwtExpirationType int64
@@ -146,4 +148,28 @@ type StoreAccessTokenOutput struct {
 	UserId        string
 	ExpiredAtUtc0 int64
 	IsActive      bool
+}
+
+type FindAccessTokenInput struct {
+	Token  string
+	UserId string
+}
+
+type FindAccessTokenOutput struct {
+	Token         string
+	UserId        string
+	ExpiredAtUtc0 int64
+	IsActive      bool
+}
+
+type ValidateJwtTokenInput struct {
+	Token string
+}
+
+type ValidateJwtTokenOutput struct {
+	jwt.RegisteredClaims
+
+	UserId        string `json:"userId"`
+	ExpiredAtUtc0 int64  `json:"exp"`
+	IssuerAtUtc0  int64  `json:"iat"`
 }
