@@ -1,0 +1,70 @@
+parameters:
+  - name: roleId
+    in: path
+    required: true
+    description: Auth role id
+    schema:
+      type: string
+      example: "1f2f4181-b4b1-4812-9f57-a6a315654040"
+get:
+  tags:
+    - Auth Roles
+  operationId: ListAuthRoleContractApis
+  summary: List role API contracts
+  description: Requires Authorization header and a user API contract grant.
+  responses:
+    '200':
+      description: Role API contracts listed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ListAuthRoleContractApisResponse.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user has no API contract grant
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorForbidden.yaml'
+post:
+  tags:
+    - Auth Roles
+  operationId: CreateAuthRoleContractApi
+  summary: Assign API contract to role
+  description: Requires Authorization header and a user API contract grant.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../../../../component/schema/CreateAuthRoleContractApiRequest.yaml'
+  responses:
+    '201':
+      description: Role API contract created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/AuthRoleContractApi.yaml'
+    '400':
+      description: Bad request error
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorBadRequest.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user has no API contract grant
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorForbidden.yaml'

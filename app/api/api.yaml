@@ -12,6 +12,10 @@ tags:
     description: Endpoints for user authentication and registration
   - name: Crypto
     description: Endpoints for cryptographic operations such as encryption and decryption
+  - name: Auth Access
+    description: Endpoints for managing API access contracts
+  - name: Auth Roles
+    description: Endpoints for managing auth roles and role API access
 paths:
   /api/v1/ping:
     get:
@@ -31,7 +35,7 @@ paths:
       tags:
         - Authentication
       operationId: RegisterPhoneNumber
-      summary: Register user phone number to app
+      summary: Register a user phone number or request a fresh OTP
       requestBody:
         required: true
         content:
@@ -40,7 +44,7 @@ paths:
               $ref: '#/components/schemas/CreateNewAccountRequest'
       responses:
         '201':
-          description: Account created successfully
+          description: OTP created successfully for a new or existing account
           content:
             application/json:
               schema:
@@ -158,6 +162,685 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorForbidden'
+  /api/v1/auth/api-contracts:
+    get:
+      tags:
+        - Auth Access
+      operationId: ListAuthApiContracts
+      summary: List API contracts
+      description: Requires Authorization header and a user API contract grant.
+      responses:
+        '200':
+          description: API contracts listed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAuthApiContractsResponse'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+    post:
+      tags:
+        - Auth Access
+      operationId: CreateAuthApiContract
+      summary: Create API contract
+      description: Requires Authorization header and a user API contract grant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthApiContractRequest'
+      responses:
+        '201':
+          description: API contract created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthApiContract'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+  '/api/v1/auth/api-contracts/{id}':
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: API contract id
+        schema:
+          type: string
+          example: CryptoEncryptText
+    get:
+      tags:
+        - Auth Access
+      operationId: GetAuthApiContract
+      summary: Get API contract
+      description: Requires Authorization header and a user API contract grant.
+      responses:
+        '200':
+          description: API contract returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthApiContract'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+    put:
+      tags:
+        - Auth Access
+      operationId: UpdateAuthApiContract
+      summary: Update API contract
+      description: Requires Authorization header and a user API contract grant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAuthApiContractRequest'
+      responses:
+        '200':
+          description: API contract updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthApiContract'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+    delete:
+      tags:
+        - Auth Access
+      operationId: DeleteAuthApiContract
+      summary: Delete API contract
+      description: Requires Authorization header and a user API contract grant.
+      responses:
+        '200':
+          description: API contract deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAuthAccessResponse'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+  /api/v1/auth/user-api-contracts:
+    get:
+      tags:
+        - Auth Access
+      operationId: ListAuthUserApiContracts
+      summary: List user API contract grants
+      description: Requires Authorization header and a user API contract grant.
+      responses:
+        '200':
+          description: User API contract grants listed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAuthUserApiContractsResponse'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+    post:
+      tags:
+        - Auth Access
+      operationId: CreateAuthUserApiContract
+      summary: Create user API contract grant
+      description: Requires Authorization header and a user API contract grant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthUserApiContractRequest'
+      responses:
+        '201':
+          description: User API contract grant created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthUserApiContract'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+  '/api/v1/auth/user-api-contracts/{id}':
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: User API contract grant id
+        schema:
+          type: string
+          example: 1d7e2f23-b4c3-4ad7-8478-e770b68e6f11
+    get:
+      tags:
+        - Auth Access
+      operationId: GetAuthUserApiContract
+      summary: Get user API contract grant
+      description: Requires Authorization header and a user API contract grant.
+      responses:
+        '200':
+          description: User API contract grant returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthUserApiContract'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+    put:
+      tags:
+        - Auth Access
+      operationId: UpdateAuthUserApiContract
+      summary: Update user API contract grant
+      description: Requires Authorization header and a user API contract grant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAuthUserApiContractRequest'
+      responses:
+        '200':
+          description: User API contract grant updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthUserApiContract'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+    delete:
+      tags:
+        - Auth Access
+      operationId: DeleteAuthUserApiContract
+      summary: Delete user API contract grant
+      description: Requires Authorization header and a user API contract grant.
+      responses:
+        '200':
+          description: User API contract grant deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAuthAccessResponse'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+  /api/v1/auth/roles:
+    get:
+      tags:
+        - Auth Roles
+      operationId: ListAuthRoles
+      summary: List auth roles
+      description: Requires Authorization header and a user API contract grant.
+      responses:
+        '200':
+          description: Auth roles listed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAuthRolesResponse'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+    post:
+      tags:
+        - Auth Roles
+      operationId: CreateAuthRole
+      summary: Create auth role
+      description: Requires Authorization header and a user API contract grant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthRoleRequest'
+      responses:
+        '201':
+          description: Auth role created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthRole'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+  '/api/v1/auth/roles/{id}':
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Auth role id
+        schema:
+          type: string
+          example: 1f2f4181-b4b1-4812-9f57-a6a315654040
+    get:
+      tags:
+        - Auth Roles
+      operationId: GetAuthRole
+      summary: Get auth role
+      description: Requires Authorization header and a user API contract grant.
+      responses:
+        '200':
+          description: Auth role returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthRole'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+    put:
+      tags:
+        - Auth Roles
+      operationId: UpdateAuthRole
+      summary: Update auth role
+      description: Requires Authorization header and a user API contract grant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAuthRoleRequest'
+      responses:
+        '200':
+          description: Auth role updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthRole'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+    delete:
+      tags:
+        - Auth Roles
+      operationId: DeleteAuthRole
+      summary: Delete auth role
+      description: Requires Authorization header and a user API contract grant.
+      responses:
+        '200':
+          description: Auth role deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAuthAccessResponse'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+  '/api/v1/auth/roles/{roleId}/api-contracts':
+    parameters:
+      - name: roleId
+        in: path
+        required: true
+        description: Auth role id
+        schema:
+          type: string
+          example: 1f2f4181-b4b1-4812-9f57-a6a315654040
+    get:
+      tags:
+        - Auth Roles
+      operationId: ListAuthRoleContractApis
+      summary: List role API contracts
+      description: Requires Authorization header and a user API contract grant.
+      responses:
+        '200':
+          description: Role API contracts listed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAuthRoleContractApisResponse'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+    post:
+      tags:
+        - Auth Roles
+      operationId: CreateAuthRoleContractApi
+      summary: Assign API contract to role
+      description: Requires Authorization header and a user API contract grant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthRoleContractApiRequest'
+      responses:
+        '201':
+          description: Role API contract created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthRoleContractApi'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+  '/api/v1/auth/roles/{roleId}/api-contracts/{id}':
+    parameters:
+      - name: roleId
+        in: path
+        required: true
+        description: Auth role id
+        schema:
+          type: string
+          example: 1f2f4181-b4b1-4812-9f57-a6a315654040
+      - name: id
+        in: path
+        required: true
+        description: Role API contract mapping id
+        schema:
+          type: string
+          example: 31267553-e12a-497d-bc4a-767b642f4dd6
+    delete:
+      tags:
+        - Auth Roles
+      operationId: DeleteAuthRoleContractApi
+      summary: Remove API contract from role
+      description: Requires Authorization header and a user API contract grant.
+      responses:
+        '200':
+          description: Role API contract deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAuthAccessResponse'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+  '/api/v1/auth/users/{userId}/role':
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: Auth user id
+        schema:
+          type: string
+          example: 358cbaad-316e-4539-9949-2636cdbd7e89
+    put:
+      tags:
+        - Auth Roles
+      operationId: AssignAuthUserRole
+      summary: Assign role to auth user
+      description: Requires Authorization header and a user API contract grant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignAuthUserRoleRequest'
+      responses:
+        '200':
+          description: User role assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignAuthUserRoleResponse'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+    delete:
+      tags:
+        - Auth Roles
+      operationId: DeleteAuthUserRole
+      summary: Remove role from auth user
+      description: Requires Authorization header and a user API contract grant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - createdBy
+              properties:
+                createdBy:
+                  type: string
+                  description: Creator identifier
+                  example: admin-user
+      responses:
+        '200':
+          description: User role removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAuthAccessResponse'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        '403':
+          description: 'Forbidden, user has no API contract grant'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
 components:
   schemas:
     GetPingResponse:
@@ -184,11 +867,11 @@ components:
       properties:
         id:
           type: string
-          description: The unique identifier for the newly created account
+          description: The unique identifier for the registered auth account
           example: 123e4567-e89b-12d3-a456-426
         otpCode:
           type: string
-          description: OTP code that could be receive to user
+          description: OTP code issued to the user
           example: 45142
     VerifyOTPRequest:
       type: object
@@ -311,3 +994,446 @@ components:
           type: string
           description: Authentication token for the user.
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    AuthApiContract:
+      type: object
+      required:
+        - id
+        - endpointPath
+        - endpointMethod
+        - description
+        - createdAtUtc0
+        - updatedAtUtc0
+        - isActive
+      properties:
+        id:
+          type: string
+          description: OpenAPI operationId for the API contract
+          example: CryptoEncryptText
+        endpointPath:
+          type: string
+          description: Echo route path for the API contract
+          example: /api/v1/crypto/encrypt
+        endpointMethod:
+          type: string
+          description: HTTP method for the API contract
+          example: post
+        description:
+          type: string
+          description: Description of the API contract purpose
+          example: Encrypt plain text using configured crypto service
+        createdAtUtc0:
+          type: integer
+          format: int64
+          description: Created at in UTC+0 Unix millisecond time
+          example: 1798790400000
+        updatedAtUtc0:
+          type: integer
+          format: int64
+          description: Updated at in UTC+0 Unix millisecond time
+          example: 1798790400000
+        isActive:
+          type: boolean
+          description: Whether the API contract is active
+          example: true
+    CreateAuthApiContractRequest:
+      type: object
+      required:
+        - id
+        - endpointPath
+        - endpointMethod
+        - description
+      properties:
+        id:
+          type: string
+          description: OpenAPI operationId for the API contract
+          example: CryptoEncryptText
+        endpointPath:
+          type: string
+          description: Echo route path for the API contract
+          example: /api/v1/crypto/encrypt
+        endpointMethod:
+          type: string
+          description: HTTP method for the API contract
+          example: post
+        description:
+          type: string
+          description: Description of the API contract purpose
+          example: Encrypt plain text using configured crypto service
+    UpdateAuthApiContractRequest:
+      type: object
+      required:
+        - endpointPath
+        - endpointMethod
+        - description
+        - isActive
+      properties:
+        endpointPath:
+          type: string
+          description: Echo route path for the API contract
+          example: /api/v1/crypto/encrypt
+        endpointMethod:
+          type: string
+          description: HTTP method for the API contract
+          example: post
+        description:
+          type: string
+          description: Description of the API contract purpose
+          example: Encrypt plain text using configured crypto service
+        isActive:
+          type: boolean
+          description: Whether the API contract is active
+          example: true
+    ListAuthApiContractsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          description: Active API contracts
+          items:
+            $ref: '#/components/schemas/AuthApiContract'
+          example:
+            - id: CryptoEncryptText
+              endpointPath: /api/v1/crypto/encrypt
+              endpointMethod: post
+              description: Encrypt plain text using configured crypto service
+              createdAtUtc0: 1798790400000
+              updatedAtUtc0: 1798790400000
+              isActive: true
+    AuthUserApiContract:
+      type: object
+      required:
+        - id
+        - userId
+        - apiContractId
+        - createdAtUtc0
+        - updatedAtUtc0
+        - isActive
+      properties:
+        id:
+          type: string
+          description: User API contract grant id
+          example: 1d7e2f23-b4c3-4ad7-8478-e770b68e6f11
+        userId:
+          type: string
+          description: Auth user id that receives API access
+          example: 358cbaad-316e-4539-9949-2636cdbd7e89
+        apiContractId:
+          type: string
+          description: API contract id granted to the user
+          example: CryptoEncryptText
+        createdAtUtc0:
+          type: integer
+          format: int64
+          description: Created at in UTC+0 Unix millisecond time
+          example: 1798790400000
+        updatedAtUtc0:
+          type: integer
+          format: int64
+          description: Updated at in UTC+0 Unix millisecond time
+          example: 1798790400000
+        isActive:
+          type: boolean
+          description: Whether the user API contract grant is active
+          example: true
+    CreateAuthUserApiContractRequest:
+      type: object
+      required:
+        - userId
+        - apiContractId
+      properties:
+        userId:
+          type: string
+          description: Auth user id that receives API access
+          example: 358cbaad-316e-4539-9949-2636cdbd7e89
+        apiContractId:
+          type: string
+          description: API contract id granted to the user
+          example: CryptoEncryptText
+    UpdateAuthUserApiContractRequest:
+      type: object
+      required:
+        - userId
+        - apiContractId
+        - isActive
+      properties:
+        userId:
+          type: string
+          description: Auth user id that receives API access
+          example: 358cbaad-316e-4539-9949-2636cdbd7e89
+        apiContractId:
+          type: string
+          description: API contract id granted to the user
+          example: CryptoEncryptText
+        isActive:
+          type: boolean
+          description: Whether the user API contract grant is active
+          example: true
+    ListAuthUserApiContractsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          description: Active user API contract grants
+          items:
+            $ref: '#/components/schemas/AuthUserApiContract'
+          example:
+            - id: 1d7e2f23-b4c3-4ad7-8478-e770b68e6f11
+              userId: 358cbaad-316e-4539-9949-2636cdbd7e89
+              apiContractId: CryptoEncryptText
+              createdAtUtc0: 1798790400000
+              updatedAtUtc0: 1798790400000
+              isActive: true
+    DeleteAuthAccessResponse:
+      type: object
+      required:
+        - isSuccess
+      properties:
+        isSuccess:
+          type: boolean
+          description: Whether the delete operation succeeded
+          example: true
+    AuthRole:
+      type: object
+      required:
+        - id
+        - roleName
+        - description
+        - ownerId
+        - createdAtUtc0
+        - updatedAtUtc0
+        - createdBy
+        - isActive
+      properties:
+        id:
+          type: string
+          description: Auth role id
+          example: 1f2f4181-b4b1-4812-9f57-a6a315654040
+        roleName:
+          type: string
+          description: Name of the role
+          example: admin
+        description:
+          type: string
+          description: Description of the role purpose
+          example: Administrator role with management access
+        ownerId:
+          type: string
+          description: Auth user id that owns the role
+          example: 358cbaad-316e-4539-9949-2636cdbd7e89
+        createdAtUtc0:
+          type: integer
+          format: int64
+          description: Created at in UTC+0 Unix millisecond time
+          example: 1798790400000
+        updatedAtUtc0:
+          type: integer
+          format: int64
+          description: Updated at in UTC+0 Unix millisecond time
+          example: 1798790400000
+        createdBy:
+          type: string
+          description: Creator identifier
+          example: admin-user
+        isActive:
+          type: boolean
+          description: Whether the role is active
+          example: true
+    CreateAuthRoleRequest:
+      type: object
+      required:
+        - roleName
+        - description
+        - ownerId
+        - createdBy
+      properties:
+        roleName:
+          type: string
+          description: Name of the role
+          example: admin
+        description:
+          type: string
+          description: Description of the role purpose
+          example: Administrator role with management access
+        ownerId:
+          type: string
+          description: Auth user id that owns the role
+          example: 358cbaad-316e-4539-9949-2636cdbd7e89
+        createdBy:
+          type: string
+          description: Creator identifier
+          example: admin-user
+    UpdateAuthRoleRequest:
+      type: object
+      required:
+        - roleName
+        - description
+        - ownerId
+        - createdBy
+        - isActive
+      properties:
+        roleName:
+          type: string
+          description: Name of the role
+          example: admin
+        description:
+          type: string
+          description: Description of the role purpose
+          example: Administrator role with management access
+        ownerId:
+          type: string
+          description: Auth user id that owns the role
+          example: 358cbaad-316e-4539-9949-2636cdbd7e89
+        createdBy:
+          type: string
+          description: Creator identifier
+          example: admin-user
+        isActive:
+          type: boolean
+          description: Whether the role is active
+          example: true
+    ListAuthRolesResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          description: Active auth roles
+          items:
+            $ref: '#/components/schemas/AuthRole'
+          example:
+            - id: 1f2f4181-b4b1-4812-9f57-a6a315654040
+              roleName: admin
+              description: Administrator role with management access
+              ownerId: 358cbaad-316e-4539-9949-2636cdbd7e89
+              createdAtUtc0: 1798790400000
+              updatedAtUtc0: 1798790400000
+              createdBy: admin-user
+              isActive: true
+    AuthRoleContractApi:
+      type: object
+      required:
+        - id
+        - roleId
+        - authApiContractId
+        - createdAtUtc0
+        - updatedAtUtc0
+        - createdBy
+        - isActive
+      properties:
+        id:
+          type: string
+          description: Role API contract mapping id
+          example: 31267553-e12a-497d-bc4a-767b642f4dd6
+        roleId:
+          type: string
+          description: Auth role id
+          example: 1f2f4181-b4b1-4812-9f57-a6a315654040
+        authApiContractId:
+          type: string
+          description: API contract id assigned to the role
+          example: CryptoEncryptText
+        createdAtUtc0:
+          type: integer
+          format: int64
+          description: Created at in UTC+0 Unix millisecond time
+          example: 1798790400000
+        updatedAtUtc0:
+          type: integer
+          format: int64
+          description: Updated at in UTC+0 Unix millisecond time
+          example: 1798790400000
+        createdBy:
+          type: string
+          description: Creator identifier
+          example: admin-user
+        isActive:
+          type: boolean
+          description: Whether the role API contract mapping is active
+          example: true
+    CreateAuthRoleContractApiRequest:
+      type: object
+      required:
+        - authApiContractId
+        - createdBy
+      properties:
+        authApiContractId:
+          type: string
+          description: API contract id assigned to the role
+          example: CryptoEncryptText
+        createdBy:
+          type: string
+          description: Creator identifier
+          example: admin-user
+    ListAuthRoleContractApisResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          description: Active role API contract mappings
+          items:
+            $ref: '#/components/schemas/AuthRoleContractApi'
+          example:
+            - id: 31267553-e12a-497d-bc4a-767b642f4dd6
+              roleId: 1f2f4181-b4b1-4812-9f57-a6a315654040
+              authApiContractId: CryptoEncryptText
+              createdAtUtc0: 1798790400000
+              updatedAtUtc0: 1798790400000
+              createdBy: admin-user
+              isActive: true
+    AssignAuthUserRoleRequest:
+      type: object
+      required:
+        - roleId
+        - createdBy
+      properties:
+        roleId:
+          type: string
+          description: Auth role id assigned to the user
+          example: 1f2f4181-b4b1-4812-9f57-a6a315654040
+        createdBy:
+          type: string
+          description: Creator identifier
+          example: admin-user
+    AssignAuthUserRoleResponse:
+      type: object
+      required:
+        - userId
+        - roleId
+        - roleName
+        - grantedCount
+        - updatedAtUtc0
+        - createdBy
+      properties:
+        userId:
+          type: string
+          description: Auth user id assigned to the role
+          example: 358cbaad-316e-4539-9949-2636cdbd7e89
+        roleId:
+          type: string
+          description: Auth role id assigned to the user
+          example: 1f2f4181-b4b1-4812-9f57-a6a315654040
+        roleName:
+          type: string
+          description: Assigned role name
+          example: admin
+        grantedCount:
+          type: integer
+          format: int64
+          description: Number of API contracts granted to the user from the role
+          example: 12
+        updatedAtUtc0:
+          type: integer
+          format: int64
+          description: Updated at in UTC+0 Unix millisecond time
+          example: 1798790400000
+        createdBy:
+          type: string
+          description: Creator identifier
+          example: admin-user

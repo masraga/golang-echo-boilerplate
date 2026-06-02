@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -31,8 +32,14 @@ func bindOrReturnBadRequest(e echo.Context, i any) error {
 }
 
 func returnError(e echo.Context, err error) error {
-	status, ok := mapError[err.Error()]
-	if !ok {
+	status := http.StatusInternalServerError
+	for target, mappedStatus := range mapError {
+		if errors.Is(err, target) {
+			status = mappedStatus
+			break
+		}
+	}
+	if status == http.StatusInternalServerError {
 		return e.JSON(http.StatusInternalServerError, map[string]string{"error": "unknown error"})
 	}
 

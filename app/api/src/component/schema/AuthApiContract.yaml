@@ -1,0 +1,40 @@
+type: object
+required:
+  - id
+  - endpointPath
+  - endpointMethod
+  - description
+  - createdAtUtc0
+  - updatedAtUtc0
+  - isActive
+properties:
+  id:
+    type: string
+    description: OpenAPI operationId for the API contract
+    example: "CryptoEncryptText"
+  endpointPath:
+    type: string
+    description: Echo route path for the API contract
+    example: "/api/v1/crypto/encrypt"
+  endpointMethod:
+    type: string
+    description: HTTP method for the API contract
+    example: "post"
+  description:
+    type: string
+    description: Description of the API contract purpose
+    example: "Encrypt plain text using configured crypto service"
+  createdAtUtc0:
+    type: integer
+    format: int64
+    description: Created at in UTC+0 Unix millisecond time
+    example: 1798790400000
+  updatedAtUtc0:
+    type: integer
+    format: int64
+    description: Updated at in UTC+0 Unix millisecond time
+    example: 1798790400000
+  isActive:
+    type: boolean
+    description: Whether the API contract is active
+    example: true

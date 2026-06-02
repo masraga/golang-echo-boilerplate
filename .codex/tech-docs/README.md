@@ -14,8 +14,11 @@ This directory is the application technical navigator. Read this file, `dictiona
 
 | Feature | Public API | Handler | Service | Repository | Docs |
 | --- | --- | --- | --- | --- | --- |
+| Auth Phone Registration | `POST /api/v1/auth/register/phone` | `internal/app/backend/server/impl_RegisterPhoneNumber.go` | `internal/service/auth/service_CreateNewAccount.go`, `internal/service/auth/service_CreateOTP.go` | `internal/service/auth/repo_CreateNewAccount.go`, `internal/service/auth/repo_CreateOTP.go`, `internal/service/auth/repo_DeleteAllUserOTP.go` | `features/auth-phone-registration.md` |
 | Auth Validate PIN | `POST /api/v1/auth/validate/pin` | `internal/app/backend/server/impl_AuthValidatePin.go` | `internal/service/auth/service_AuthValidatePin.go` | `internal/service/auth/repo_CreateNewPin.go`, `internal/service/auth/repo_StoreAccessToken.go` | `features/auth-validate-pin.md` |
 | Auth Token Validation | Protected routes not listed in the middleware skip map | `internal/echo/middleware/auth_validation_filter.go` | `internal/service/auth/service_ValidateJwtToken.go` | `internal/service/auth/repo_FindAccessToken.go` | `features/auth-token-validation.md` |
+| Auth API Access Control | Protected routes after JWT validation; CRUD under `/api/v1/auth/*api-contracts*` | `internal/app/backend/server/impl_AuthApiContract.go`, `internal/app/backend/server/impl_AuthUserApiContract.go` | `internal/service/auth` | `internal/service/auth` | `features/auth-api-access-control.md` |
+| Auth Roles | CRUD under `/api/v1/auth/roles*`; user role assignment under `/api/v1/auth/users/{userId}/role` | `internal/app/backend/server/impl_AuthRole.go`, `internal/app/backend/server/impl_AuthRoleContractApi.go`, `internal/app/backend/server/impl_AuthUserRole.go` | `internal/service/auth` | `internal/service/auth` | `features/auth-roles.md` |
 
 ## Documentation Rules
 

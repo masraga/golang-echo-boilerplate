@@ -1,0 +1,28 @@
+type: object
+required:
+  - roleName
+  - description
+  - ownerId
+  - createdBy
+  - isActive
+properties:
+  roleName:
+    type: string
+    description: Name of the role
+    example: "admin"
+  description:
+    type: string
+    description: Description of the role purpose
+    example: "Administrator role with management access"
+  ownerId:
+    type: string
+    description: Auth user id that owns the role
+    example: "358cbaad-316e-4539-9949-2636cdbd7e89"
+  createdBy:
+    type: string
+    description: Creator identifier
+    example: "admin-user"
+  isActive:
+    type: boolean
+    description: Whether the role is active
+    example: true

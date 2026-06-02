@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/go-faker/faker/v4"
 	"github.com/masraga/kerp-api/internal/ctxerr"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
@@ -18,7 +17,11 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 		input auth.CreateNewAccountInput
 	}
 
-	type expected = testutil.Result[auth.CreateNewAccountOutput]
+	type expected struct {
+		Err    error
+		Value  auth.CreateNewAccountOutput
+		Assert func(t *testing.T, actual auth.CreateNewAccountOutput)
+	}
 
 	type fields struct {
 		AuthRepositoryReader *auth.MockAuthRepositoryReaderInterface
@@ -30,12 +33,12 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 		args     args
 		expected expected
 		fields   fields
-		mock     func(tt *test, ctrl *gomock.Controller)
+		mock     func(t *testing.T, tt *test, ctrl *gomock.Controller)
 	}
 
 	tests := []test{
 		{
-			name: "should failed when user already exist",
+			name: "should create otp for existing user without creating account",
 			args: args{
 				ctx: context.Background(),
 				input: auth.CreateNewAccountInput{
@@ -43,18 +46,53 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 				},
 			},
 			expected: expected{
-				Err:   auth.ErrDuplicateUser,
-				Value: auth.CreateNewAccountOutput{},
+				Value: auth.CreateNewAccountOutput{
+					Id: "358cbaad-316e-4539-9949-2636cdbd7e89",
+				},
+				Assert: func(t *testing.T, actual auth.CreateNewAccountOutput) {
+					require.Equal(t, "358cbaad-316e-4539-9949-2636cdbd7e89", actual.Id)
+					require.Regexp(t, `^[0-9]{6}$`, actual.OtpCode)
+				},
 			},
-			mock: func(tt *test, ctrl *gomock.Controller) {
+			mock: func(t *testing.T, tt *test, ctrl *gomock.Controller) {
 				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
 				authRepoReader.EXPECT().
-					FindAuth(gomock.Any(), gomock.Any()).
+					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: tt.args.input.PhoneNo}).
 					Return(auth.FindAuthOutput{
-						Id:      faker.UUIDHyphenated(),
-						PhoneNo: "081234567890",
+						Id:      tt.expected.Value.Id,
+						PhoneNo: tt.args.input.PhoneNo,
 					}, nil)
+				authRepoReader.EXPECT().
+					FindAuth(gomock.Any(), auth.FindAuthInput{
+						PhoneNo: tt.args.input.PhoneNo,
+						UserId:  tt.expected.Value.Id,
+					}).
+					Return(auth.FindAuthOutput{
+						Id:      tt.expected.Value.Id,
+						PhoneNo: tt.args.input.PhoneNo,
+					}, nil)
+
+				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					Begin(gomock.Any(), nil).
+					Return(context.Background(), nil)
+				authRepoWriter.EXPECT().
+					DeleteAllUserOTP(gomock.Any(), auth.DeleteAllUserOTPInput{UserId: tt.expected.Value.Id}).
+					Return(auth.DeleteAllUserOTPOutput{IsSuccess: true}, nil)
+				authRepoWriter.EXPECT().
+					CreateOTP(gomock.Any(), gomock.Any()).
+					DoAndReturn(func(_ context.Context, input auth.CreateOTPInput) (auth.CreateOTPOutput, error) {
+						require.Equal(t, tt.expected.Value.Id, input.UserId)
+						require.NotNil(t, input.Note)
+						require.Equal(t, "OTP for account register", *input.Note)
+						return auth.CreateOTPOutput{OtpCode: input.OtpCode}, nil
+					})
+				authRepoWriter.EXPECT().
+					CommitOrRollback(gomock.Any(), nil).
+					Return(nil)
+
 				tt.fields.AuthRepositoryReader = authRepoReader
+				tt.fields.AuthRepositoryWriter = authRepoWriter
 			},
 		},
 		{
@@ -69,11 +107,11 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 				Err:   auth.ErrBeginDbTx,
 				Value: auth.CreateNewAccountOutput{},
 			},
-			mock: func(tt *test, ctrl *gomock.Controller) {
+			mock: func(t *testing.T, tt *test, ctrl *gomock.Controller) {
 				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
 				authRepoReader.EXPECT().
-					FindAuth(gomock.Any(), gomock.Any()).
-					Return(auth.FindAuthOutput{}, nil)
+					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: tt.args.input.PhoneNo}).
+					Return(auth.FindAuthOutput{}, auth.ErrAuthNotFound)
 
 				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
 				authRepoWriter.EXPECT().
@@ -96,14 +134,19 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 				Err:   auth.ErrCreateNewOTP,
 				Value: auth.CreateNewAccountOutput{},
 			},
-			mock: func(tt *test, ctrl *gomock.Controller) {
+			mock: func(t *testing.T, tt *test, ctrl *gomock.Controller) {
+				var createdAccount auth.CreateNewAccountInput
+
 				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
 				authRepoReader.EXPECT().
-					FindAuth(gomock.Any(), gomock.Any()).
+					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: tt.args.input.PhoneNo}).
 					Return(auth.FindAuthOutput{}, auth.ErrAuthNotFound)
 				authRepoReader.EXPECT().
 					FindAuth(gomock.Any(), gomock.Any()).
-					Return(auth.FindAuthOutput{Id: faker.UUIDHyphenated()}, nil)
+					DoAndReturn(func(_ context.Context, input auth.FindAuthInput) (auth.FindAuthOutput, error) {
+						require.Equal(t, createdAccount.Id, input.UserId)
+						return auth.FindAuthOutput{Id: input.UserId}, nil
+					})
 
 				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
 				authRepoWriter.EXPECT().
@@ -111,16 +154,84 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 					Return(context.Background(), nil)
 				authRepoWriter.EXPECT().
 					CreateNewAccount(gomock.Any(), gomock.Any()).
-					Return(auth.CreateNewAccountOutput{}, nil)
+					DoAndReturn(func(_ context.Context, input auth.CreateNewAccountInput) (auth.CreateNewAccountOutput, error) {
+						createdAccount = input
+						return auth.CreateNewAccountOutput{}, nil
+					})
 				authRepoWriter.EXPECT().
 					DeleteAllUserOTP(gomock.Any(), gomock.Any()).
-					Return(auth.DeleteAllUserOTPOutput{}, nil)
+					Return(auth.DeleteAllUserOTPOutput{IsSuccess: true}, nil)
 				authRepoWriter.EXPECT().
 					CreateOTP(gomock.Any(), gomock.Any()).
 					Return(auth.CreateOTPOutput{}, auth.ErrCreateNewOTP)
 				authRepoWriter.EXPECT().
 					CommitOrRollback(gomock.Any(), auth.ErrCreateNewOTP).
 					Return(auth.ErrCreateNewOTP)
+
+				tt.fields.AuthRepositoryReader = authRepoReader
+				tt.fields.AuthRepositoryWriter = authRepoWriter
+			},
+		},
+		{
+			name: "should return account id and persisted otp when successful",
+			args: args{
+				ctx: context.Background(),
+				input: auth.CreateNewAccountInput{
+					PhoneNo: "081234567890",
+				},
+			},
+			expected: expected{
+				Assert: func(t *testing.T, actual auth.CreateNewAccountOutput) {
+					require.NotEmpty(t, actual.Id)
+					require.Regexp(t, `^[0-9]{6}$`, actual.OtpCode)
+				},
+			},
+			mock: func(t *testing.T, tt *test, ctrl *gomock.Controller) {
+				var createdAccount auth.CreateNewAccountInput
+				var createdOTP auth.CreateOTPInput
+
+				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
+				authRepoReader.EXPECT().
+					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: tt.args.input.PhoneNo}).
+					Return(auth.FindAuthOutput{}, auth.ErrAuthNotFound)
+				authRepoReader.EXPECT().
+					FindAuth(gomock.Any(), gomock.Any()).
+					DoAndReturn(func(_ context.Context, input auth.FindAuthInput) (auth.FindAuthOutput, error) {
+						require.Equal(t, createdAccount.Id, input.UserId)
+						return auth.FindAuthOutput{Id: input.UserId}, nil
+					})
+
+				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					Begin(gomock.Any(), nil).
+					Return(context.Background(), nil)
+				authRepoWriter.EXPECT().
+					CreateNewAccount(gomock.Any(), gomock.Any()).
+					DoAndReturn(func(_ context.Context, input auth.CreateNewAccountInput) (auth.CreateNewAccountOutput, error) {
+						createdAccount = input
+						return auth.CreateNewAccountOutput{Id: input.Id}, nil
+					})
+				authRepoWriter.EXPECT().
+					DeleteAllUserOTP(gomock.Any(), gomock.Any()).
+					DoAndReturn(func(_ context.Context, input auth.DeleteAllUserOTPInput) (auth.DeleteAllUserOTPOutput, error) {
+						require.Equal(t, createdAccount.Id, input.UserId)
+						return auth.DeleteAllUserOTPOutput{IsSuccess: true}, nil
+					})
+				authRepoWriter.EXPECT().
+					CreateOTP(gomock.Any(), gomock.Any()).
+					DoAndReturn(func(_ context.Context, input auth.CreateOTPInput) (auth.CreateOTPOutput, error) {
+						createdOTP = input
+						return auth.CreateOTPOutput{OtpCode: input.OtpCode}, nil
+					})
+				authRepoWriter.EXPECT().
+					CommitOrRollback(gomock.Any(), nil).
+					Return(nil)
+
+				tt.expected.Assert = func(t *testing.T, actual auth.CreateNewAccountOutput) {
+					require.Equal(t, createdAccount.Id, actual.Id)
+					require.Equal(t, createdOTP.OtpCode, actual.OtpCode)
+					require.Regexp(t, `^[0-9]{6}$`, actual.OtpCode)
+				}
 
 				tt.fields.AuthRepositoryReader = authRepoReader
 				tt.fields.AuthRepositoryWriter = authRepoWriter
@@ -134,7 +245,7 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 			defer ctrl.Finish()
 
 			if tt.mock != nil {
-				tt.mock(&tt, ctrl)
+				tt.mock(t, &tt, ctrl)
 			}
 
 			authService := auth.NewAuthService(auth.AuthServiceOpts{
@@ -146,70 +257,16 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 			})
 
 			res, err := authService.CreateNewAccount(tt.args.ctx, tt.args.input)
-			testutil.RequireResult(t, err, tt.expected, res)
+			if tt.expected.Assert != nil {
+				require.NoError(t, err)
+				tt.expected.Assert(t, res)
+				return
+			}
+
+			testutil.RequireResult(t, err, testutil.Result[auth.CreateNewAccountOutput]{
+				Err:   tt.expected.Err,
+				Value: tt.expected.Value,
+			}, res)
 		})
 	}
-
-	t.Run("should return account id and persisted otp when successful", func(t *testing.T) {
-		ctrl := gomock.NewController(t)
-		defer ctrl.Finish()
-
-		var createdAccount auth.CreateNewAccountInput
-		var createdOTP auth.CreateOTPInput
-
-		authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
-		authRepoReader.EXPECT().
-			FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: "081234567890"}).
-			Return(auth.FindAuthOutput{}, auth.ErrAuthNotFound)
-		authRepoReader.EXPECT().
-			FindAuth(gomock.Any(), gomock.Any()).
-			DoAndReturn(func(_ context.Context, input auth.FindAuthInput) (auth.FindAuthOutput, error) {
-				require.Equal(t, createdAccount.Id, input.UserId)
-				return auth.FindAuthOutput{Id: input.UserId}, nil
-			})
-
-		authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
-		authRepoWriter.EXPECT().
-			Begin(gomock.Any(), nil).
-			Return(context.Background(), nil)
-		authRepoWriter.EXPECT().
-			CreateNewAccount(gomock.Any(), gomock.Any()).
-			DoAndReturn(func(_ context.Context, input auth.CreateNewAccountInput) (auth.CreateNewAccountOutput, error) {
-				createdAccount = input
-				return auth.CreateNewAccountOutput{}, nil
-			})
-		authRepoWriter.EXPECT().
-			DeleteAllUserOTP(gomock.Any(), gomock.Any()).
-			DoAndReturn(func(_ context.Context, input auth.DeleteAllUserOTPInput) (auth.DeleteAllUserOTPOutput, error) {
-				require.Equal(t, createdAccount.Id, input.UserId)
-				return auth.DeleteAllUserOTPOutput{IsSuccess: true}, nil
-			})
-		authRepoWriter.EXPECT().
-			CreateOTP(gomock.Any(), gomock.Any()).
-			DoAndReturn(func(_ context.Context, input auth.CreateOTPInput) (auth.CreateOTPOutput, error) {
-				createdOTP = input
-				return auth.CreateOTPOutput{OtpCode: input.OtpCode}, nil
-			})
-		authRepoWriter.EXPECT().
-			CommitOrRollback(gomock.Any(), nil).
-			Return(nil)
-
-		authService := auth.NewAuthService(auth.AuthServiceOpts{
-			JwtSecret:            "secret",
-			JwtExpiration:        3600,
-			Err:                  ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
-			AuthRepositoryReader: authRepoReader,
-			AuthRepositoryWriter: authRepoWriter,
-		})
-
-		res, err := authService.CreateNewAccount(context.Background(), auth.CreateNewAccountInput{
-			PhoneNo: "081234567890",
-		})
-
-		require.NoError(t, err)
-		require.NotEmpty(t, res.Id)
-		require.Regexp(t, `^[0-9]{6}$`, res.OtpCode)
-		require.Equal(t, createdAccount.Id, res.Id)
-		require.Equal(t, createdOTP.OtpCode, res.OtpCode)
-	})
 }

@@ -6,5 +6,8 @@ internal/**/interface.mock.gen.go
 internal/log/error.log
 api-docs.html
 
+.DS_STORE
+make
+
 .vscode
 .env

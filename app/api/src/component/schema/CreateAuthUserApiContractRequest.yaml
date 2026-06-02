@@ -1,0 +1,13 @@
+type: object
+required:
+  - userId
+  - apiContractId
+properties:
+  userId:
+    type: string
+    description: Auth user id that receives API access
+    example: "358cbaad-316e-4539-9949-2636cdbd7e89"
+  apiContractId:
+    type: string
+    description: API contract id granted to the user
+    example: "CryptoEncryptText"

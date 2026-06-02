@@ -16,6 +16,7 @@ func InitializeService(config *Config) (*server.Server, error) {
 		ProvideSqlDb,
 		ProvideDbTx,
 		ProvideSqlDialect,
+		ProvideAuthAccessBootstrapUserId,
 		ProvideZerolog,
 
 		wire.FieldsOf(new(*Config),
@@ -23,6 +24,7 @@ func InitializeService(config *Config) (*server.Server, error) {
 			"JwtExpiration",
 			"ShowErrMode",
 			"CryptoKey",
+			"AuthAccessBootstrapUserId",
 		),
 
 		wire.Struct(new(ctxerr.CtxErrOpts), "*"),
@@ -38,6 +40,7 @@ func InitializeService(config *Config) (*server.Server, error) {
 		wire.Struct(new(auth.AuthServiceOpts), "*"),
 		auth.NewAuthService,
 		wire.Bind(new(auth.AuthServiceInterface), new(*auth.AuthService)),
+
 		wire.Struct(new(server.ServerOpts), "*"),
 		server.NewServer,
 	)

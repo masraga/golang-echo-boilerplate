@@ -2,7 +2,7 @@ post:
   tags:
     - Authentication
   operationId: RegisterPhoneNumber
-  summary: Register user phone number to app
+  summary: Register a user phone number or request a fresh OTP
   requestBody:
     required: true
     content:
@@ -11,7 +11,7 @@ post:
           $ref: '../../../../../../component/schema/RegisterPhoneNumberRequest.yaml'
   responses:
     '201':
-      description: Account created successfully
+      description: OTP created successfully for a new or existing account
       content:
         application/json:
           schema:

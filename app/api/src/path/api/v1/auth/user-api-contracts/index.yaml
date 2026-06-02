@@ -1,0 +1,62 @@
+get:
+  tags:
+    - Auth Access
+  operationId: ListAuthUserApiContracts
+  summary: List user API contract grants
+  description: Requires Authorization header and a user API contract grant.
+  responses:
+    '200':
+      description: User API contract grants listed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ListAuthUserApiContractsResponse.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user has no API contract grant
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ErrorForbidden.yaml'
+post:
+  tags:
+    - Auth Access
+  operationId: CreateAuthUserApiContract
+  summary: Create user API contract grant
+  description: Requires Authorization header and a user API contract grant.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../../component/schema/CreateAuthUserApiContractRequest.yaml'
+  responses:
+    '201':
+      description: User API contract grant created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/AuthUserApiContract.yaml'
+    '400':
+      description: Bad request error
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ErrorBadRequest.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user has no API contract grant
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ErrorForbidden.yaml'

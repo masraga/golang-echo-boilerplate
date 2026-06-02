@@ -3,24 +3,17 @@ package auth
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/google/uuid"
-	"github.com/masraga/kerp-api/internal/util/generator"
 	"github.com/masraga/kerp-api/internal/util/pointer"
 )
 
 func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccountInput) (output CreateNewAccountOutput, err error) {
-
 	authUser, err := s.AuthRepositoryReader.FindAuth(ctx, FindAuthInput{
 		PhoneNo: input.PhoneNo,
 	})
 	if err != nil && !errors.Is(err, ErrAuthNotFound) {
 		err = s.Err.Wrap(err)
-		return
-	}
-	if authUser.Id != "" {
-		err = s.Err.Wrap(ErrDuplicateUser)
 		return
 	}
 
@@ -35,31 +28,33 @@ func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccou
 		err = s.Err.Wrap(commitErr)
 	}()
 
-	input.Id = uuid.NewString()
+	userId := authUser.Id
+	if userId == "" {
+		input.Id = uuid.NewString()
 
-	_, err = s.AuthRepositoryWriter.CreateNewAccount(ctx, input)
-	if err != nil {
-		err = s.Err.Wrap(err)
-		return
+		_, err = s.AuthRepositoryWriter.CreateNewAccount(ctx, input)
+		if err != nil {
+			err = s.Err.Wrap(err)
+			return
+		}
+
+		userId = input.Id
 	}
 
-	otpCode, err := generator.GenerateRandom(6, true)
-	if err != nil {
-		return
-	}
-
-	otpSvc, err := s.CreateOTP(ctx, CreateOTPInput{
-		UserId:        input.Id,
-		PhoneNo:       input.PhoneNo,
-		Note:          pointer.String("OTP for new account register"),
-		ExpiredAtUtc0: time.Now().Add(time.Duration(OtpExpiredDuration) * time.Minute).UnixMilli(),
-		OtpCode:       otpCode,
+	otpSvc, err := s.createRegistrationOTP(ctx, CreateOTPInput{
+		UserId:  userId,
+		PhoneNo: input.PhoneNo,
 	})
 	if err != nil {
 		return
 	}
 
-	output.Id = input.Id
+	output.Id = userId
 	output.OtpCode = otpSvc.OtpCode
 	return
+}
+
+func (s *AuthService) createRegistrationOTP(ctx context.Context, input CreateOTPInput) (output CreateOTPOutput, err error) {
+	input.Note = pointer.String("OTP for account register")
+	return s.CreateOTP(ctx, input)
 }

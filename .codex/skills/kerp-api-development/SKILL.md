@@ -14,7 +14,7 @@ Before changing this repository, read `.codex/rules/kerp-api.md` and apply it as
 3. Write every new or changed test as a table-driven test.
 4. Match test function names to the concrete type and method under test.
 5. For API definition changes, update `app/api/src/main.yaml` and referenced schema/path files, then run the required Make targets.
-6. For migrations, create files through the Make target and use descriptive migration names.
+6. For migrations, create files through the Make target, use descriptive migration names, and add purpose-driven comments for every field introduced by DDL.
 7. Prefer existing examples in the same package as the implementation source for imports, setup, mocks, assertions, and error handling.
 
 ## Required Checks

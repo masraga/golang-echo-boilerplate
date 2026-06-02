@@ -1,0 +1,23 @@
+type: object
+required:
+  - endpointPath
+  - endpointMethod
+  - description
+  - isActive
+properties:
+  endpointPath:
+    type: string
+    description: Echo route path for the API contract
+    example: "/api/v1/crypto/encrypt"
+  endpointMethod:
+    type: string
+    description: HTTP method for the API contract
+    example: "post"
+  description:
+    type: string
+    description: Description of the API contract purpose
+    example: "Encrypt plain text using configured crypto service"
+  isActive:
+    type: boolean
+    description: Whether the API contract is active
+    example: true

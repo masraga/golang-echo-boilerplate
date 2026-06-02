@@ -1,0 +1,35 @@
+type: object
+required:
+  - userId
+  - roleId
+  - roleName
+  - grantedCount
+  - updatedAtUtc0
+  - createdBy
+properties:
+  userId:
+    type: string
+    description: Auth user id assigned to the role
+    example: "358cbaad-316e-4539-9949-2636cdbd7e89"
+  roleId:
+    type: string
+    description: Auth role id assigned to the user
+    example: "1f2f4181-b4b1-4812-9f57-a6a315654040"
+  roleName:
+    type: string
+    description: Assigned role name
+    example: "admin"
+  grantedCount:
+    type: integer
+    format: int64
+    description: Number of API contracts granted to the user from the role
+    example: 12
+  updatedAtUtc0:
+    type: integer
+    format: int64
+    description: Updated at in UTC+0 Unix millisecond time
+    example: 1798790400000
+  createdBy:
+    type: string
+    description: Creator identifier
+    example: "admin-user"

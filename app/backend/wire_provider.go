@@ -9,6 +9,7 @@ import (
 	"github.com/leporo/sqlf"
 	"github.com/masraga/kerp-api/internal/database"
 	"github.com/masraga/kerp-api/internal/dbtx"
+	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/rs/zerolog"
 )
 
@@ -26,6 +27,10 @@ func ProvideDbTx(db *sql.DB) dbtx.DbTxInterface {
 
 func ProvideSqlDialect() *sqlf.Dialect {
 	return sqlf.PostgreSQL
+}
+
+func ProvideAuthAccessBootstrapUserId(configValue string) auth.AuthAccessBootstrapUserIdType {
+	return auth.AuthAccessBootstrapUserIdType(configValue)
 }
 
 func ProvideZerolog(config *Config) zerolog.Logger {

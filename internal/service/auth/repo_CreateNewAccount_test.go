@@ -12,7 +12,7 @@ import (
 	"github.com/masraga/kerp-api/internal/testutil"
 )
 
-func TestUserRepository_CreateNewAcccount(t *testing.T) {
+func TestAuthRepository_CreateNewAccount(t *testing.T) {
 	type args struct {
 		ctx   context.Context
 		input auth.CreateNewAccountInput
@@ -49,13 +49,14 @@ func TestUserRepository_CreateNewAcccount(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				input: auth.CreateNewAccountInput{
+					Id:      "358cbaad-316e-4539-9949-2636cdbd7e89",
 					PhoneNo: "081234567890",
 				},
 			},
 			expected: expected{
 				Err: nil,
 				Value: auth.CreateNewAccountOutput{
-					Id: "081234567890",
+					Id: "358cbaad-316e-4539-9949-2636cdbd7e89",
 				},
 			},
 			mock: func(tt *testing.T, mock sqlmock.Sqlmock) {

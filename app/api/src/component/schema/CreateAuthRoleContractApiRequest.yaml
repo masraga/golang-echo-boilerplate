@@ -1,0 +1,13 @@
+type: object
+required:
+  - authApiContractId
+  - createdBy
+properties:
+  authApiContractId:
+    type: string
+    description: API contract id assigned to the role
+    example: "CryptoEncryptText"
+  createdBy:
+    type: string
+    description: Creator identifier
+    example: "admin-user"

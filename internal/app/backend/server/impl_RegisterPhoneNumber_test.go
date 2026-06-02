@@ -21,7 +21,8 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 	e := echo.New()
 
 	var (
-		expectedId string = faker.Word()
+		expectedId      string = faker.Word()
+		expectedOtpCode string = "123456"
 	)
 
 	type args struct {
@@ -62,12 +63,16 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 					CreateNewAccount(ctx.Request().Context(), auth.CreateNewAccountInput{
 						PhoneNo: tt.args.input.PhoneNo,
 					}).
-					Return(auth.CreateNewAccountOutput{Id: expectedId}, nil)
+					Return(auth.CreateNewAccountOutput{
+						Id:      expectedId,
+						OtpCode: expectedOtpCode,
+					}, nil)
 				tt.fields.AuthService = mockAuthService
 				tt.fields.CryptoService = mockCryptoService
 
 				result, _ := json.Marshal(api.CreateNewAccountResponse{
-					Id: expectedId,
+					Id:      expectedId,
+					OtpCode: expectedOtpCode,
 				})
 				tt.expected = testutil.HttpResult{
 					Code: http.StatusCreated,
@@ -76,7 +81,7 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 			},
 		},
 		{
-			name: "test failed when user already registered",
+			name: "test success when user already registered",
 			args: args{
 				input: api.CreateNewAccountRequest{
 					PhoneNo: "081234567890",
@@ -95,13 +100,19 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 					CreateNewAccount(ctx.Request().Context(), auth.CreateNewAccountInput{
 						PhoneNo: tt.args.input.PhoneNo,
 					}).
-					Return(auth.CreateNewAccountOutput{}, auth.ErrDuplicateUser)
+					Return(auth.CreateNewAccountOutput{
+						Id:      expectedId,
+						OtpCode: expectedOtpCode,
+					}, nil)
 				tt.fields.AuthService = mockAuthService
 				tt.fields.CryptoService = mockCryptoService
 
-				result, _ := json.Marshal(api.ErrorBadRequest{Error: auth.ErrDuplicateUser.Error()})
+				result, _ := json.Marshal(api.CreateNewAccountResponse{
+					Id:      expectedId,
+					OtpCode: expectedOtpCode,
+				})
 				tt.expected = testutil.HttpResult{
-					Code: http.StatusBadRequest,
+					Code: http.StatusCreated,
 					Body: string(result),
 				}
 			},

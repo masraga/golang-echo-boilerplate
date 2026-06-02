@@ -6,9 +6,10 @@ import (
 )
 
 type AuthService struct {
-	JwtSecret     JwtSecretType
-	JwtExpiration JwtExpirationType
-	Err           *ctxerr.CtxErr
+	JwtSecret                 JwtSecretType
+	JwtExpiration             JwtExpirationType
+	AuthAccessBootstrapUserId AuthAccessBootstrapUserIdType
+	Err                       *ctxerr.CtxErr
 
 	AuthRepositoryWriter AuthRepositoryWriterInterface
 	AuthRepositoryReader AuthRepositoryReaderInterface
@@ -16,9 +17,10 @@ type AuthService struct {
 }
 
 type AuthServiceOpts struct {
-	JwtSecret     JwtSecretType
-	JwtExpiration JwtExpirationType
-	Err           *ctxerr.CtxErr
+	JwtSecret                 JwtSecretType
+	JwtExpiration             JwtExpirationType
+	AuthAccessBootstrapUserId AuthAccessBootstrapUserIdType
+	Err                       *ctxerr.CtxErr
 
 	AuthRepositoryWriter AuthRepositoryWriterInterface
 	AuthRepositoryReader AuthRepositoryReaderInterface
@@ -27,9 +29,10 @@ type AuthServiceOpts struct {
 
 func NewAuthService(opts AuthServiceOpts) *AuthService {
 	return &AuthService{
-		JwtSecret:     opts.JwtSecret,
-		JwtExpiration: opts.JwtExpiration,
-		Err:           opts.Err,
+		JwtSecret:                 opts.JwtSecret,
+		JwtExpiration:             opts.JwtExpiration,
+		AuthAccessBootstrapUserId: opts.AuthAccessBootstrapUserId,
+		Err:                       opts.Err,
 
 		AuthRepositoryWriter: opts.AuthRepositoryWriter,
 		AuthRepositoryReader: opts.AuthRepositoryReader,

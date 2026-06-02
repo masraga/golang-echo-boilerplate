@@ -15,6 +15,6 @@ func (r *AuthRepository) CreateNewAccount(ctx context.Context, input CreateNewAc
 		err = errors.Join(err, ErrCreateNewAccount)
 		return
 	}
-	output.Id = input.PhoneNo
+	output.Id = input.Id
 	return
 }

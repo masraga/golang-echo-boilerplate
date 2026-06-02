@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
+
 	"github.com/masraga/kerp-api/internal/app/backend/server"
+	"github.com/masraga/kerp-api/internal/service/auth"
 )
 
 func Initialize() (cfg *Config, server *server.Server) {
@@ -9,6 +12,14 @@ func Initialize() (cfg *Config, server *server.Server) {
 	sv, err := InitializeService(cfg)
 	if err != nil {
 		panic(err)
+	}
+	if cfg.AuthAccessBootstrapUserId != "" {
+		_, err = sv.AuthService.BootstrapUserApiContracts(context.Background(), auth.BootstrapUserApiContractsInput{
+			UserId: cfg.AuthAccessBootstrapUserId,
+		})
+		if err != nil {
+			panic(err)
+		}
 	}
 	return cfg, sv
 }

@@ -2,7 +2,7 @@
 
 ## Summary
 
-`RegisterMiddlewares` wires `AuthValidationFilterMiddleware` into Echo so protected routes require a JWT access token before the OpenAPI request validator runs. Clients send the token in the `Authorization` header with the `Bearer <token>` format.
+`RegisterMiddlewares` wires `AuthValidationFilterMiddleware` into Echo so protected routes require a JWT access token and an active user API access grant before the OpenAPI request validator runs. Clients send the token in the `Authorization` header with the `Bearer <token>` format.
 
 ## Public API
 
@@ -21,8 +21,9 @@ The current public skip map allows these requests without token validation:
 | `POST` | `/api/v1/auth/register/phone` |
 | `POST` | `/api/v1/auth/otp/verify` |
 | `POST` | `/api/v1/auth/validate/pin` |
+| `POST` | `/api/v1/crypto/encrypt` |
 
-All other registered routes pass through JWT validation. In the current OpenAPI surface, `POST /api/v1/crypto/encrypt` is protected.
+All other registered routes pass through JWT validation. In the current OpenAPI surface, auth access-management and auth role-management endpoints are protected.
 
 ## Implementation Map
 
@@ -32,9 +33,11 @@ All other registered routes pass through JWT validation. In the current OpenAPI 
 | Auth middleware | `internal/echo/middleware/middleware.go` | `AuthValidationFilterMiddleware` |
 | Auth middleware | `internal/echo/middleware/auth_validation_filter.go` | `authValidationFilter` |
 | Skip map | `internal/echo/middleware/const.go` | `skipAuthValidationFilterMap` |
-| Skip helper | `internal/echo/middleware/util.go` | `skipValidation`, `returnUnauthorized` |
+| Skip helper | `internal/echo/middleware/util.go` | `skipValidation`, `returnUnauthorized`, `returnForbidden` |
 | Service | `internal/service/auth/service_ValidateJwtToken.go` | `AuthService.ValidateJwtToken` |
+| Service | `internal/service/auth/service_ValidateUserApiContract.go` | `AuthService.ValidateUserApiContract` |
 | Repository | `internal/service/auth/repo_FindAccessToken.go` | `AuthRepository.FindAccessToken` |
+| Repository | `internal/service/auth/repo_ValidateUserApiContract.go` | `AuthRepository.ValidateUserApiContract` |
 | Types | `internal/service/auth/type.go` | `ValidateJwtTokenInput`, `ValidateJwtTokenOutput`, `FindAccessTokenInput`, `FindAccessTokenOutput` |
 | Errors | `internal/service/auth/error.go` | `ErrAuthSigInvalid`, `ErrAuthTokenInvalid`, `ErrAuthTokenExpired`, `ErrFindAccessTokenNotFound` |
 
@@ -59,9 +62,12 @@ For each request, `authValidationFilter`:
 5. Extracts the JWT string from `Bearer <token>`.
 6. Calls `AuthService.ValidateJwtToken`.
 7. Returns `401` with `{"error":"Unauthorized"}` when JWT validation returns an error.
-8. Calls the next handler on success.
+8. Calls `AuthService.ValidateUserApiContract` with the validated `UserId`, Echo route path, and request method.
+9. Allows the request without a per-endpoint grant when the validated `UserId` equals `AUTH_ACCESS_BOOTSTRAP_USER_ID`.
+10. Returns `403` with `{"error":"Forbidden"}` when no active user grant exists for non-bootstrap users.
+11. Calls the next handler on success.
 
-Current implementation note: non-empty `Authorization` values that do not contain `Bearer ` are split without a length check, so malformed non-Bearer headers can panic and be recovered by Echo instead of returning the middleware's unauthorized response.
+Malformed non-Bearer authorization headers return the middleware unauthorized response.
 
 ## JWT Validation
 
@@ -83,12 +89,15 @@ When no matching active row exists, validation returns `ErrFindAccessTokenNotFou
 | --- | --- |
 | `internal/service/auth/service_ValidateJwtToken_test.go` | Valid token with active stored row, missing stored row, expired token, invalid signature. |
 | `internal/service/auth/service_ValidateJwtToken_integration_test.go` | JWT creation and validation with real auth service/repository wiring and sqlmock-backed active token lookup. |
+| `internal/service/auth/service_ValidateUserApiContract_integration_test.go` | Bootstrap access bypass and normal user grant lookup through concrete auth service/repository wiring. |
 | `internal/service/auth/repo_FindAccessToken_test.go` | Active stored access-token lookup failure and success. |
+| `internal/echo/middleware/auth_validation_filter_test.go` | Public skip, missing/malformed token, invalid JWT, forbidden API grant, and successful JWT + API access flow. |
 
 Recommended narrow check:
 
 ```sh
 go test ./internal/service/auth -run 'TestAuthService_ValidateJwtToken|TestAuthRepository_FindAccessToken'
+go test ./internal/echo/middleware
 ```
 
 ## Change Checklist

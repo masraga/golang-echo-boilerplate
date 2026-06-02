@@ -12,6 +12,10 @@ tags:
     description: Endpoints for user authentication and registration
   - name: Crypto
     description: Endpoints for cryptographic operations such as encryption and decryption
+  - name: Auth Access
+    description: Endpoints for managing API access contracts
+  - name: Auth Roles
+    description: Endpoints for managing auth roles and role API access
 paths:
   /api/v1/ping:
     $ref: './path/api/v1/ping/index.yaml'
@@ -23,6 +27,24 @@ paths:
     $ref: './path/api/v1/crypto/encrypt/index.yaml'
   /api/v1/auth/otp/verify:
     $ref: './path/api/v1/auth/otp/verify/index.yaml'
+  /api/v1/auth/api-contracts:
+    $ref: './path/api/v1/auth/api-contracts/index.yaml'
+  /api/v1/auth/api-contracts/{id}:
+    $ref: './path/api/v1/auth/api-contracts/{id}/index.yaml'
+  /api/v1/auth/user-api-contracts:
+    $ref: './path/api/v1/auth/user-api-contracts/index.yaml'
+  /api/v1/auth/user-api-contracts/{id}:
+    $ref: './path/api/v1/auth/user-api-contracts/{id}/index.yaml'
+  /api/v1/auth/roles:
+    $ref: './path/api/v1/auth/roles/index.yaml'
+  /api/v1/auth/roles/{id}:
+    $ref: './path/api/v1/auth/roles/{id}/index.yaml'
+  /api/v1/auth/roles/{roleId}/api-contracts:
+    $ref: './path/api/v1/auth/roles/{roleId}/api-contracts/index.yaml'
+  /api/v1/auth/roles/{roleId}/api-contracts/{id}:
+    $ref: './path/api/v1/auth/roles/{roleId}/api-contracts/{id}/index.yaml'
+  /api/v1/auth/users/{userId}/role:
+    $ref: './path/api/v1/auth/users/{userId}/role/index.yaml'
 
 components:
   schemas:
@@ -52,3 +74,39 @@ components:
       $ref: './component/schema/AuthValidatePinRequest.yaml'
     AuthValidatePinResponse:
       $ref: './component/schema/AuthValidatePinResponse.yaml'
+    AuthApiContract:
+      $ref: './component/schema/AuthApiContract.yaml'
+    CreateAuthApiContractRequest:
+      $ref: './component/schema/CreateAuthApiContractRequest.yaml'
+    UpdateAuthApiContractRequest:
+      $ref: './component/schema/UpdateAuthApiContractRequest.yaml'
+    ListAuthApiContractsResponse:
+      $ref: './component/schema/ListAuthApiContractsResponse.yaml'
+    AuthUserApiContract:
+      $ref: './component/schema/AuthUserApiContract.yaml'
+    CreateAuthUserApiContractRequest:
+      $ref: './component/schema/CreateAuthUserApiContractRequest.yaml'
+    UpdateAuthUserApiContractRequest:
+      $ref: './component/schema/UpdateAuthUserApiContractRequest.yaml'
+    ListAuthUserApiContractsResponse:
+      $ref: './component/schema/ListAuthUserApiContractsResponse.yaml'
+    DeleteAuthAccessResponse:
+      $ref: './component/schema/DeleteAuthAccessResponse.yaml'
+    AuthRole:
+      $ref: './component/schema/AuthRole.yaml'
+    CreateAuthRoleRequest:
+      $ref: './component/schema/CreateAuthRoleRequest.yaml'
+    UpdateAuthRoleRequest:
+      $ref: './component/schema/UpdateAuthRoleRequest.yaml'
+    ListAuthRolesResponse:
+      $ref: './component/schema/ListAuthRolesResponse.yaml'
+    AuthRoleContractApi:
+      $ref: './component/schema/AuthRoleContractApi.yaml'
+    CreateAuthRoleContractApiRequest:
+      $ref: './component/schema/CreateAuthRoleContractApiRequest.yaml'
+    ListAuthRoleContractApisResponse:
+      $ref: './component/schema/ListAuthRoleContractApisResponse.yaml'
+    AssignAuthUserRoleRequest:
+      $ref: './component/schema/AssignAuthUserRoleRequest.yaml'
+    AssignAuthUserRoleResponse:
+      $ref: './component/schema/AssignAuthUserRoleResponse.yaml'

@@ -1,0 +1,35 @@
+type: object
+required:
+  - id
+  - userId
+  - apiContractId
+  - createdAtUtc0
+  - updatedAtUtc0
+  - isActive
+properties:
+  id:
+    type: string
+    description: User API contract grant id
+    example: "1d7e2f23-b4c3-4ad7-8478-e770b68e6f11"
+  userId:
+    type: string
+    description: Auth user id that receives API access
+    example: "358cbaad-316e-4539-9949-2636cdbd7e89"
+  apiContractId:
+    type: string
+    description: API contract id granted to the user
+    example: "CryptoEncryptText"
+  createdAtUtc0:
+    type: integer
+    format: int64
+    description: Created at in UTC+0 Unix millisecond time
+    example: 1798790400000
+  updatedAtUtc0:
+    type: integer
+    format: int64
+    description: Updated at in UTC+0 Unix millisecond time
+    example: 1798790400000
+  isActive:
+    type: boolean
+    description: Whether the user API contract grant is active
+    example: true

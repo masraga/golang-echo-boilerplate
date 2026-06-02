@@ -22,12 +22,25 @@ func authValidationFilter(authInterface auth.AuthServiceInterface) echo.Middlewa
 				return returnUnauthorized(c)
 			}
 
-			authToken := strings.Split(token, "Bearer ")[1]
-
-			if _, err := authInterface.ValidateJwtToken(c.Request().Context(), auth.ValidateJwtTokenInput{
-				Token: authToken,
-			}); err != nil {
+			authToken := strings.TrimPrefix(token, "Bearer ")
+			if authToken == token || authToken == "" {
 				return returnUnauthorized(c)
+			}
+
+			authOutput, err := authInterface.ValidateJwtToken(c.Request().Context(), auth.ValidateJwtTokenInput{
+				Token: authToken,
+			})
+			if err != nil {
+				return returnUnauthorized(c)
+			}
+
+			_, err = authInterface.ValidateUserApiContract(c.Request().Context(), auth.ValidateUserApiContractInput{
+				UserId:         authOutput.UserId,
+				EndpointPath:   endpointPath,
+				EndpointMethod: method,
+			})
+			if err != nil {
+				return returnForbidden(c)
 			}
 
 			return next(c)

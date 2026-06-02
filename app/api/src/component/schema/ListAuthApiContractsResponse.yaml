@@ -1,0 +1,17 @@
+type: object
+required:
+  - data
+properties:
+  data:
+    type: array
+    description: Active API contracts
+    items:
+      $ref: './AuthApiContract.yaml'
+    example:
+      - id: "CryptoEncryptText"
+        endpointPath: "/api/v1/crypto/encrypt"
+        endpointMethod: "post"
+        description: "Encrypt plain text using configured crypto service"
+        createdAtUtc0: 1798790400000
+        updatedAtUtc0: 1798790400000
+        isActive: true

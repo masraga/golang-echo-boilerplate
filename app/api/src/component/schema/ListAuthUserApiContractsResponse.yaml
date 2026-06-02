@@ -1,0 +1,16 @@
+type: object
+required:
+  - data
+properties:
+  data:
+    type: array
+    description: Active user API contract grants
+    items:
+      $ref: './AuthUserApiContract.yaml'
+    example:
+      - id: "1d7e2f23-b4c3-4ad7-8478-e770b68e6f11"
+        userId: "358cbaad-316e-4539-9949-2636cdbd7e89"
+        apiContractId: "CryptoEncryptText"
+        createdAtUtc0: 1798790400000
+        updatedAtUtc0: 1798790400000
+        isActive: true

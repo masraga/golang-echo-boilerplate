@@ -25,4 +25,29 @@ var (
 	ErrAuthSigInvalid          error = errors.New("error invalid signature")
 	ErrAuthTokenInvalid        error = errors.New("error invalid token")
 	ErrAuthTokenExpired        error = errors.New("error token is expired")
+
+	ErrCreateAuthApiContract       error = errors.New("error to create auth api contract")
+	ErrFindAuthApiContractNotFound error = errors.New("error auth api contract data not found")
+	ErrUpdateAuthApiContract       error = errors.New("error to update auth api contract")
+	ErrDeleteAuthApiContract       error = errors.New("error to delete auth api contract")
+
+	ErrCreateAuthUserApiContract       error = errors.New("error to create auth user api contract")
+	ErrFindAuthUserApiContractNotFound error = errors.New("error auth user api contract data not found")
+	ErrUpdateAuthUserApiContract       error = errors.New("error to update auth user api contract")
+	ErrDeleteAuthUserApiContract       error = errors.New("error to delete auth user api contract")
+
+	ErrUserApiContractForbidden error = errors.New("error user does not have access to api contract")
+	ErrBootstrapUserApiContract error = errors.New("error to bootstrap user api contract")
+
+	ErrCreateAuthRole       error = errors.New("error to create auth role")
+	ErrFindAuthRoleNotFound error = errors.New("error auth role data not found")
+	ErrUpdateAuthRole       error = errors.New("error to update auth role")
+	ErrDeleteAuthRole       error = errors.New("error to delete auth role")
+
+	ErrCreateAuthRoleContractApi       error = errors.New("error to create auth role contract api")
+	ErrFindAuthRoleContractApiNotFound error = errors.New("error auth role contract api data not found")
+	ErrDeleteAuthRoleContractApi       error = errors.New("error to delete auth role contract api")
+
+	ErrAssignAuthUserRole error = errors.New("error to assign auth user role")
+	ErrDeleteAuthUserRole error = errors.New("error to delete auth user role")
 )

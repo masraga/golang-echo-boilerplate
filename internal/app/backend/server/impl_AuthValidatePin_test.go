@@ -42,7 +42,6 @@ func TestServer_AuthValidatePin(t *testing.T) {
 
 	type expected struct {
 		httpResult *testutil.HttpResult
-		err        error
 	}
 
 	type test struct {
@@ -116,7 +115,10 @@ func TestServer_AuthValidatePin(t *testing.T) {
 					Return(crypto.DecryptOutput{}, errDecrypt)
 
 				tt.fields.CryptoService = mockCryptoService
-				tt.expected.err = errDecrypt
+				tt.expected.httpResult = &testutil.HttpResult{
+					Code: http.StatusInternalServerError,
+					Body: `{"error":"unknown error"}`,
+				}
 			},
 		},
 		{
@@ -147,7 +149,10 @@ func TestServer_AuthValidatePin(t *testing.T) {
 
 				tt.fields.AuthService = mockAuthService
 				tt.fields.CryptoService = mockCryptoService
-				tt.expected.err = auth.ErrPinCodeNotMatch
+				tt.expected.httpResult = &testutil.HttpResult{
+					Code: http.StatusInternalServerError,
+					Body: `{"error":"unknown error"}`,
+				}
 			},
 		},
 		{
@@ -214,11 +219,6 @@ func TestServer_AuthValidatePin(t *testing.T) {
 			})
 
 			err := svc.AuthValidatePin(context)
-			if tt.expected.err != nil {
-				require.ErrorIs(t, err, tt.expected.err)
-				return
-			}
-
 			require.NoError(t, err)
 			testutil.RequireHttpResultJson(t, *tt.expected.httpResult, rec)
 		})

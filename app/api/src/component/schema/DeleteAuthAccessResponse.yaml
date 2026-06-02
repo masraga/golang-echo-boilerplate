@@ -1,0 +1,8 @@
+type: object
+required:
+  - isSuccess
+properties:
+  isSuccess:
+    type: boolean
+    description: Whether the delete operation succeeded
+    example: true

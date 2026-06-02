@@ -9,6 +9,11 @@ Use the handler > service > repository mechanism.
 - Handlers live in `internal/app/backend/server`.
 - Services live in `internal/service/*`.
 - Repositories live in `internal/service/*`.
+- Each service package must have one main service type defined in `internal/service/[domain]/service.go`.
+- Do not create multiple service instances in one service package. Add new domain behavior as methods on the existing service type.
+- Each service package must have one main repository type defined in `internal/service/[domain]/repository.go`.
+- Do not create multiple repository instances in one service package. Add new persistence behavior as methods on the existing repository type.
+- All service and repository interfaces for a package must live in `internal/service/[domain]/interface.go`.
 - Use existing package conventions before adding new structure.
 
 ## Technical Docs
@@ -30,6 +35,9 @@ Use these file names for new backend code:
 - Service test: `internal/service/[domain]/service_[ServiceFunctionName]_test.go`
 - Repository implementation: `internal/service/[domain]/repo_[RepositoryFunctionName].go`
 - Repository test: `internal/service/[domain]/repo_[RepositoryFunctionName]_test.go`
+- Main service type and constructor: `internal/service/[domain]/service.go`
+- Main repository type and constructor: `internal/service/[domain]/repository.go`
+- Service and repository interfaces: `internal/service/[domain]/interface.go`
 
 ## Tests
 
@@ -121,12 +129,18 @@ This application uses `oapi-codegen`.
 
 - API source lives in `app/api`.
 - Main API source is `app/api/src/main.yaml`.
-- Request and response schema files live in `app/api/src/component/schema`.
-- Schema file naming format: `[OperationId]Request.yaml` or `[OperationId]Response.yaml`.
+- Request and response schema files must live in `app/api/src/component/schema`.
+- Parameter component files must live in `app/api/src/component/parameter`.
+- API path and method contracts must live under `app/api/src/path`.
+- Path directories must mirror the endpoint path segments. For example, endpoint `api/v1/user/roles` must be defined at `app/api/src/path/api/v1/user/roles/index.yaml`, with the path item and method contract written in that `index.yaml`.
+- Request and response schema file naming format: `[OperationId]Request.yaml` or `[OperationId]Response.yaml`.
+- Every request and response field must define an example value.
 - Every `operationId` must be unique.
 - Every endpoint must be grouped with tags.
 - The handler name must match the `operationId`.
-- Handler file name format from `operationId`: `impl_[OperationId].go`.
+- Handler implementation file name format from `operationId`: `internal/app/backend/server/impl_[OperationId].go`.
+- Handler test file name format from `operationId`: `internal/app/backend/server/impl_[OperationId]_test.go`.
+- Handler functions must implement the generated `ServerInterface` contract for the matching `operationId`.
 
 After creating or changing API definitions, run:
 
@@ -134,7 +148,7 @@ After creating or changing API definitions, run:
 make clean api.yaml validate-api api-docs
 ```
 
-After the API handler is generated, reinitialize the app:
+When the API contract is ready to implement, create the matching handler implementation and test files in `internal/app/backend/server`, then reinitialize the app:
 
 ```sh
 make clean init
@@ -147,6 +161,10 @@ This application uses `golang-migrate`.
 - Create migration files with the Make target.
 - Migration names must reflect the migration purpose.
 - Generated migration files live in `migrations`.
+- Every up migration that adds DDL must add comments for every new table field in the same migration.
+- For `CREATE TABLE`, every column in the new table must have a matching `COMMENT ON COLUMN schema.table.column IS '...'` statement, including primary key, timestamp, status, and foreign key columns.
+- For `ALTER TABLE ... ADD COLUMN`, every added column must have a matching `COMMENT ON COLUMN` statement in the same migration.
+- Column comments must describe the business or technical purpose of the field, not only repeat the column name.
 
 Commands:
 

@@ -20,6 +20,7 @@ func HTTPErrorHandler(err error, c echo.Context) {
 		c.Path(),
 		requestID(c),
 		err,
+		"unknown",
 		debug.Stack(),
 	)
 

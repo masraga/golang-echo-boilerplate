@@ -1,0 +1,89 @@
+parameters:
+  - name: userId
+    in: path
+    required: true
+    description: Auth user id
+    schema:
+      type: string
+      example: "358cbaad-316e-4539-9949-2636cdbd7e89"
+put:
+  tags:
+    - Auth Roles
+  operationId: AssignAuthUserRole
+  summary: Assign role to auth user
+  description: Requires Authorization header and a user API contract grant.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../../../../component/schema/AssignAuthUserRoleRequest.yaml'
+  responses:
+    '200':
+      description: User role assigned successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/AssignAuthUserRoleResponse.yaml'
+    '400':
+      description: Bad request error
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorBadRequest.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user has no API contract grant
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorForbidden.yaml'
+delete:
+  tags:
+    - Auth Roles
+  operationId: DeleteAuthUserRole
+  summary: Remove role from auth user
+  description: Requires Authorization header and a user API contract grant.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - createdBy
+          properties:
+            createdBy:
+              type: string
+              description: Creator identifier
+              example: "admin-user"
+  responses:
+    '200':
+      description: User role removed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/DeleteAuthAccessResponse.yaml'
+    '400':
+      description: Bad request error
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorBadRequest.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user has no API contract grant
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorForbidden.yaml'

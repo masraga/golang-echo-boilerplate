@@ -5,9 +5,9 @@ required:
 properties:
   id:
     type: string
-    description: The unique identifier for the newly created account
+    description: The unique identifier for the registered auth account
     example: 123e4567-e89b-12d3-a456-426
   otpCode:
     type: string
-    description: OTP code that could be receive to user
+    description: OTP code issued to the user
     example: 45142

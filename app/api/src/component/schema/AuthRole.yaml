@@ -1,0 +1,45 @@
+type: object
+required:
+  - id
+  - roleName
+  - description
+  - ownerId
+  - createdAtUtc0
+  - updatedAtUtc0
+  - createdBy
+  - isActive
+properties:
+  id:
+    type: string
+    description: Auth role id
+    example: "1f2f4181-b4b1-4812-9f57-a6a315654040"
+  roleName:
+    type: string
+    description: Name of the role
+    example: "admin"
+  description:
+    type: string
+    description: Description of the role purpose
+    example: "Administrator role with management access"
+  ownerId:
+    type: string
+    description: Auth user id that owns the role
+    example: "358cbaad-316e-4539-9949-2636cdbd7e89"
+  createdAtUtc0:
+    type: integer
+    format: int64
+    description: Created at in UTC+0 Unix millisecond time
+    example: 1798790400000
+  updatedAtUtc0:
+    type: integer
+    format: int64
+    description: Updated at in UTC+0 Unix millisecond time
+    example: 1798790400000
+  createdBy:
+    type: string
+    description: Creator identifier
+    example: "admin-user"
+  isActive:
+    type: boolean
+    description: Whether the role is active
+    example: true

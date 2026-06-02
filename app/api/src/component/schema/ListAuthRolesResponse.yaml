@@ -1,0 +1,18 @@
+type: object
+required:
+  - data
+properties:
+  data:
+    type: array
+    description: Active auth roles
+    items:
+      $ref: './AuthRole.yaml'
+    example:
+      - id: "1f2f4181-b4b1-4812-9f57-a6a315654040"
+        roleName: "admin"
+        description: "Administrator role with management access"
+        ownerId: "358cbaad-316e-4539-9949-2636cdbd7e89"
+        createdAtUtc0: 1798790400000
+        updatedAtUtc0: 1798790400000
+        createdBy: "admin-user"
+        isActive: true

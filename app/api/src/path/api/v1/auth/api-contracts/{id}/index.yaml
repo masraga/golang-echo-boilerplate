@@ -1,0 +1,95 @@
+parameters:
+  - name: id
+    in: path
+    required: true
+    description: API contract id
+    schema:
+      type: string
+      example: "CryptoEncryptText"
+get:
+  tags:
+    - Auth Access
+  operationId: GetAuthApiContract
+  summary: Get API contract
+  description: Requires Authorization header and a user API contract grant.
+  responses:
+    '200':
+      description: API contract returned successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/AuthApiContract.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user has no API contract grant
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorForbidden.yaml'
+put:
+  tags:
+    - Auth Access
+  operationId: UpdateAuthApiContract
+  summary: Update API contract
+  description: Requires Authorization header and a user API contract grant.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../../../component/schema/UpdateAuthApiContractRequest.yaml'
+  responses:
+    '200':
+      description: API contract updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/AuthApiContract.yaml'
+    '400':
+      description: Bad request error
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorBadRequest.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user has no API contract grant
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorForbidden.yaml'
+delete:
+  tags:
+    - Auth Access
+  operationId: DeleteAuthApiContract
+  summary: Delete API contract
+  description: Requires Authorization header and a user API contract grant.
+  responses:
+    '200':
+      description: API contract deleted successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/DeleteAuthAccessResponse.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user has no API contract grant
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../component/schema/ErrorForbidden.yaml'

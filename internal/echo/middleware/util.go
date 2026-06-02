@@ -12,6 +12,12 @@ func returnUnauthorized(ctx echo.Context) error {
 	})
 }
 
+func returnForbidden(ctx echo.Context) error {
+	return ctx.JSON(http.StatusForbidden, map[string]interface{}{
+		"error": "Forbidden",
+	})
+}
+
 func skipValidation(path string, method string) bool {
 	if filter, ok := skipAuthValidationFilterMap[path]; ok {
 		for _, m := range filter.Method {

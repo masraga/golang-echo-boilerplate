@@ -16,10 +16,15 @@ func (s *AuthService) CreateJWTToken(ctx context.Context, input CreateJWTTokenIn
 		return output, ErrClaimJwtToken
 	}
 
+	issuerAtUtc0 := input.IssuerAtUtc0
+	if issuerAtUtc0 == 0 {
+		issuerAtUtc0 = time.Now().UnixMilli()
+	}
+
 	claims := jwt.MapClaims{
 		"userId": input.UserId,
 		"exp":    input.ExpiredAtUtc0,
-		"iat":    time.Now().UnixMilli(),
+		"iat":    issuerAtUtc0,
 	}
 	newClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := newClaims.SignedString([]byte(s.JwtSecret))

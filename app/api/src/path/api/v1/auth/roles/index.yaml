@@ -1,0 +1,62 @@
+get:
+  tags:
+    - Auth Roles
+  operationId: ListAuthRoles
+  summary: List auth roles
+  description: Requires Authorization header and a user API contract grant.
+  responses:
+    '200':
+      description: Auth roles listed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ListAuthRolesResponse.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user has no API contract grant
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ErrorForbidden.yaml'
+post:
+  tags:
+    - Auth Roles
+  operationId: CreateAuthRole
+  summary: Create auth role
+  description: Requires Authorization header and a user API contract grant.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../../component/schema/CreateAuthRoleRequest.yaml'
+  responses:
+    '201':
+      description: Auth role created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/AuthRole.yaml'
+    '400':
+      description: Bad request error
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ErrorBadRequest.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ErrorUnauthorized.yaml'
+    '403':
+      description: Forbidden, user has no API contract grant
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../component/schema/ErrorForbidden.yaml'

@@ -1,0 +1,17 @@
+type: object
+required:
+  - data
+properties:
+  data:
+    type: array
+    description: Active role API contract mappings
+    items:
+      $ref: './AuthRoleContractApi.yaml'
+    example:
+      - id: "31267553-e12a-497d-bc4a-767b642f4dd6"
+        roleId: "1f2f4181-b4b1-4812-9f57-a6a315654040"
+        authApiContractId: "CryptoEncryptText"
+        createdAtUtc0: 1798790400000
+        updatedAtUtc0: 1798790400000
+        createdBy: "admin-user"
+        isActive: true
