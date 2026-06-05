@@ -1,15 +1,18 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/leporo/sqlf"
+	"github.com/masraga/kerp-api/external/fcm"
 	"github.com/masraga/kerp-api/internal/database"
 	"github.com/masraga/kerp-api/internal/dbtx"
 	"github.com/masraga/kerp-api/internal/service/auth"
+	"github.com/masraga/kerp-api/internal/service/notification"
 	"github.com/rs/zerolog"
 )
 
@@ -58,4 +61,12 @@ func ProvideZerolog(config *Config) zerolog.Logger {
 	}
 	saveLogMode := zerolog.New(logFile).With().Timestamp().Caller().Logger()
 	return saveLogMode
+}
+
+func ProvidePushNotificationService(ctx context.Context, cfg *Config) notification.PushProviderInterface {
+	provider := fcm.NewFcmService(fcm.FcmServiceStructOpts{
+		Ctx:              ctx,
+		ServiceAccountId: cfg.FcmServiceAccountId,
+	})
+	return provider
 }

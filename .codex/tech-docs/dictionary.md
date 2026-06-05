@@ -21,7 +21,8 @@ This dictionary defines shared application terms used across feature docs.
 | `AuthService` | Auth domain service type defined in `internal/service/auth/service.go`. |
 | `AuthRepository` | Auth domain repository type defined in `internal/service/auth/repository.go`. |
 | `FindAuth` | Repository lookup for an auth account by phone number or user id. |
-| `CreateNewAccount` | Auth registration service method that creates a missing phone account, or reuses an existing account, then issues a fresh OTP. |
+| `CreateNewAccount` | Auth registration service method that creates a missing phone account, refreshes a supplied Firebase ID for an existing account, then issues a fresh OTP. |
+| `FirebaseId` | Required Firebase Cloud Messaging registration token stored on the auth account for the user's current device. |
 | `CreateOTP` | Auth service method that verifies the user, deletes active user OTP rows, generates default OTP data when omitted, and stores the new OTP. |
 | `FindAccessToken` | Repository lookup for an active JWT row in `public.auth_access_token` by token id and user id. |
 | `CreateNewPin` | Repository operation that writes a PIN to `public.auth.pin`. |

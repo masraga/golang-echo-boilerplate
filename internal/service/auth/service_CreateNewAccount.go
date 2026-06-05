@@ -39,6 +39,15 @@ func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccou
 		}
 
 		userId = input.Id
+	} else {
+		_, err = s.AuthRepositoryWriter.UpdateFirebaseId(ctx, UpdateFirebaseIdInput{
+			UserId:     userId,
+			FirebaseId: *input.FirebaseId,
+		})
+		if err != nil {
+			err = s.Err.Wrap(err)
+			return
+		}
 	}
 
 	otpSvc, err := s.createRegistrationOTP(ctx, CreateOTPInput{

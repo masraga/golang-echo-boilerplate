@@ -16,9 +16,10 @@ import (
 )
 
 func InitApi() {
-	config, server := Initialize()
-
 	e := echo.New()
+	ctx := context.Background()
+
+	config, server := Initialize(ctx)
 
 	api.RegisterHandlers(e, server)
 	RegisterMiddlewares(e, server)
@@ -28,7 +29,7 @@ func InitApi() {
 		signal.Notify(sigChan, os.Interrupt)
 		sig := <-sigChan
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
 		if err := e.Shutdown(ctx); err != nil {

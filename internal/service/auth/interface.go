@@ -48,6 +48,7 @@ type AuthServiceInterface interface {
 type AuthRepositoryWriterInterface interface {
 	dbtx.DbTxInterface
 	CreateNewAccount(ctx context.Context, input CreateNewAccountInput) (output CreateNewAccountOutput, err error)
+	UpdateFirebaseId(ctx context.Context, input UpdateFirebaseIdInput) (output UpdateFirebaseIdOutput, err error)
 	DeleteAllUserOTP(ctx context.Context, input DeleteAllUserOTPInput) (output DeleteAllUserOTPOutput, err error)
 	CreateOTP(ctx context.Context, input CreateOTPInput) (output CreateOTPOutput, err error)
 	VerifyOtp(ctx context.Context, input VerifyOtpInput) (output VerifyOtpOutput, err error)

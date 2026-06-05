@@ -10,8 +10,9 @@ type AuthAccessBootstrapUserIdType string
 
 type CreateNewAccountInput struct {
 	TokenType
-	Id      string
-	PhoneNo string
+	Id         string
+	PhoneNo    string
+	FirebaseId *string
 }
 
 type CreateNewAccountOutput struct {
@@ -57,6 +58,16 @@ type FindAuthOutput struct {
 	Id      string
 	PhoneNo string
 	PinCode *string
+}
+
+type UpdateFirebaseIdInput struct {
+	UserId     string
+	FirebaseId string
+}
+
+type UpdateFirebaseIdOutput struct {
+	UserId     string
+	FirebaseId string
 }
 
 type CreateOTPInput struct {

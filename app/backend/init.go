@@ -7,9 +7,9 @@ import (
 	"github.com/masraga/kerp-api/internal/service/auth"
 )
 
-func Initialize() (cfg *Config, server *server.Server) {
+func Initialize(ctx context.Context) (cfg *Config, server *server.Server) {
 	cfg = LoadConfig()
-	sv, err := InitializeService(cfg)
+	sv, err := InitializeService(ctx, cfg)
 	if err != nil {
 		panic(err)
 	}

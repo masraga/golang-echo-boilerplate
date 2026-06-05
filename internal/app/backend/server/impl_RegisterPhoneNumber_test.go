@@ -23,6 +23,7 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 	var (
 		expectedId      string = faker.Word()
 		expectedOtpCode string = "123456"
+		firebaseId             = "fcm-registration-token"
 	)
 
 	type args struct {
@@ -47,7 +48,8 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 			name: "test success endpoint",
 			args: args{
 				input: api.CreateNewAccountRequest{
-					PhoneNo: "081234567890",
+					PhoneNo:    "081234567890",
+					FirebaseId: firebaseId,
 				},
 			},
 			mock: func(ctx echo.Context, tt *test, ctrl *gomock.Controller) {
@@ -61,7 +63,8 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 				mockAuthService := auth.NewMockAuthServiceInterface(ctrl)
 				mockAuthService.EXPECT().
 					CreateNewAccount(ctx.Request().Context(), auth.CreateNewAccountInput{
-						PhoneNo: tt.args.input.PhoneNo,
+						PhoneNo:    tt.args.input.PhoneNo,
+						FirebaseId: stringPointer(tt.args.input.FirebaseId),
 					}).
 					Return(auth.CreateNewAccountOutput{
 						Id:      expectedId,
@@ -84,7 +87,8 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 			name: "test success when user already registered",
 			args: args{
 				input: api.CreateNewAccountRequest{
-					PhoneNo: "081234567890",
+					PhoneNo:    "081234567890",
+					FirebaseId: firebaseId,
 				},
 			},
 			mock: func(ctx echo.Context, tt *test, ctrl *gomock.Controller) {
@@ -98,7 +102,8 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 				mockAuthService := auth.NewMockAuthServiceInterface(ctrl)
 				mockAuthService.EXPECT().
 					CreateNewAccount(ctx.Request().Context(), auth.CreateNewAccountInput{
-						PhoneNo: tt.args.input.PhoneNo,
+						PhoneNo:    tt.args.input.PhoneNo,
+						FirebaseId: stringPointer(tt.args.input.FirebaseId),
 					}).
 					Return(auth.CreateNewAccountOutput{
 						Id:      expectedId,
@@ -146,4 +151,8 @@ func TestServer_RegisterPhoneNumber(t *testing.T) {
 			testutil.RequireHttpResultJson(t, tt.expected, rec)
 		})
 	}
+}
+
+func stringPointer(value string) *string {
+	return &value
 }

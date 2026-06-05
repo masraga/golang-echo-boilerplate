@@ -8,7 +8,8 @@ import (
 func (r *AuthRepository) CreateNewAccount(ctx context.Context, input CreateNewAccountInput) (output CreateNewAccountOutput, err error) {
 	stmt := r.Sql.InsertInto(TableAuth).
 		Set("id", input.Id).
-		Set("phone_no", input.PhoneNo)
+		Set("phone_no", input.PhoneNo).
+		Set("firebase_id", input.FirebaseId)
 
 	_, err = stmt.ExecAndClose(ctx, r.UseTx(ctx))
 	if err != nil {

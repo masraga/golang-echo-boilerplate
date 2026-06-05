@@ -10,60 +10,61 @@ import (
 	"github.com/masraga/kerp-api/internal/dbtx"
 	"github.com/masraga/kerp-api/internal/service/auth"
 	"github.com/masraga/kerp-api/internal/testutil"
-	"github.com/masraga/kerp-api/internal/util/pointer"
 )
 
-func TestAuthRepository_CreateNewAccount(t *testing.T) {
+func TestAuthRepository_UpdateFirebaseId(t *testing.T) {
 	type args struct {
 		ctx   context.Context
-		input auth.CreateNewAccountInput
+		input auth.UpdateFirebaseIdInput
 	}
 
-	type expected = testutil.Result[auth.CreateNewAccountOutput]
+	type expected = testutil.Result[auth.UpdateFirebaseIdOutput]
 
 	type test struct {
 		name     string
 		args     args
 		expected expected
-		mock     func(tt *testing.T, mock sqlmock.Sqlmock)
+		mock     func(mock sqlmock.Sqlmock)
 	}
 
 	tests := []test{
 		{
-			name: "test failed to create new account",
+			name: "should fail to update firebase id",
 			args: args{
-				ctx:   context.Background(),
-				input: auth.CreateNewAccountInput{},
+				ctx: context.Background(),
+				input: auth.UpdateFirebaseIdInput{
+					UserId:     "358cbaad-316e-4539-9949-2636cdbd7e89",
+					FirebaseId: "fcm-registration-token",
+				},
 			},
 			expected: expected{
-				Err:   auth.ErrCreateNewAccount,
-				Value: auth.CreateNewAccountOutput{},
+				Err: auth.ErrUpdateFirebaseId,
 			},
-			mock: func(tt *testing.T, mock sqlmock.Sqlmock) {
+			mock: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(``).
 					WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
-					WillReturnError(auth.ErrCreateNewAccount)
+					WillReturnError(auth.ErrUpdateFirebaseId)
 			},
 		},
 		{
-			name: "test success to create new user",
+			name: "should update firebase id",
 			args: args{
 				ctx: context.Background(),
-				input: auth.CreateNewAccountInput{
-					Id:         "358cbaad-316e-4539-9949-2636cdbd7e89",
-					PhoneNo:    "081234567890",
-					FirebaseId: pointer.String("fcm-registration-token"),
+				input: auth.UpdateFirebaseIdInput{
+					UserId:     "358cbaad-316e-4539-9949-2636cdbd7e89",
+					FirebaseId: "fcm-registration-token",
 				},
 			},
 			expected: expected{
-				Err: nil,
-				Value: auth.CreateNewAccountOutput{
-					Id: "358cbaad-316e-4539-9949-2636cdbd7e89",
+				Value: auth.UpdateFirebaseIdOutput{
+					UserId:     "358cbaad-316e-4539-9949-2636cdbd7e89",
+					FirebaseId: "fcm-registration-token",
 				},
 			},
-			mock: func(tt *testing.T, mock sqlmock.Sqlmock) {
+			mock: func(mock sqlmock.Sqlmock) {
 				mock.ExpectExec(``).
-					WillReturnResult(sqlmock.NewResult(1, 1))
+					WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
 	}
@@ -74,17 +75,19 @@ func TestAuthRepository_CreateNewAccount(t *testing.T) {
 			if err != nil {
 				t.Fatalf("error init mock: %v", err)
 			}
+			defer db.Close()
+
 			if tt.mock != nil {
-				tt.mock(t, sqlMock)
+				tt.mock(sqlMock)
 			}
-			dbtx := dbtx.DbTx{Db: db}
+
 			repo := auth.NewAuthRepository(auth.AuthRepositoryOpts{
-				DbTxInterface: &dbtx,
+				DbTxInterface: &dbtx.DbTx{Db: db},
 				Db:            db,
 				Sql:           sqlf.PostgreSQL,
 				Err:           ctxerr.NewCtxErr(ctxerr.CtxErrOpts{}),
 			})
-			res, err := repo.CreateNewAccount(tt.args.ctx, tt.args.input)
+			res, err := repo.UpdateFirebaseId(tt.args.ctx, tt.args.input)
 			testutil.RequireResult(t, err, tt.expected, res)
 		})
 	}

@@ -35,6 +35,7 @@ func (s *Server) bindRequestToCreateNewAccountInput(ctx echo.Context) (input aut
 		return
 	}
 	input.PhoneNo = phone.Result
+	input.FirebaseId = &reqBody.FirebaseId
 	return
 }
 

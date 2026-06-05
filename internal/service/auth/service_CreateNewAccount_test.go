@@ -38,11 +38,12 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 
 	tests := []test{
 		{
-			name: "should create otp for existing user without creating account",
+			name: "should create otp and update firebase id for existing user",
 			args: args{
 				ctx: context.Background(),
 				input: auth.CreateNewAccountInput{
-					PhoneNo: "081234567890",
+					PhoneNo:    "081234567890",
+					FirebaseId: stringPointer("fcm-registration-token"),
 				},
 			},
 			expected: expected{
@@ -77,6 +78,12 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 					Begin(gomock.Any(), nil).
 					Return(context.Background(), nil)
 				authRepoWriter.EXPECT().
+					UpdateFirebaseId(gomock.Any(), auth.UpdateFirebaseIdInput{
+						UserId:     tt.expected.Value.Id,
+						FirebaseId: *tt.args.input.FirebaseId,
+					}).
+					Return(auth.UpdateFirebaseIdOutput{}, nil)
+				authRepoWriter.EXPECT().
 					DeleteAllUserOTP(gomock.Any(), auth.DeleteAllUserOTPInput{UserId: tt.expected.Value.Id}).
 					Return(auth.DeleteAllUserOTPOutput{IsSuccess: true}, nil)
 				authRepoWriter.EXPECT().
@@ -96,11 +103,105 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 			},
 		},
 		{
+			name: "should update firebase id for existing user",
+			args: args{
+				ctx: context.Background(),
+				input: auth.CreateNewAccountInput{
+					PhoneNo:    "081234567890",
+					FirebaseId: stringPointer("new-fcm-registration-token"),
+				},
+			},
+			expected: expected{
+				Value: auth.CreateNewAccountOutput{
+					Id: "358cbaad-316e-4539-9949-2636cdbd7e89",
+				},
+				Assert: func(t *testing.T, actual auth.CreateNewAccountOutput) {
+					require.Equal(t, "358cbaad-316e-4539-9949-2636cdbd7e89", actual.Id)
+					require.Regexp(t, `^[0-9]{6}$`, actual.OtpCode)
+				},
+			},
+			mock: func(t *testing.T, tt *test, ctrl *gomock.Controller) {
+				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
+				authRepoReader.EXPECT().
+					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: tt.args.input.PhoneNo}).
+					Return(auth.FindAuthOutput{Id: tt.expected.Value.Id}, nil)
+				authRepoReader.EXPECT().
+					FindAuth(gomock.Any(), auth.FindAuthInput{
+						PhoneNo: tt.args.input.PhoneNo,
+						UserId:  tt.expected.Value.Id,
+					}).
+					Return(auth.FindAuthOutput{Id: tt.expected.Value.Id}, nil)
+
+				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					Begin(gomock.Any(), nil).
+					Return(context.Background(), nil)
+				authRepoWriter.EXPECT().
+					UpdateFirebaseId(gomock.Any(), auth.UpdateFirebaseIdInput{
+						UserId:     tt.expected.Value.Id,
+						FirebaseId: *tt.args.input.FirebaseId,
+					}).
+					Return(auth.UpdateFirebaseIdOutput{}, nil)
+				authRepoWriter.EXPECT().
+					DeleteAllUserOTP(gomock.Any(), auth.DeleteAllUserOTPInput{UserId: tt.expected.Value.Id}).
+					Return(auth.DeleteAllUserOTPOutput{IsSuccess: true}, nil)
+				authRepoWriter.EXPECT().
+					CreateOTP(gomock.Any(), gomock.Any()).
+					DoAndReturn(func(_ context.Context, input auth.CreateOTPInput) (auth.CreateOTPOutput, error) {
+						return auth.CreateOTPOutput{OtpCode: input.OtpCode}, nil
+					})
+				authRepoWriter.EXPECT().
+					CommitOrRollback(gomock.Any(), nil).
+					Return(nil)
+
+				tt.fields.AuthRepositoryReader = authRepoReader
+				tt.fields.AuthRepositoryWriter = authRepoWriter
+			},
+		},
+		{
+			name: "should rollback when firebase id update fails",
+			args: args{
+				ctx: context.Background(),
+				input: auth.CreateNewAccountInput{
+					PhoneNo:    "081234567890",
+					FirebaseId: stringPointer("new-fcm-registration-token"),
+				},
+			},
+			expected: expected{
+				Err: auth.ErrUpdateFirebaseId,
+			},
+			mock: func(t *testing.T, tt *test, ctrl *gomock.Controller) {
+				userId := "358cbaad-316e-4539-9949-2636cdbd7e89"
+				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
+				authRepoReader.EXPECT().
+					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: tt.args.input.PhoneNo}).
+					Return(auth.FindAuthOutput{Id: userId}, nil)
+
+				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					Begin(gomock.Any(), nil).
+					Return(context.Background(), nil)
+				authRepoWriter.EXPECT().
+					UpdateFirebaseId(gomock.Any(), auth.UpdateFirebaseIdInput{
+						UserId:     userId,
+						FirebaseId: *tt.args.input.FirebaseId,
+					}).
+					Return(auth.UpdateFirebaseIdOutput{}, auth.ErrUpdateFirebaseId)
+				authRepoWriter.EXPECT().
+					CommitOrRollback(gomock.Any(), auth.ErrUpdateFirebaseId).
+					Return(auth.ErrUpdateFirebaseId)
+
+				tt.fields.AuthRepositoryReader = authRepoReader
+				tt.fields.AuthRepositoryWriter = authRepoWriter
+			},
+		},
+		{
 			name: "should failed begin dbtx",
 			args: args{
 				ctx: context.Background(),
 				input: auth.CreateNewAccountInput{
-					PhoneNo: "081234567890",
+					PhoneNo:    "081234567890",
+					FirebaseId: stringPointer("fcm-registration-token"),
 				},
 			},
 			expected: expected{
@@ -127,7 +228,8 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				input: auth.CreateNewAccountInput{
-					PhoneNo: "081234567890",
+					PhoneNo:    "081234567890",
+					FirebaseId: stringPointer("fcm-registration-token"),
 				},
 			},
 			expected: expected{
@@ -177,7 +279,8 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				input: auth.CreateNewAccountInput{
-					PhoneNo: "081234567890",
+					PhoneNo:    "081234567890",
+					FirebaseId: stringPointer("fcm-registration-token"),
 				},
 			},
 			expected: expected{
@@ -209,6 +312,7 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 					CreateNewAccount(gomock.Any(), gomock.Any()).
 					DoAndReturn(func(_ context.Context, input auth.CreateNewAccountInput) (auth.CreateNewAccountOutput, error) {
 						createdAccount = input
+						require.Equal(t, tt.args.input.FirebaseId, input.FirebaseId)
 						return auth.CreateNewAccountOutput{Id: input.Id}, nil
 					})
 				authRepoWriter.EXPECT().
@@ -269,4 +373,8 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 			}, res)
 		})
 	}
+}
+
+func stringPointer(value string) *string {
+	return &value
 }
