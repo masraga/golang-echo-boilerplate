@@ -2,7 +2,7 @@
 
 ## Summary
 
-`AuthValidatePin` validates an auth user's PIN, stores the current JWT access token, and returns that token. If the user does not have a PIN yet, the same flow creates the first PIN after validating `retypePin`.
+`AuthValidatePin` requires a successfully validated OTP, validates an auth user's PIN, stores the current JWT access token, consumes the OTP gate, and returns that token. If the user does not have a PIN yet, the same flow creates the first PIN after validating `retypePin`.
 
 ## Public API
 
@@ -38,9 +38,10 @@ Response body:
 | Service | `internal/service/auth/service_AuthValidatePin.go` | `AuthService.AuthValidatePin`, `AuthService.createNewPin` |
 | Repository | `internal/service/auth/repo_CreateNewPin.go` | `AuthRepository.CreateNewPin` |
 | Repository | `internal/service/auth/repo_StoreAccessToken.go` | `AuthRepository.StoreAccessToken` |
+| Repository | `internal/service/auth/repo_UpdateOtpValidity.go` | Consumes the OTP validation gate after successful authentication. |
 | Types | `internal/service/auth/type.go` | `AuthValidatePinInput`, `AuthValidatePinOutput`, `CreateNewPinInput`, `CreateNewPinOutput`, `StoreAccessTokenInput`, `StoreAccessTokenOutput` |
 | Constants | `internal/service/auth/const.go` | `MinPinLen`, `MaxPinLen`, `JwtTokenExpiredDuration` |
-| Errors | `internal/service/auth/error.go` | `ErrValidateRetypePin`, `ErrPinCodeNotMatch`, `ErrPinIsTooLongOrShort`, `ErrCreateNewPin`, `ErrStoreAccessToken` |
+| Errors | `internal/service/auth/error.go` | `ErrOtpValidationRequired`, `ErrValidateRetypePin`, `ErrPinCodeNotMatch`, `ErrPinIsTooLongOrShort`, `ErrCreateNewPin`, `ErrStoreAccessToken`, `ErrUpdateOtpValidity` |
 | Migration | `migrations/202605300013_add_table_auth_access_token.up.sql` | Creates `public.auth_access_token` |
 
 ## Handler Flow
@@ -56,18 +57,20 @@ Current handler note: decrypt and service errors are returned directly by `Serve
 ## Service Flow
 
 1. Load auth account with `AuthRepositoryReader.FindAuth` by phone number.
-2. Validate `pin` and optional `retypePin` before starting a transaction when possible.
-3. Begin a database transaction through `AuthRepositoryWriter.Begin`.
-4. If the account has no stored PIN:
+2. Require `is_otp_valid = true`; otherwise return `ErrOtpValidationRequired` as HTTP `400`.
+3. Validate `pin` and optional `retypePin` before starting a transaction when possible. A wrong PIN does not consume the valid OTP state.
+4. Begin a database transaction through `AuthRepositoryWriter.Begin`.
+5. If the account has no stored PIN:
    - require `RetypePinCode`;
    - require `PinCode` to match `RetypePinCode`;
    - require PIN length to be exactly 6 based on `MinPinLen` and `MaxPinLen`;
    - write the new PIN through `AuthRepositoryWriter.CreateNewPin`.
-5. If the account has a stored PIN, compare it with the supplied `PinCode`.
-6. Create a JWT with `CreateToken` using one computed `ExpiredAtUtc0` value.
-7. Store the current JWT through `AuthRepositoryWriter.StoreAccessToken`, which deactivates previous active tokens for the user first.
-8. Commit on success or roll back on any error.
-9. Return `IsValid`, `UserId`, `Token`, and internal `ExpiredAtUtc0`.
+6. If the account has a stored PIN, compare it with the supplied `PinCode`.
+7. Create a JWT with `CreateToken` using one computed `ExpiredAtUtc0` value.
+8. Store the current JWT through `AuthRepositoryWriter.StoreAccessToken`, which deactivates previous active tokens for the user first.
+9. Set `is_otp_valid = false` in the same transaction.
+10. Commit on success or roll back PIN creation, token storage, and OTP-gate consumption on any error.
+11. Return `IsValid`, `UserId`, `Token`, and internal `ExpiredAtUtc0`. The JWT remains valid after the OTP gate is consumed.
 
 ## Repository Behavior
 
@@ -103,7 +106,7 @@ The `public.auth_access_token` table is created by `migrations/202605300013_add_
 | Test File | Coverage |
 | --- | --- |
 | `internal/app/backend/server/impl_AuthValidatePin_test.go` | Successful HTTP response, decrypt failure, service failure, invalid service user id. |
-| `internal/service/auth/service_AuthValidatePin_test.go` | Auth not found, missing retype PIN, mismatched new PIN, invalid PIN length, begin transaction failure, create PIN failure, store access token failure, existing PIN mismatch, create new PIN success, existing PIN success. |
+| `internal/service/auth/service_AuthValidatePin_test.go` | Auth not found, OTP required, PIN validation, transaction failures, OTP-gate consumption failure, and successful new/existing PIN authentication. |
 | `internal/service/auth/repo_CreateNewPin_test.go` | SQL update failure and success result. |
 | `internal/service/auth/repo_StoreAccessToken_test.go` | Old token deactivation failure, current token insert failure, and success result. |
 

@@ -8,8 +8,9 @@ import (
 
 var mapError = map[error]int{
 	// 400 Error
-	auth.ErrDuplicateUser: http.StatusBadRequest,
-	auth.ErrAuthNotFound:  http.StatusBadRequest,
+	auth.ErrDuplicateUser:         http.StatusBadRequest,
+	auth.ErrAuthNotFound:          http.StatusBadRequest,
+	auth.ErrOtpValidationRequired: http.StatusBadRequest,
 
 	auth.ErrCreateAuthApiContract:           http.StatusBadRequest,
 	auth.ErrFindAuthApiContractNotFound:     http.StatusBadRequest,

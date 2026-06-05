@@ -28,18 +28,11 @@ func (s *Server) VerifyNewAuthUserOTP(ctx echo.Context) error {
 		return returnError(ctx, err)
 	}
 
-	verifyUser, err := s.AuthService.VerifyUserAccount(ctx.Request().Context(), auth.VerifyUserAccountInput{
-		PhoneNo: phone.Result,
-	})
-	if err != nil {
-		return returnError(ctx, err)
-	}
-
 	var resp api.VerifyOTPResponse200
 	resp.IsValid = output.IsValid
-	resp.PhoneNo = verifyUser.PhoneNo
+	resp.PhoneNo = output.PhoneNo
 	resp.Note = output.Note
-	resp.IsNewUser = verifyUser.IsNewUser
+	resp.IsNewUser = output.IsNewUser
 
 	return returnOk(ctx, resp)
 }

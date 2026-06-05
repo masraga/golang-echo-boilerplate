@@ -15,6 +15,10 @@ func (s *AuthService) AuthValidatePin(ctx context.Context, input AuthValidatePin
 	if err != nil {
 		return
 	}
+	if !authUser.IsOtpValid {
+		err = s.Err.Wrap(ErrOtpValidationRequired)
+		return
+	}
 	if authUser.PinCode == nil && input.RetypePinCode == nil {
 		err = s.Err.Wrap(ErrValidateRetypePin)
 		return
@@ -67,6 +71,15 @@ func (s *AuthService) AuthValidatePin(ctx context.Context, input AuthValidatePin
 		Token:         token.Token,
 		UserId:        authUser.Id,
 		ExpiredAtUtc0: expiredAtUtc0,
+	})
+	if err != nil {
+		err = s.Err.Wrap(err)
+		return
+	}
+
+	_, err = s.AuthRepositoryWriter.UpdateOtpValidity(ctx, UpdateOtpValidityInput{
+		UserId:     authUser.Id,
+		IsOtpValid: false,
 	})
 	if err != nil {
 		err = s.Err.Wrap(err)

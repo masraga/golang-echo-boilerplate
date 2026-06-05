@@ -78,19 +78,60 @@ func TestAuthService_VerifyOtp(t *testing.T) {
 				Value: auth.VerifyOtpOutput{},
 			},
 			mock: func(tt *test, ctrl *gomock.Controller) {
+				userId := faker.UUIDHyphenated()
 				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
 				authRepoReader.
 					EXPECT().
 					FindAuth(gomock.Any(), gomock.Any()).
 					Return(auth.FindAuthOutput{
-						Id:      faker.UUIDHyphenated(),
+						Id:      userId,
 						PhoneNo: expectedPhoneNumber,
 					}, nil)
 				authRepoReader.
 					EXPECT().
 					FindOTP(gomock.Any(), gomock.Any()).
 					Return(auth.FindOTPOutput{}, auth.ErrFindOTPNotFound)
+				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     userId,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, nil)
 				tt.fields.AuthRepoReader = authRepoReader
+				tt.fields.AuthRepoWriter = authRepoWriter
+			},
+		},
+		{
+			name: "should fail when clearing otp validity fails",
+			args: args{
+				ctx: context.Background(),
+				input: auth.VerifyOtpInput{
+					OtpCode: expectedOtp,
+					PhoneNo: expectedPhoneNumber,
+				},
+			},
+			expected: expected{Err: auth.ErrUpdateOtpValidity},
+			mock: func(tt *test, ctrl *gomock.Controller) {
+				userId := faker.UUIDHyphenated()
+				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
+				authRepoReader.EXPECT().
+					FindAuth(gomock.Any(), gomock.Any()).
+					Return(auth.FindAuthOutput{
+						Id:      userId,
+						PhoneNo: expectedPhoneNumber,
+					}, nil)
+
+				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     userId,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, auth.ErrUpdateOtpValidity)
+
+				tt.fields.AuthRepoReader = authRepoReader
+				tt.fields.AuthRepoWriter = authRepoWriter
 			},
 		},
 		{
@@ -107,12 +148,13 @@ func TestAuthService_VerifyOtp(t *testing.T) {
 				Value: auth.VerifyOtpOutput{},
 			},
 			mock: func(tt *test, ctrl *gomock.Controller) {
+				userId := faker.UUIDHyphenated()
 				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
 				authRepoReader.
 					EXPECT().
 					FindAuth(gomock.Any(), gomock.Any()).
 					Return(auth.FindAuthOutput{
-						Id:      faker.UUIDHyphenated(),
+						Id:      userId,
 						PhoneNo: expectedPhoneNumber,
 					}, nil)
 				authRepoReader.
@@ -123,7 +165,15 @@ func TestAuthService_VerifyOtp(t *testing.T) {
 						Note:          expectedNote,
 						ExpiredAtUtc0: expectedExpiredAt,
 					}, nil)
+				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     userId,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, nil)
 				tt.fields.AuthRepoReader = authRepoReader
+				tt.fields.AuthRepoWriter = authRepoWriter
 			},
 		},
 		{
@@ -140,12 +190,13 @@ func TestAuthService_VerifyOtp(t *testing.T) {
 				Value: auth.VerifyOtpOutput{},
 			},
 			mock: func(tt *test, ctrl *gomock.Controller) {
+				userId := faker.UUIDHyphenated()
 				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
 				authRepoReader.
 					EXPECT().
 					FindAuth(gomock.Any(), gomock.Any()).
 					Return(auth.FindAuthOutput{
-						Id:      faker.UUIDHyphenated(),
+						Id:      userId,
 						PhoneNo: expectedPhoneNumber,
 					}, nil)
 				authRepoReader.
@@ -157,7 +208,15 @@ func TestAuthService_VerifyOtp(t *testing.T) {
 						ExpiredAtUtc0: expectedValidExpiredAt,
 						IsVerified:    true,
 					}, nil)
+				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     userId,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, nil)
 				tt.fields.AuthRepoReader = authRepoReader
+				tt.fields.AuthRepoWriter = authRepoWriter
 			},
 		},
 		{
@@ -172,18 +231,21 @@ func TestAuthService_VerifyOtp(t *testing.T) {
 			expected: expected{
 				Err: nil,
 				Value: auth.VerifyOtpOutput{
-					IsValid: true,
-					UserId:  expectedPhoneNumber,
-					Note:    expectedNote,
+					IsValid:   true,
+					UserId:    expectedPhoneNumber,
+					PhoneNo:   expectedPhoneNumber,
+					Note:      expectedNote,
+					IsNewUser: true,
 				},
 			},
 			mock: func(tt *test, ctrl *gomock.Controller) {
+				userId := faker.UUIDHyphenated()
 				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
 				authRepoReader.
 					EXPECT().
 					FindAuth(gomock.Any(), gomock.Any()).
 					Return(auth.FindAuthOutput{
-						Id:      faker.UUIDHyphenated(),
+						Id:      userId,
 						PhoneNo: expectedPhoneNumber,
 					}, nil)
 				authRepoReader.
@@ -196,6 +258,15 @@ func TestAuthService_VerifyOtp(t *testing.T) {
 					}, nil)
 
 				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     userId,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, nil)
+				authRepoWriter.EXPECT().
+					Begin(gomock.Any(), nil).
+					Return(context.Background(), nil)
 				authRepoWriter.
 					EXPECT().
 					VerifyOtp(gomock.Any(), gomock.Any()).
@@ -203,6 +274,67 @@ func TestAuthService_VerifyOtp(t *testing.T) {
 						IsValid: true,
 						UserId:  expectedPhoneNumber,
 					}, nil)
+				authRepoWriter.EXPECT().
+					VerifyUserAccount(gomock.Any(), auth.VerifyUserAccountInput{
+						PhoneNo: expectedPhoneNumber,
+					}).
+					Return(auth.VerifyUserAccountOutput{IsVerified: true}, nil)
+				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     userId,
+						IsOtpValid: true,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, nil)
+				authRepoWriter.EXPECT().
+					CommitOrRollback(gomock.Any(), nil).
+					Return(nil)
+				tt.fields.AuthRepoReader = authRepoReader
+				tt.fields.AuthRepoWriter = authRepoWriter
+			},
+		},
+		{
+			name: "should keep otp validity false when otp persistence fails",
+			args: args{
+				ctx: context.Background(),
+				input: auth.VerifyOtpInput{
+					OtpCode: expectedOtp,
+					PhoneNo: expectedPhoneNumber,
+				},
+			},
+			expected: expected{Err: auth.ErrVerifyOtp},
+			mock: func(tt *test, ctrl *gomock.Controller) {
+				userId := faker.UUIDHyphenated()
+				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
+				authRepoReader.EXPECT().
+					FindAuth(gomock.Any(), gomock.Any()).
+					Return(auth.FindAuthOutput{
+						Id:      userId,
+						PhoneNo: expectedPhoneNumber,
+					}, nil)
+				authRepoReader.EXPECT().
+					FindOTP(gomock.Any(), gomock.Any()).
+					Return(auth.FindOTPOutput{
+						OtpCode:       expectedOtp,
+						ExpiredAtUtc0: expectedValidExpiredAt,
+					}, nil)
+
+				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     userId,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, nil)
+				authRepoWriter.EXPECT().
+					Begin(gomock.Any(), nil).
+					Return(context.Background(), nil)
+				authRepoWriter.EXPECT().
+					VerifyOtp(gomock.Any(), gomock.Any()).
+					Return(auth.VerifyOtpOutput{}, auth.ErrVerifyOtp)
+				authRepoWriter.EXPECT().
+					CommitOrRollback(gomock.Any(), auth.ErrVerifyOtp).
+					Return(auth.ErrVerifyOtp)
+
 				tt.fields.AuthRepoReader = authRepoReader
 				tt.fields.AuthRepoWriter = authRepoWriter
 			},

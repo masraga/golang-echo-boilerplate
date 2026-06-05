@@ -55,9 +55,20 @@ type FindAuthInput struct {
 }
 
 type FindAuthOutput struct {
-	Id      string
-	PhoneNo string
-	PinCode *string
+	Id         string
+	PhoneNo    string
+	PinCode    *string
+	IsOtpValid bool
+}
+
+type UpdateOtpValidityInput struct {
+	UserId     string
+	IsOtpValid bool
+}
+
+type UpdateOtpValidityOutput struct {
+	UserId     string
+	IsOtpValid bool
 }
 
 type UpdateFirebaseIdInput struct {
@@ -110,9 +121,11 @@ type VerifyOtpInput struct {
 }
 
 type VerifyOtpOutput struct {
-	IsValid bool
-	UserId  string
-	Note    *string
+	IsValid   bool
+	UserId    string
+	PhoneNo   string
+	Note      *string
+	IsNewUser bool
 }
 
 type VerifyUserAccountInput struct {

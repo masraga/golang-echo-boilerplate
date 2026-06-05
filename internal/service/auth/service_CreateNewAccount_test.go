@@ -84,6 +84,12 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 					}).
 					Return(auth.UpdateFirebaseIdOutput{}, nil)
 				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     tt.expected.Value.Id,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, nil)
+				authRepoWriter.EXPECT().
 					DeleteAllUserOTP(gomock.Any(), auth.DeleteAllUserOTPInput{UserId: tt.expected.Value.Id}).
 					Return(auth.DeleteAllUserOTPOutput{IsSuccess: true}, nil)
 				authRepoWriter.EXPECT().
@@ -143,6 +149,12 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 					}).
 					Return(auth.UpdateFirebaseIdOutput{}, nil)
 				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     tt.expected.Value.Id,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, nil)
+				authRepoWriter.EXPECT().
 					DeleteAllUserOTP(gomock.Any(), auth.DeleteAllUserOTPInput{UserId: tt.expected.Value.Id}).
 					Return(auth.DeleteAllUserOTPOutput{IsSuccess: true}, nil)
 				authRepoWriter.EXPECT().
@@ -190,6 +202,44 @@ func TestAuthService_CreateNewAccount(t *testing.T) {
 				authRepoWriter.EXPECT().
 					CommitOrRollback(gomock.Any(), auth.ErrUpdateFirebaseId).
 					Return(auth.ErrUpdateFirebaseId)
+
+				tt.fields.AuthRepositoryReader = authRepoReader
+				tt.fields.AuthRepositoryWriter = authRepoWriter
+			},
+		},
+		{
+			name: "should rollback when otp validity reset fails",
+			args: args{
+				ctx: context.Background(),
+				input: auth.CreateNewAccountInput{
+					PhoneNo:    "081234567890",
+					FirebaseId: stringPointer("new-fcm-registration-token"),
+				},
+			},
+			expected: expected{Err: auth.ErrUpdateOtpValidity},
+			mock: func(t *testing.T, tt *test, ctrl *gomock.Controller) {
+				userId := "358cbaad-316e-4539-9949-2636cdbd7e89"
+				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
+				authRepoReader.EXPECT().
+					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: tt.args.input.PhoneNo}).
+					Return(auth.FindAuthOutput{Id: userId}, nil)
+
+				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					Begin(gomock.Any(), nil).
+					Return(context.Background(), nil)
+				authRepoWriter.EXPECT().
+					UpdateFirebaseId(gomock.Any(), gomock.Any()).
+					Return(auth.UpdateFirebaseIdOutput{}, nil)
+				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     userId,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, auth.ErrUpdateOtpValidity)
+				authRepoWriter.EXPECT().
+					CommitOrRollback(gomock.Any(), auth.ErrUpdateOtpValidity).
+					Return(auth.ErrUpdateOtpValidity)
 
 				tt.fields.AuthRepositoryReader = authRepoReader
 				tt.fields.AuthRepositoryWriter = authRepoWriter

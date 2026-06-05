@@ -3,7 +3,7 @@ post:
     - Authentication
   operationId: AuthValidatePin
   summary: Validate a PIN code for authentication.
-  description: Validate user pin code, if pin already provided login if not, create new pin
+  description: Validate or create the user PIN after OTP verification, issue a JWT, and consume the OTP validation state.
   requestBody:
     required: true
     content:
@@ -18,7 +18,7 @@ post:
           schema:
             $ref: '../../../../../../component/schema/AuthValidatePinResponse.yaml'
     '400':
-      description: Bad request, invalid input data.
+      description: Bad request, invalid input data, or OTP validation is required.
       content:
         application/json:
           schema:

@@ -68,15 +68,9 @@ func TestServer_VerifyNewAuthUserOTP(t *testing.T) {
 						OtpCode: tt.args.input.Otp,
 					}).
 					Return(auth.VerifyOtpOutput{
-						IsValid: true,
-						Note:    &note,
-					}, nil)
-				mockAuthService.EXPECT().
-					VerifyUserAccount(ctx.Request().Context(), auth.VerifyUserAccountInput{
-						PhoneNo: phoneNo,
-					}).
-					Return(auth.VerifyUserAccountOutput{
+						IsValid:   true,
 						PhoneNo:   phoneNo,
+						Note:      &note,
 						IsNewUser: true,
 					}, nil)
 				tt.fields.AuthService = mockAuthService
@@ -143,47 +137,6 @@ func TestServer_VerifyNewAuthUserOTP(t *testing.T) {
 						OtpCode: tt.args.input.Otp,
 					}).
 					Return(auth.VerifyOtpOutput{}, auth.ErrVerifyOtp)
-				tt.fields.AuthService = mockAuthService
-				tt.fields.CryptoService = mockCryptoService
-
-				result, _ := json.Marshal(map[string]string{"error": "unknown error"})
-				tt.expected = testutil.HttpResult{
-					Code: http.StatusInternalServerError,
-					Body: string(result),
-				}
-			},
-		},
-		{
-			name: "test failed when verify user account failed",
-			args: args{
-				input: api.VerifyOTPRequest{
-					PhoneNo: encryptedPhoneNo,
-					Otp:     otpCode,
-				},
-			},
-			mock: func(ctx echo.Context, tt *test, ctrl *gomock.Controller) {
-				mockCryptoService := crypto.NewMockCryptoServiceInterface(ctrl)
-				mockCryptoService.EXPECT().
-					Decrypt(ctx.Request().Context(), crypto.DecryptInput{
-						HashCode: tt.args.input.PhoneNo,
-					}).
-					Return(crypto.DecryptOutput{Result: phoneNo}, nil)
-
-				mockAuthService := auth.NewMockAuthServiceInterface(ctrl)
-				mockAuthService.EXPECT().
-					VerifyOtp(ctx.Request().Context(), auth.VerifyOtpInput{
-						PhoneNo: phoneNo,
-						OtpCode: tt.args.input.Otp,
-					}).
-					Return(auth.VerifyOtpOutput{
-						IsValid: true,
-						Note:    &note,
-					}, nil)
-				mockAuthService.EXPECT().
-					VerifyUserAccount(ctx.Request().Context(), auth.VerifyUserAccountInput{
-						PhoneNo: phoneNo,
-					}).
-					Return(auth.VerifyUserAccountOutput{}, auth.ErrVerifyUserAccount)
 				tt.fields.AuthService = mockAuthService
 				tt.fields.CryptoService = mockCryptoService
 

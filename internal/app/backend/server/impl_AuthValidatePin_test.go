@@ -156,6 +156,38 @@ func TestServer_AuthValidatePin(t *testing.T) {
 			},
 		},
 		{
+			name: "test failed when otp is not validated",
+			args: args{
+				input: api.AuthValidatePinRequest{
+					PhoneNo: encryptedPhoneNo,
+					Pin:     pinCode,
+				},
+			},
+			mock: func(ctx echo.Context, tt *test, ctrl *gomock.Controller) {
+				mockCryptoService := crypto.NewMockCryptoServiceInterface(ctrl)
+				mockCryptoService.EXPECT().
+					Decrypt(ctx.Request().Context(), crypto.DecryptInput{
+						HashCode: tt.args.input.PhoneNo,
+					}).
+					Return(crypto.DecryptOutput{Result: phoneNo}, nil)
+
+				mockAuthService := auth.NewMockAuthServiceInterface(ctrl)
+				mockAuthService.EXPECT().
+					AuthValidatePin(ctx.Request().Context(), auth.AuthValidatePinInput{
+						PhoneNo: phoneNo,
+						PinCode: tt.args.input.Pin,
+					}).
+					Return(auth.AuthValidatePinOutput{}, auth.ErrOtpValidationRequired)
+
+				tt.fields.AuthService = mockAuthService
+				tt.fields.CryptoService = mockCryptoService
+				tt.expected.httpResult = &testutil.HttpResult{
+					Code: http.StatusBadRequest,
+					Body: `{"error":"must validate otp before validating pin"}`,
+				}
+			},
+		},
+		{
 			name: "test failed when service returns invalid user id",
 			args: args{
 				input: api.AuthValidatePinRequest{

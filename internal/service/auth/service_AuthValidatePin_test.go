@@ -64,6 +64,32 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 			},
 		},
 		{
+			name: "should fail when otp is not validated",
+			args: args{
+				ctx: context.Background(),
+				input: auth.AuthValidatePinInput{
+					PhoneNo: expectedPhoneNo,
+					PinCode: expectedPinCode,
+				},
+			},
+			expected: expected{
+				Err: auth.ErrOtpValidationRequired,
+			},
+			mock: func(tt *test, ctrl *gomock.Controller) {
+				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
+				authRepoReader.EXPECT().
+					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: expectedPhoneNo}).
+					Return(auth.FindAuthOutput{
+						Id:         expectedUserId,
+						PhoneNo:    expectedPhoneNo,
+						PinCode:    pointer.String(expectedPinCode),
+						IsOtpValid: false,
+					}, nil)
+
+				tt.fields.AuthRepositoryReader = authRepoReader
+			},
+		},
+		{
 			name: "should failed when new pin has no retype pin",
 			args: args{
 				ctx: context.Background(),
@@ -81,8 +107,9 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 				authRepoReader.EXPECT().
 					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: expectedPhoneNo}).
 					Return(auth.FindAuthOutput{
-						Id:      expectedUserId,
-						PhoneNo: expectedPhoneNo,
+						Id:         expectedUserId,
+						PhoneNo:    expectedPhoneNo,
+						IsOtpValid: true,
 					}, nil)
 
 				tt.fields.AuthRepositoryReader = authRepoReader
@@ -107,8 +134,9 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 				authRepoReader.EXPECT().
 					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: expectedPhoneNo}).
 					Return(auth.FindAuthOutput{
-						Id:      expectedUserId,
-						PhoneNo: expectedPhoneNo,
+						Id:         expectedUserId,
+						PhoneNo:    expectedPhoneNo,
+						IsOtpValid: true,
 					}, nil)
 
 				tt.fields.AuthRepositoryReader = authRepoReader
@@ -133,8 +161,9 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 				authRepoReader.EXPECT().
 					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: expectedPhoneNo}).
 					Return(auth.FindAuthOutput{
-						Id:      expectedUserId,
-						PhoneNo: expectedPhoneNo,
+						Id:         expectedUserId,
+						PhoneNo:    expectedPhoneNo,
+						IsOtpValid: true,
 					}, nil)
 
 				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
@@ -167,9 +196,10 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 				authRepoReader.EXPECT().
 					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: expectedPhoneNo}).
 					Return(auth.FindAuthOutput{
-						Id:      expectedUserId,
-						PhoneNo: expectedPhoneNo,
-						PinCode: pointer.String(expectedPinCode),
+						Id:         expectedUserId,
+						PhoneNo:    expectedPhoneNo,
+						PinCode:    pointer.String(expectedPinCode),
+						IsOtpValid: true,
 					}, nil)
 
 				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
@@ -200,8 +230,9 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 				authRepoReader.EXPECT().
 					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: expectedPhoneNo}).
 					Return(auth.FindAuthOutput{
-						Id:      expectedUserId,
-						PhoneNo: expectedPhoneNo,
+						Id:         expectedUserId,
+						PhoneNo:    expectedPhoneNo,
+						IsOtpValid: true,
 					}, nil)
 
 				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
@@ -240,9 +271,10 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 				authRepoReader.EXPECT().
 					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: expectedPhoneNo}).
 					Return(auth.FindAuthOutput{
-						Id:      expectedUserId,
-						PhoneNo: expectedPhoneNo,
-						PinCode: pointer.String(expectedPinCode),
+						Id:         expectedUserId,
+						PhoneNo:    expectedPhoneNo,
+						PinCode:    pointer.String(expectedPinCode),
+						IsOtpValid: true,
 					}, nil)
 
 				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
@@ -278,9 +310,10 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 				authRepoReader.EXPECT().
 					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: expectedPhoneNo}).
 					Return(auth.FindAuthOutput{
-						Id:      expectedUserId,
-						PhoneNo: expectedPhoneNo,
-						PinCode: pointer.String(expectedPinCode),
+						Id:         expectedUserId,
+						PhoneNo:    expectedPhoneNo,
+						PinCode:    pointer.String(expectedPinCode),
+						IsOtpValid: true,
 					}, nil)
 
 				tt.fields.AuthRepositoryReader = authRepoReader
@@ -308,8 +341,9 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 				authRepoReader.EXPECT().
 					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: expectedPhoneNo}).
 					Return(auth.FindAuthOutput{
-						Id:      expectedUserId,
-						PhoneNo: expectedPhoneNo,
+						Id:         expectedUserId,
+						PhoneNo:    expectedPhoneNo,
+						IsOtpValid: true,
 					}, nil)
 
 				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
@@ -339,6 +373,12 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 						}, nil
 					})
 				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     expectedUserId,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, nil)
+				authRepoWriter.EXPECT().
 					CommitOrRollback(gomock.Any(), nil).
 					Return(nil)
 
@@ -367,9 +407,10 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 				authRepoReader.EXPECT().
 					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: expectedPhoneNo}).
 					Return(auth.FindAuthOutput{
-						Id:      expectedUserId,
-						PhoneNo: expectedPhoneNo,
-						PinCode: pointer.String(expectedPinCode),
+						Id:         expectedUserId,
+						PhoneNo:    expectedPhoneNo,
+						PinCode:    pointer.String(expectedPinCode),
+						IsOtpValid: true,
 					}, nil)
 
 				tt.fields.AuthRepositoryReader = authRepoReader
@@ -391,9 +432,57 @@ func TestAuthService_AuthValidatePin(t *testing.T) {
 						}, nil
 					})
 				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     expectedUserId,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, nil)
+				authRepoWriter.EXPECT().
 					CommitOrRollback(gomock.Any(), nil).
 					Return(nil)
 
+				tt.fields.AuthRepositoryWriter = authRepoWriter
+			},
+		},
+		{
+			name: "should rollback when consuming otp validity fails",
+			args: args{
+				ctx: context.Background(),
+				input: auth.AuthValidatePinInput{
+					PhoneNo: expectedPhoneNo,
+					PinCode: expectedPinCode,
+				},
+			},
+			expected: expected{Err: auth.ErrUpdateOtpValidity},
+			mock: func(tt *test, ctrl *gomock.Controller) {
+				authRepoReader := auth.NewMockAuthRepositoryReaderInterface(ctrl)
+				authRepoReader.EXPECT().
+					FindAuth(gomock.Any(), auth.FindAuthInput{PhoneNo: expectedPhoneNo}).
+					Return(auth.FindAuthOutput{
+						Id:         expectedUserId,
+						PhoneNo:    expectedPhoneNo,
+						PinCode:    pointer.String(expectedPinCode),
+						IsOtpValid: true,
+					}, nil)
+
+				authRepoWriter := auth.NewMockAuthRepositoryWriterInterface(ctrl)
+				authRepoWriter.EXPECT().
+					Begin(gomock.Any(), nil).
+					Return(context.Background(), nil)
+				authRepoWriter.EXPECT().
+					StoreAccessToken(gomock.Any(), gomock.Any()).
+					Return(auth.StoreAccessTokenOutput{}, nil)
+				authRepoWriter.EXPECT().
+					UpdateOtpValidity(gomock.Any(), auth.UpdateOtpValidityInput{
+						UserId:     expectedUserId,
+						IsOtpValid: false,
+					}).
+					Return(auth.UpdateOtpValidityOutput{}, auth.ErrUpdateOtpValidity)
+				authRepoWriter.EXPECT().
+					CommitOrRollback(gomock.Any(), auth.ErrUpdateOtpValidity).
+					Return(auth.ErrUpdateOtpValidity)
+
+				tt.fields.AuthRepositoryReader = authRepoReader
 				tt.fields.AuthRepositoryWriter = authRepoWriter
 			},
 		},

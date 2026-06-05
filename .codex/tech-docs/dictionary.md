@@ -23,12 +23,15 @@ This dictionary defines shared application terms used across feature docs.
 | `FindAuth` | Repository lookup for an auth account by phone number or user id. |
 | `CreateNewAccount` | Auth registration service method that creates a missing phone account, refreshes a supplied Firebase ID for an existing account, then issues a fresh OTP. |
 | `FirebaseId` | Required Firebase Cloud Messaging registration token stored on the auth account for the user's current device. |
+| `IsOtpValid` | One-time auth-account gate set by successful OTP verification and consumed by successful PIN authentication. |
 | `CreateOTP` | Auth service method that verifies the user, deletes active user OTP rows, generates default OTP data when omitted, and stores the new OTP. |
+| `UpdateOtpValidity` | Repository operation that sets the one-time OTP validation gate on `public.auth`. |
 | `FindAccessToken` | Repository lookup for an active JWT row in `public.auth_access_token` by token id and user id. |
 | `CreateNewPin` | Repository operation that writes a PIN to `public.auth.pin`. |
 | `StoreAccessToken` | Repository operation that deactivates previous active tokens for a user and stores the current JWT in `public.auth_access_token`. |
 | `auth_access_token` | Table that stores JWT access tokens by token string id, auth user id, expiration, and active flag. |
 | `auth_otp` | Table that stores OTP codes by auth user id, expiration, verification state, and active flag. |
+| `auth.phone_no` | Required phone number field that is not database-unique; current auth lookups still use phone number as their primary selector. |
 | `auth_api_contract` | Table that stores active API contracts keyed by OpenAPI `operationId`, endpoint path, and endpoint method. |
 | `auth_user_api_contract` | Table that stores active per-user grants to API contracts. Role assignment replaces rows in this table with hard deletes and inserts. |
 | `auth_roles` | Table that stores active API access roles with owner, creator, and copied role metadata for assignment to auth users. |
@@ -49,6 +52,8 @@ This dictionary defines shared application terms used across feature docs.
 | `ErrValidateRetypePin` | A new PIN was requested without `retypePin`. |
 | `ErrPinCodeNotMatch` | `pin` and `retypePin` differ, or an existing stored PIN differs from the supplied PIN. |
 | `ErrPinIsTooLongOrShort` | Supplied PIN length is outside the configured bounds. |
+| `ErrOtpValidationRequired` | PIN authentication was attempted before successful OTP verification. |
+| `ErrUpdateOtpValidity` | Repository failed while changing the one-time OTP validation gate. |
 | `ErrCreateNewPin` | Repository failed while writing a new PIN. |
 | `ErrStoreAccessToken` | Repository failed while deactivating old tokens or storing the current access token. |
 | `ErrFindAccessTokenNotFound` | Active JWT row was not found in `public.auth_access_token` for the token id and user id. |
@@ -58,6 +63,19 @@ This dictionary defines shared application terms used across feature docs.
 | `ErrUserApiContractForbidden` | Access validation did not find an active grant for the user, endpoint path, and method. |
 | `ErrFindAuthRoleNotFound` | Role lookup did not find an active `auth_roles` row. |
 | `ErrFindAuthRoleContractApiNotFound` | Role API contract mapping lookup or delete did not find an active `auth_roles_contract_api` row. |
+| `ErrInitiateNotifProvider` | FCM provider initialization or messaging-client creation failed. |
+| `ErrToSendNotification` | The push provider failed to send a notification. |
+
+## Notification Domain
+
+| Term | Meaning |
+| --- | --- |
+| `NotificationService` | Provider-independent push notification service defined in `internal/service/notification/service.go`. |
+| `PushNotification` | Notification service method that delegates delivery to the configured push provider and reports success when the provider returns no error. |
+| `PushProviderInterface` | Boundary implemented by push providers through `SendNotification`; application services must depend on this interface instead of the FCM package. |
+| `FcmService` | Firebase Cloud Messaging implementation of `PushProviderInterface` under `external/fcm`. |
+| `SendNotificationInput.UserId` | Current field used as the provider destination token. For FCM, it must contain the device registration token, despite the field name. |
+| `FCM_SERVICE_ACCOUNT_ID` | Backend configuration value passed to Firebase as the project ID when initializing the FCM provider. |
 
 ## Testing Terms
 

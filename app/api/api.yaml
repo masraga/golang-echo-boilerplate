@@ -61,7 +61,7 @@ paths:
         - Authentication
       operationId: AuthValidatePin
       summary: Validate a PIN code for authentication.
-      description: 'Validate user pin code, if pin already provided login if not, create new pin'
+      description: 'Validate or create the user PIN after OTP verification, issue a JWT, and consume the OTP validation state.'
       requestBody:
         required: true
         content:
@@ -76,7 +76,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthValidatePinResponse'
         '400':
-          description: 'Bad request, invalid input data.'
+          description: 'Bad request, invalid input data, or OTP validation is required.'
           content:
             application/json:
               schema:
@@ -130,6 +130,7 @@ paths:
       tags:
         - Authentication
       summary: Verify OTP code for user authentication
+      description: Verify the current OTP and enable one PIN authentication attempt for the user.
       operationId: VerifyNewAuthUserOTP
       requestBody:
         required: true
@@ -139,7 +140,7 @@ paths:
               $ref: '#/components/schemas/VerifyOTPRequest'
       responses:
         '200':
-          description: OTP verification successful
+          description: OTP verification successful and PIN authentication enabled
           content:
             application/json:
               schema:

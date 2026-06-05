@@ -65,9 +65,10 @@ func TestAuthRepository_FindAuth(t *testing.T) {
 			expected: expected{
 				Err: nil,
 				Value: auth.FindAuthOutput{
-					Id:      expectedId,
-					PhoneNo: expectedPhoneNo,
-					PinCode: expectedPinCode,
+					Id:         expectedId,
+					PhoneNo:    expectedPhoneNo,
+					PinCode:    expectedPinCode,
+					IsOtpValid: true,
 				},
 			},
 			mock: func(mock sqlmock.Sqlmock) {
@@ -78,8 +79,9 @@ func TestAuthRepository_FindAuth(t *testing.T) {
 							"id",
 							"phone_no",
 							"pin",
+							"is_otp_valid",
 						},
-					).AddRow(expectedId, expectedPhoneNo, expectedPinCode))
+					).AddRow(expectedId, expectedPhoneNo, expectedPinCode, true))
 			},
 		},
 	}

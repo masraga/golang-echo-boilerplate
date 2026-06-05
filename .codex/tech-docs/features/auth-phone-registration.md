@@ -1,6 +1,6 @@
 # Auth Phone Registration
 
-Phone registration creates an auth account when the phone number is new and issues an OTP for the account. When the phone number already belongs to an active auth account, the endpoint does not create another `public.auth` row; it replaces the user's active OTP rows and returns the fresh OTP payload.
+Phone registration creates an auth account when the phone number is new and issues an OTP for the account. When the phone number already belongs to an active auth account, the endpoint does not create another `public.auth` row; it resets the OTP login gate, replaces the user's active OTP rows, and returns the fresh OTP payload.
 
 ## API
 
@@ -28,9 +28,11 @@ The request body uses `RegisterPhoneNumberRequest` with required encrypted `phon
 
 The global OpenAPI middleware validates the required, non-empty Firebase ID before invoking the handler. `AuthService.CreateNewAccount` then calls `FindAuth` by `phoneNo`.
 
-If the account exists, the service uses the existing user id, skips `CreateNewAccount`, and replaces the stored Firebase ID. The update and OTP replacement use the same transaction.
+If the account exists, the service uses the existing user id, skips `CreateNewAccount`, replaces the stored Firebase ID, and sets `is_otp_valid = false`. The updates and OTP replacement use the same transaction.
 
 If the account is missing, the service generates a UUID, inserts the account with the Firebase ID, then creates the OTP inside the same transaction.
+
+The database permits multiple active auth rows with the same `phone_no`. Current registration and authentication lookups still select by phone number only, so callers must avoid creating ambiguous duplicate accounts until those flows include another account identifier.
 
 Both paths call the same private registration OTP helper, which delegates code generation, expiration defaults, prior OTP deletion, and OTP insertion to `AuthService.CreateOTP`. This keeps OTP behavior shared between new and existing users.
 
@@ -38,7 +40,7 @@ Both paths call the same private registration OTP helper, which delegates code g
 
 | File | Coverage |
 | --- | --- |
-| `internal/service/auth/service_CreateNewAccount_test.go` | Existing-user token update, begin failure, rollback behavior, and new-account success. |
+| `internal/service/auth/service_CreateNewAccount_test.go` | Existing-user Firebase update and OTP-gate reset, begin failure, rollback behavior, and new-account success. |
 | `internal/service/auth/service_CreateOTP_test.go` | OTP user lookup, prior OTP deletion, OTP insert failure, and success. |
 | `internal/service/auth/repo_CreateNewAccount_test.go` | Account insert failure and returned account id. |
 | `internal/service/auth/repo_UpdateFirebaseId_test.go` | Existing-account Firebase ID update success and failure. |

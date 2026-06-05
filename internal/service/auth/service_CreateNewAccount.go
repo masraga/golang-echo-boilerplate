@@ -48,6 +48,15 @@ func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccou
 			err = s.Err.Wrap(err)
 			return
 		}
+
+		_, err = s.AuthRepositoryWriter.UpdateOtpValidity(ctx, UpdateOtpValidityInput{
+			UserId:     userId,
+			IsOtpValid: false,
+		})
+		if err != nil {
+			err = s.Err.Wrap(err)
+			return
+		}
 	}
 
 	otpSvc, err := s.createRegistrationOTP(ctx, CreateOTPInput{
