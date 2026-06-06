@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
-	"github.com/masraga/kerp-api/internal/service/auth"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/auth"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )

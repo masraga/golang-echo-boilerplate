@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	utiltime "github.com/masraga/kerp-api/internal/util/time"
+	utiltime "github.com/masraga/golang-echo-boilerplate/internal/util/time"
 )
 
 func (r *AuthRepository) CreateAuthRole(ctx context.Context, input CreateAuthRoleOutput) (output CreateAuthRoleOutput, err error) {

@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"github.com/masraga/kerp-api/internal/dbtx"
+	"github.com/masraga/golang-echo-boilerplate/internal/dbtx"
 )
 
 type AuthServiceInterface interface {

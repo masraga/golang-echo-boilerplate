@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"firebase.google.com/go/v4/messaging"
-	"github.com/masraga/kerp-api/internal/service/notification"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/notification"
 )
 
 func (s *FcmService) SendNotification(ctx context.Context, input notification.SendNotificationInput) (output notification.SendNotificationOutput, err error) {

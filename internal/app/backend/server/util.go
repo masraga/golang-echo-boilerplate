@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/masraga/kerp-api/generated/api"
+	"github.com/masraga/golang-echo-boilerplate/generated/api"
 )
 
 func returnBadRequest(e echo.Context, data interface{}) error {

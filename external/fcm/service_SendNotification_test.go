@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/masraga/kerp-api/external/fcm"
-	"github.com/masraga/kerp-api/internal/service/notification"
-	"github.com/masraga/kerp-api/internal/testutil"
+	"github.com/masraga/golang-echo-boilerplate/external/fcm"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/notification"
+	"github.com/masraga/golang-echo-boilerplate/internal/testutil"
 	"github.com/rs/zerolog"
 )
 

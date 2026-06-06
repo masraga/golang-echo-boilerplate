@@ -9,9 +9,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
-	api "github.com/masraga/kerp-api/generated/api"
-	"github.com/masraga/kerp-api/internal/app/backend/server"
-	"github.com/masraga/kerp-api/internal/echo/middleware"
+	api "github.com/masraga/golang-echo-boilerplate/generated/api"
+	"github.com/masraga/golang-echo-boilerplate/internal/app/backend/server"
+	"github.com/masraga/golang-echo-boilerplate/internal/echo/middleware"
 	oapimiddleware "github.com/oapi-codegen/echo-middleware"
 )
 

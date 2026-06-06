@@ -1,4 +1,4 @@
-# KERP API Dictionary
+# Go Echo Boilerplate Dictionary
 
 This dictionary defines shared application terms used across feature docs.
 

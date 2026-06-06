@@ -7,7 +7,7 @@ import (
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
-	"github.com/masraga/kerp-api/internal/service/notification"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/notification"
 	"github.com/rs/zerolog"
 )
 

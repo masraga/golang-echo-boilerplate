@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/masraga/kerp-api/internal/util/pointer"
+	"github.com/masraga/golang-echo-boilerplate/internal/util/pointer"
 )
 
 func (s *AuthService) AuthValidatePin(ctx context.Context, input AuthValidatePinInput) (output AuthValidatePinOutput, err error) {

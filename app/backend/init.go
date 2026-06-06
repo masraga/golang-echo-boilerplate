@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 
-	"github.com/masraga/kerp-api/internal/app/backend/server"
-	"github.com/masraga/kerp-api/internal/service/auth"
+	"github.com/masraga/golang-echo-boilerplate/internal/app/backend/server"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/auth"
 )
 
 func Initialize(ctx context.Context) (cfg *Config, server *server.Server) {

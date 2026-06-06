@@ -7,11 +7,11 @@ import (
 	"context"
 
 	"github.com/google/wire"
-	"github.com/masraga/kerp-api/internal/app/backend/server"
-	"github.com/masraga/kerp-api/internal/crypto"
-	"github.com/masraga/kerp-api/internal/ctxerr"
-	"github.com/masraga/kerp-api/internal/service/auth"
-	"github.com/masraga/kerp-api/internal/service/notification"
+	"github.com/masraga/golang-echo-boilerplate/internal/app/backend/server"
+	"github.com/masraga/golang-echo-boilerplate/internal/crypto"
+	"github.com/masraga/golang-echo-boilerplate/internal/ctxerr"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/auth"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/notification"
 )
 
 func InitializeService(ctx context.Context, config *Config) (*server.Server, error) {

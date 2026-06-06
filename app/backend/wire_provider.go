@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 
 	"github.com/leporo/sqlf"
-	"github.com/masraga/kerp-api/external/fcm"
-	"github.com/masraga/kerp-api/internal/database"
-	"github.com/masraga/kerp-api/internal/dbtx"
-	"github.com/masraga/kerp-api/internal/service/auth"
-	"github.com/masraga/kerp-api/internal/service/notification"
+	"github.com/masraga/golang-echo-boilerplate/external/fcm"
+	"github.com/masraga/golang-echo-boilerplate/internal/database"
+	"github.com/masraga/golang-echo-boilerplate/internal/dbtx"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/auth"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/notification"
 	"github.com/rs/zerolog"
 )
 

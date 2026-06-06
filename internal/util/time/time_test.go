@@ -4,7 +4,7 @@ import (
 	"testing"
 	stdtime "time"
 
-	utiltime "github.com/masraga/kerp-api/internal/util/time"
+	utiltime "github.com/masraga/golang-echo-boilerplate/internal/util/time"
 	"github.com/stretchr/testify/require"
 )
 

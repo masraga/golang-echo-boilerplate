@@ -1,4 +1,4 @@
-.PHONY: generate-api generate-backend init generate-wire generate-mocks clean generate-vendor
+.PHONY: api.yaml validate-api api-docs generate-api generate-backend init generate-wire generate-mocks clean generate-vendor update-api-handler test-update-api-handler
 
 api.yaml:
 	@swagger-cli bundle app/api/src/main.yaml -o app/api/api.yaml -t yaml
@@ -15,6 +15,12 @@ generate-api:
 		-generate types,echo-server,spec \
 		-package api \
 		./app/api/api.yaml > ./generated/api/api.gen.go
+
+update-api-handler: api.yaml validate-api generate-api
+	@./bin/update_api_handler.sh
+
+test-update-api-handler:
+	@./bin/update_api_handler_test.sh
 
 generate-backend:
 	@mkdir -p ./generated/app
@@ -39,7 +45,7 @@ $(INTERFACE_MOCK_GO_FILES): %.mock.gen.go: %.go
 	@echo "Generating mocks $@ for $<"
 	@mockgen -source=$< -destination=$@ -package=$(shell basename $(dir $<))
 
-generate-vendor: 
+generate-vendor:
 	go mod tidy
 
 init: api.yaml \
@@ -53,14 +59,14 @@ init: api.yaml \
 clean:
 	@rm -rf ./api-docs.html
 	@rm -rf ./generated
-	@rm -rf ./app/backend/wire_gen.go 
+	@rm -rf ./app/backend/wire_gen.go
 	@find . -name "*.mock.gen.go" -type f -delete
 
 migrate_up:
 	@migrate -path ./migrations -database $(db) up
 
 migrate_down:
-	@migrate -path ./migrations -database $(db) up
+	@migrate -path ./migrations -database $(db) down
 
 migrate_version:
 	@migrate -path ./migrations -database $(db) version
@@ -71,3 +77,11 @@ migrate_force:
 create_migration:
 	@mkdir -p ./migrations
 	@migrate create -ext sql -dir migrations -format 200601021504 -tz Asia/Jakarta $(filter-out $@,$(MAKECMDGOALS))
+
+ifneq ($(filter create_migration,$(MAKECMDGOALS)),)
+MIGRATION_NAME := $(filter-out create_migration,$(MAKECMDGOALS))
+ifneq ($(strip $(MIGRATION_NAME)),)
+$(MIGRATION_NAME):
+	@:
+endif
+endif

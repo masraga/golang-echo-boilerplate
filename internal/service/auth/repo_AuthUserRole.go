@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	utiltime "github.com/masraga/kerp-api/internal/util/time"
+	utiltime "github.com/masraga/golang-echo-boilerplate/internal/util/time"
 )
 
 func (r *AuthRepository) AssignAuthUserRole(ctx context.Context, input AssignAuthUserRoleInput) (output AssignAuthUserRoleOutput, err error) {

@@ -1,6 +1,6 @@
 package crypto
 
-import "github.com/masraga/kerp-api/internal/ctxerr"
+import "github.com/masraga/golang-echo-boilerplate/internal/ctxerr"
 
 type CryptoService struct {
 	ConfigCryptoKey

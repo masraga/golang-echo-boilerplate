@@ -3,7 +3,7 @@ package parser_test
 import (
 	"testing"
 
-	"github.com/masraga/kerp-api/internal/util/parser"
+	"github.com/masraga/golang-echo-boilerplate/internal/util/parser"
 	"github.com/stretchr/testify/require"
 )
 

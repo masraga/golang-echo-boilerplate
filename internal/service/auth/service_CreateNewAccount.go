@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
-	"github.com/masraga/kerp-api/internal/util/pointer"
+	"github.com/masraga/golang-echo-boilerplate/internal/util/pointer"
 )
 
 func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccountInput) (output CreateNewAccountOutput, err error) {

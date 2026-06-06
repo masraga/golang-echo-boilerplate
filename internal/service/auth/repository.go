@@ -4,8 +4,8 @@ import (
 	"database/sql"
 
 	"github.com/leporo/sqlf"
-	"github.com/masraga/kerp-api/internal/ctxerr"
-	"github.com/masraga/kerp-api/internal/dbtx"
+	"github.com/masraga/golang-echo-boilerplate/internal/ctxerr"
+	"github.com/masraga/golang-echo-boilerplate/internal/dbtx"
 )
 
 type AuthRepository struct {

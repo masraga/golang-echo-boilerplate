@@ -2,8 +2,8 @@ package server
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/masraga/kerp-api/generated/api"
-	"github.com/masraga/kerp-api/internal/crypto"
+	"github.com/masraga/golang-echo-boilerplate/generated/api"
+	"github.com/masraga/golang-echo-boilerplate/internal/crypto"
 )
 
 func (s *Server) CryptoEncryptText(ctx echo.Context) error {

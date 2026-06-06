@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"github.com/masraga/kerp-api/internal/crypto"
-	"github.com/masraga/kerp-api/internal/ctxerr"
+	"github.com/masraga/golang-echo-boilerplate/internal/crypto"
+	"github.com/masraga/golang-echo-boilerplate/internal/ctxerr"
 )
 
 type AuthService struct {

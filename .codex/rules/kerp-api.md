@@ -151,8 +151,15 @@ make clean api.yaml validate-api api-docs
 When the API contract is ready to implement, create the matching handler implementation and test files in `internal/app/backend/server`, then reinitialize the app:
 
 ```sh
-make clean init
+make update-api-handler
+make generate-wire generate-backend
 ```
+
+`make update-api-handler` bundles and validates the API, regenerates the
+`oapi-codegen` server interface, and creates missing handler pairs from each new
+`operationId`. It creates `impl_[OperationId].go` and
+`impl_[OperationId]_test.go`, never overwrites existing files, and uses the
+generated server interface for exact method parameters.
 
 ## Migrations
 

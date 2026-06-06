@@ -3,8 +3,8 @@ package auth
 import (
 	"context"
 
-	"github.com/masraga/kerp-api/internal/util/parser"
-	utiltime "github.com/masraga/kerp-api/internal/util/time"
+	"github.com/masraga/golang-echo-boilerplate/internal/util/parser"
+	utiltime "github.com/masraga/golang-echo-boilerplate/internal/util/time"
 )
 
 func (s *AuthService) CreateAuthApiContract(ctx context.Context, input CreateAuthApiContractInput) (output CreateAuthApiContractOutput, err error) {

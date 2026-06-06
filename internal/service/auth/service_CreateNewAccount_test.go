@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/masraga/kerp-api/internal/ctxerr"
-	"github.com/masraga/kerp-api/internal/service/auth"
-	"github.com/masraga/kerp-api/internal/testutil"
+	"github.com/masraga/golang-echo-boilerplate/internal/ctxerr"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/auth"
+	"github.com/masraga/golang-echo-boilerplate/internal/testutil"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )

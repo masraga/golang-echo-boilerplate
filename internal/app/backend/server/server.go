@@ -1,9 +1,9 @@
 package server
 
 import (
-	"github.com/masraga/kerp-api/internal/crypto"
-	"github.com/masraga/kerp-api/internal/service/auth"
-	"github.com/masraga/kerp-api/internal/service/notification"
+	"github.com/masraga/golang-echo-boilerplate/internal/crypto"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/auth"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/notification"
 )
 
 type Server struct {

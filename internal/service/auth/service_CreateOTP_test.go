@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/go-faker/faker/v4"
-	"github.com/masraga/kerp-api/internal/ctxerr"
-	"github.com/masraga/kerp-api/internal/service/auth"
-	"github.com/masraga/kerp-api/internal/testutil"
-	"github.com/masraga/kerp-api/internal/util/pointer"
+	"github.com/masraga/golang-echo-boilerplate/internal/ctxerr"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/auth"
+	"github.com/masraga/golang-echo-boilerplate/internal/testutil"
+	"github.com/masraga/golang-echo-boilerplate/internal/util/pointer"
 	"go.uber.org/mock/gomock"
 )
 

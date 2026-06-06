@@ -1,4 +1,4 @@
-module github.com/masraga/kerp-api
+module github.com/masraga/golang-echo-boilerplate
 
 go 1.25.8
 

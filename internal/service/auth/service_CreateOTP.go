@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/masraga/kerp-api/internal/util/generator"
+	"github.com/masraga/golang-echo-boilerplate/internal/util/generator"
 )
 
 func (s *AuthService) CreateOTP(ctx context.Context, input CreateOTPInput) (output CreateOTPOutput, err error) {

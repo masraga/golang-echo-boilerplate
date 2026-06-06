@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"github.com/masraga/kerp-api/internal/util/parser"
+	"github.com/masraga/golang-echo-boilerplate/internal/util/parser"
 )
 
 func (s *AuthService) ValidateUserApiContract(ctx context.Context, input ValidateUserApiContractInput) (output ValidateUserApiContractOutput, err error) {

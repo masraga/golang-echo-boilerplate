@@ -1,4 +1,4 @@
-# KERP API Technical Docs
+# Go Echo Boilerplate Technical Docs
 
 This directory is the application technical navigator. Read this file, `dictionary.md`, and any relevant feature docs before modifying application code. Update the relevant docs after changing selected code.
 
@@ -9,6 +9,9 @@ This directory is the application technical navigator. Read this file, `dictiona
 - Use `features/*.md` for endpoint behavior, service flow, repository behavior, and tests.
 - If code behavior changes, update the feature doc in the same change.
 - If an interface is added or changed, run `make clean init` before gomock-dependent tests so generated files stay in sync.
+- After adding an OpenAPI operation, run `make update-api-handler` to generate
+  its missing handler and table-driven test stubs from the generated server
+  interface.
 
 ## Feature Navigator
 

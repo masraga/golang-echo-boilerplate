@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/masraga/kerp-api/internal/service/auth"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/auth"
 )
 
 var mapError = map[error]int{

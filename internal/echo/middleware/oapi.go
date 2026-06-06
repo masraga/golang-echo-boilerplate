@@ -7,7 +7,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/labstack/echo/v4"
-	"github.com/masraga/kerp-api/generated/api"
+	"github.com/masraga/golang-echo-boilerplate/generated/api"
 	echomiddleware "github.com/oapi-codegen/echo-middleware"
 )
 

@@ -3,7 +3,7 @@ package database_test
 import (
 	"testing"
 
-	"github.com/masraga/kerp-api/internal/database"
+	"github.com/masraga/golang-echo-boilerplate/internal/database"
 	"github.com/stretchr/testify/require"
 )
 
