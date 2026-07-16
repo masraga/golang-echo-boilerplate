@@ -1,0 +1,7 @@
+name: userId
+in: path
+required: true
+description: Parameter for getting auth user id
+schema:
+  type: string
+  example: 358cbaad-316e-4539-9949-2636cdbd7e89

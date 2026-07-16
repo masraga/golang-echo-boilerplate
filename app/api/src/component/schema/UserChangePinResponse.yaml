@@ -1,0 +1,8 @@
+type: object
+required:
+  - isUpdate
+properties:
+  isUpdate:
+    type: boolean
+    description: indicate pin already updated
+    example: true

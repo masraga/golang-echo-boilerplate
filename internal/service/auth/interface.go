@@ -15,6 +15,7 @@ type AuthServiceInterface interface {
 	VerifyUserAccount(ctx context.Context, input VerifyUserAccountInput) (output VerifyUserAccountOutput, err error)
 	AuthValidatePin(ctx context.Context, input AuthValidatePinInput) (output AuthValidatePinOutput, err error)
 	ValidateJwtToken(ctx context.Context, input ValidateJwtTokenInput) (output ValidateJwtTokenOutput, err error)
+	UserChangePin(ctx context.Context, input UserChangePinInput) (output UserChangePinOutput, err error)
 
 	CreateAuthApiContract(ctx context.Context, input CreateAuthApiContractInput) (output CreateAuthApiContractOutput, err error)
 	GetAuthApiContract(ctx context.Context, input GetAuthApiContractInput) (output GetAuthApiContractOutput, err error)

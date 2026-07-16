@@ -1,0 +1,18 @@
+type: object
+required:
+  - oldPin
+  - newPin
+  - retypeNewPin
+properties:
+  oldPin: 
+    type: string
+    description: User existing PIN before updated
+    example: BLQ6CluXXkkUeMXiCIa47BEIFvt3ef7joFKAt+HxwJdgGvijuSLtA==
+  newPin: 
+    type: string
+    description: User existing PIN before updated
+    example: BLQ6CluXXkkUeMXiCIa47BEIFvt3ef7joFKAt+HxwJdgGvijuSLtA==
+  retypeNewPin: 
+    type: string
+    description: User existing PIN before updated
+    example: BLQ6CluXXkkUeMXiCIa47BEIFvt3ef7joFKAt+HxwJdgGvijuSLtA==

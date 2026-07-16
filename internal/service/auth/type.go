@@ -443,3 +443,15 @@ type DeleteAuthUserRoleInput struct {
 type DeleteAuthUserRoleOutput struct {
 	IsSuccess bool
 }
+
+type UserChangePinInput struct {
+	UserId       string
+	OldPin       string
+	NewPin       string
+	RetypeNewPin string
+}
+
+type UserChangePinOutput struct {
+	IsUpdate  bool
+	UpdatedAt int64
+}

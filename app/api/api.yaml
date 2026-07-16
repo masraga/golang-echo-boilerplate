@@ -753,20 +753,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorForbidden'
   '/api/v1/auth/users/{userId}/role':
-    parameters:
-      - name: userId
-        in: path
-        required: true
-        description: Auth user id
-        schema:
-          type: string
-          example: 358cbaad-316e-4539-9949-2636cdbd7e89
     put:
       tags:
         - Auth Roles
       operationId: AssignAuthUserRole
       summary: Assign role to auth user
       description: Requires Authorization header and a user API contract grant.
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParameter'
       requestBody:
         required: true
         content:
@@ -804,6 +798,8 @@ paths:
       operationId: DeleteAuthUserRole
       summary: Remove role from auth user
       description: Requires Authorization header and a user API contract grant.
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParameter'
       requestBody:
         required: true
         content:
@@ -842,7 +838,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorForbidden'
+  '/api/v1/auth/users/{userId}/change-pin':
+    put:
+      tags:
+        - Authentication
+      summary: Change user pin
+      description: Change registered user pin with old pin and otp if active
+      operationId: UserChangePin
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserChangePinRequest'
+      responses:
+        '200':
+          description: User PIN already updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserChangePinResponse'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        '401':
+          description: 'Unauthorized, missing or invalid bearer token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
 components:
+  parameters:
+    UserIdPathParameter:
+      name: userId
+      in: path
+      required: true
+      description: Parameter for getting auth user id
+      schema:
+        type: string
+        example: 358cbaad-316e-4539-9949-2636cdbd7e89
   schemas:
     GetPingResponse:
       type: object
@@ -1444,3 +1483,31 @@ components:
           type: string
           description: Creator identifier
           example: admin-user
+    UserChangePinRequest:
+      type: object
+      required:
+        - oldPin
+        - newPin
+        - retypeNewPin
+      properties:
+        oldPin:
+          type: string
+          description: User existing PIN before updated
+          example: BLQ6CluXXkkUeMXiCIa47BEIFvt3ef7joFKAt+HxwJdgGvijuSLtA==
+        newPin:
+          type: string
+          description: User existing PIN before updated
+          example: BLQ6CluXXkkUeMXiCIa47BEIFvt3ef7joFKAt+HxwJdgGvijuSLtA==
+        retypeNewPin:
+          type: string
+          description: User existing PIN before updated
+          example: BLQ6CluXXkkUeMXiCIa47BEIFvt3ef7joFKAt+HxwJdgGvijuSLtA==
+    UserChangePinResponse:
+      type: object
+      required:
+        - isUpdate
+      properties:
+        isUpdate:
+          type: boolean
+          description: indicate pin already updated
+          example: true

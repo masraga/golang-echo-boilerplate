@@ -44,9 +44,14 @@ paths:
   /api/v1/auth/roles/{roleId}/api-contracts/{id}:
     $ref: './path/api/v1/auth/roles/{roleId}/api-contracts/{id}/index.yaml'
   /api/v1/auth/users/{userId}/role:
-    $ref: './path/api/v1/auth/users/{userId}/role/index.yaml'
+    $ref: './path/api/v1/auth/users/__userId__/role/index.yaml'
+  /api/v1/auth/users/{userId}/change-pin:
+    $ref: './path/api/v1/auth/users/__userId__/change-pin/index.yaml'
 
 components:
+  parameters:
+    UserIdPathParameter:
+      $ref: './component/parameter/UserIdPathParameter.yaml'
   schemas:
     GetPingResponse:
       $ref: './component/schema/GetPingResponse.yaml'
@@ -110,3 +115,8 @@ components:
       $ref: './component/schema/AssignAuthUserRoleRequest.yaml'
     AssignAuthUserRoleResponse:
       $ref: './component/schema/AssignAuthUserRoleResponse.yaml'
+    UserChangePinRequest:
+      $ref: './component/schema/UserChangePinRequest.yaml'
+    UserChangePinResponse:
+      $ref: './component/schema/UserChangePinResponse.yaml'
+    

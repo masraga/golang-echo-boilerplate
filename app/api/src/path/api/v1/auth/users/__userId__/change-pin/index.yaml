@@ -1,0 +1,33 @@
+put:
+  tags: 
+    - Authentication
+  summary: Change user pin
+  description: Change registered user pin with old pin and otp if active
+  operationId: UserChangePin
+  parameters:
+    - $ref: ../../../../../../../component/parameter/UserIdPathParameter.yaml
+  requestBody:
+    required: true
+    content: 
+      application/json:
+        schema:
+          $ref: ../../../../../../../component/schema/UserChangePinRequest.yaml
+  responses:
+    '200':
+      description: User PIN already updated
+      content:
+        application/json:
+          schema:
+            $ref: ../../../../../../../component/schema/UserChangePinResponse.yaml
+    '400':
+      description: Bad request error
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorBadRequest.yaml'
+    '401':
+      description: Unauthorized, missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '../../../../../../../component/schema/ErrorUnauthorized.yaml'
