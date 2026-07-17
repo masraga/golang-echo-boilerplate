@@ -1,17 +1,11 @@
-parameters:
-  - name: userId
-    in: path
-    required: true
-    description: Auth user id
-    schema:
-      type: string
-      example: "358cbaad-316e-4539-9949-2636cdbd7e89"
 put:
   tags:
     - Auth Roles
   operationId: AssignAuthUserRole
   summary: Assign role to auth user
   description: Requires Authorization header and a user API contract grant.
+  parameters:
+    - $ref: ../../../../../../../component/parameter/UserIdPathParameter.yaml
   requestBody:
     required: true
     content:
@@ -49,6 +43,8 @@ delete:
   operationId: DeleteAuthUserRole
   summary: Remove role from auth user
   description: Requires Authorization header and a user API contract grant.
+  parameters:
+    - $ref: ../../../../../../../component/parameter/UserIdPathParameter.yaml
   requestBody:
     required: true
     content:

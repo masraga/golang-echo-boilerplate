@@ -1,0 +1,22 @@
+type: object
+required:
+  - userPhoneNo
+  - oldPin
+  - newPin
+  - retypeNewPin
+properties:
+  userPhoneNo:
+    type: string
+    description: Encrypted user phone no
+  oldPin: 
+    type: string
+    description: User existing PIN before updated
+    example: BLQ6CluXXkkUeMXiCIa47BEIFvt3ef7joFKAt+HxwJdgGvijuSLtA==
+  newPin: 
+    type: string
+    description: User existing PIN before updated
+    example: BLQ6CluXXkkUeMXiCIa47BEIFvt3ef7joFKAt+HxwJdgGvijuSLtA==
+  retypeNewPin: 
+    type: string
+    description: User existing PIN before updated
+    example: BLQ6CluXXkkUeMXiCIa47BEIFvt3ef7joFKAt+HxwJdgGvijuSLtA==
