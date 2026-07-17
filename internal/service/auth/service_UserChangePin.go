@@ -8,7 +8,8 @@ import (
 
 func (s *AuthService) UserChangePin(ctx context.Context, input UserChangePinInput) (output UserChangePinOutput, err error) {
 	user, err := s.AuthRepositoryReader.FindAuth(ctx, FindAuthInput{
-		UserId: input.UserId,
+		PhoneNo: input.UserPhoneNo,
+		UserId:  input.AuthUserId,
 	})
 	if err != nil {
 		err = s.Err.Wrap(err)

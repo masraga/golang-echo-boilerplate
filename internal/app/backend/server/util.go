@@ -8,6 +8,10 @@ import (
 	"github.com/masraga/golang-echo-boilerplate/generated/api"
 )
 
+func getUserId(ctx echo.Context) string {
+	return ctx.Get("userId").(string)
+}
+
 func returnBadRequest(e echo.Context, data interface{}) error {
 	return e.JSON(http.StatusBadRequest, api.ErrorBadRequest{Error: data.(string)})
 }

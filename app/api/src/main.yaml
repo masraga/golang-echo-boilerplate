@@ -45,8 +45,8 @@ paths:
     $ref: './path/api/v1/auth/roles/{roleId}/api-contracts/{id}/index.yaml'
   /api/v1/auth/users/{userId}/role:
     $ref: './path/api/v1/auth/users/__userId__/role/index.yaml'
-  /api/v1/auth/users/{userId}/change-pin:
-    $ref: './path/api/v1/auth/users/__userId__/change-pin/index.yaml'
+  /api/v1/auth/users/change-pin:
+    $ref: './path/api/v1/auth/users/change-pin/index.yaml'
 
 components:
   parameters:

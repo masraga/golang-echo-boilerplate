@@ -7,12 +7,18 @@ import (
 	"github.com/masraga/golang-echo-boilerplate/internal/service/auth"
 )
 
-func (s *Server) UserChangePin(ctx echo.Context, userId api.UserIdPathParameter) error {
+func (s *Server) UserChangePin(ctx echo.Context) error {
 	var reqBody api.UserChangePinRequest
-	if err := bindOrReturnBadRequest(ctx, reqBody); err != nil {
+	if err := bindOrReturnBadRequest(ctx, &reqBody); err != nil {
 		return err
 	}
 
+	userPhoneNo, err := s.CryptoService.Decrypt(ctx.Request().Context(), crypto.DecryptInput{
+		HashCode: reqBody.UserPhoneNo,
+	})
+	if err != nil {
+		return returnError(ctx, err)
+	}
 	oldPin, err := s.CryptoService.Decrypt(ctx.Request().Context(), crypto.DecryptInput{
 		HashCode: reqBody.OldPin,
 	})
@@ -33,7 +39,7 @@ func (s *Server) UserChangePin(ctx echo.Context, userId api.UserIdPathParameter)
 	}
 
 	svc, err := s.AuthService.UserChangePin(ctx.Request().Context(), auth.UserChangePinInput{
-		UserId:       userId,
+		UserPhoneNo:  userPhoneNo.Result,
 		OldPin:       oldPin.Result,
 		NewPin:       newPin.Result,
 		RetypeNewPin: retypeNewPin.Result,

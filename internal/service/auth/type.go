@@ -445,7 +445,8 @@ type DeleteAuthUserRoleOutput struct {
 }
 
 type UserChangePinInput struct {
-	UserId       string
+	AuthUserId   string
+	UserPhoneNo  string
 	OldPin       string
 	NewPin       string
 	RetypeNewPin string

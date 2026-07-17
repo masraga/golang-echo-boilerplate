@@ -34,6 +34,9 @@ func authValidationFilter(authInterface auth.AuthServiceInterface) echo.Middlewa
 				return returnUnauthorized(c)
 			}
 
+			//create setter for global variable in context
+			c.Set("userId", authOutput.UserId)
+
 			_, err = authInterface.ValidateUserApiContract(c.Request().Context(), auth.ValidateUserApiContractInput{
 				UserId:         authOutput.UserId,
 				EndpointPath:   endpointPath,

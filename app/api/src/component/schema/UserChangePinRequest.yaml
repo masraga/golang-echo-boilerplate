@@ -1,9 +1,13 @@
 type: object
 required:
+  - userPhoneNo
   - oldPin
   - newPin
   - retypeNewPin
 properties:
+  userPhoneNo:
+    type: string
+    description: Encrypted user phone no
   oldPin: 
     type: string
     description: User existing PIN before updated
