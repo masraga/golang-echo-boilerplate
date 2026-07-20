@@ -4,6 +4,7 @@ set -euo pipefail
 
 ROOT_DIR=${1:-.}
 GENERATED_API_PATH="$ROOT_DIR/generated/api/api.gen.go"
+GENERATED_API_SQL_PATH="$ROOT_DIR/generated/api/api.gen.sql"
 SERVER_DIR="$ROOT_DIR/internal/app/backend/server"
 GO_MOD_PATH="$ROOT_DIR/go.mod"
 
@@ -11,6 +12,12 @@ trim() {
   local value=$1
   value="${value#"${value%%[![:space:]]*}"}"
   value="${value%"${value##*[![:space:]]}"}"
+  printf '%s' "$value"
+}
+
+sql_escape() {
+  local value=$1
+  value=${value//\'/\'\'}
   printf '%s' "$value"
 }
 
@@ -156,9 +163,64 @@ parse_parameters() {
   fi
 }
 
+
+write_api_sql() {
+  local output_path=$1
+  local timestamp=$2
+  shift 2
+
+  {
+    echo "INSERT INTO public.auth_api_contract"
+    echo "(id, endpoint_path, endpoint_method, description, created_at_utc0, updated_at_utc0, is_active)"
+    echo "VALUES"
+
+    local first=1
+    local row
+    local operation_id
+    local endpoint
+    local method
+    local path
+    local summary
+
+    for row in "$@"; do
+      IFS=$'\t' read -r operation_id endpoint summary <<<"$row"
+
+      method=${endpoint%% *}
+      method=${method#(}
+      method=$(printf '%s' "$method" | tr '[:upper:]' '[:lower:]')
+
+      path=${endpoint#* }
+      path=${path%)}
+
+      operation_id=$(sql_escape "$operation_id")
+      path=$(sql_escape "$path")
+      summary=$(sql_escape "$summary")
+
+      if [[ "$first" -eq 1 ]]; then
+        first=0
+      else
+        echo ","
+      fi
+
+      printf "('%s', '%s', '%s', '%s', %s, %s, true)" \
+        "$operation_id" \
+        "$path" \
+        "$method" \
+        "$summary" \
+        "$timestamp" \
+        "$timestamp"
+    done
+
+    echo
+    echo "ON CONFLICT (id) DO NOTHING;"
+  } >"$output_path"
+}
+
 write_handler() {
   local output_path=$1
   local operation_id=$2
+  local summary="${3:-}"
+  local endpoint="${4:-}"
 
   {
     echo "package server"
@@ -170,6 +232,15 @@ write_handler() {
     fi
     echo ")"
     echo
+
+    if [[ -n "$summary" ]]; then
+      echo "// ${summary}"
+    fi
+
+    if [[ -n "$endpoint" ]]; then
+      echo "// ${endpoint}"
+    fi
+
     echo "func (s *Server) ${operation_id}(${PARAMETERS}) error {"
     echo $'\t'"return returnNotImplemented(${CONTEXT_NAME})"
     echo "}"
@@ -232,6 +303,8 @@ require_command awk
 require_command find
 require_command gofmt
 require_command grep
+require_command tr
+require_command date
 require_file "$GO_MOD_PATH"
 require_file "$GENERATED_API_PATH"
 
@@ -249,16 +322,40 @@ fi
 SIGNATURES=$(awk '
   /^type ServerInterface interface \{/ {
     in_interface = 1
+    summary = ""
+    endpoint = ""
     next
   }
-  in_interface && /^}/ {
+
+  in_interface && /^[[:space:]]*}/ {
     exit
   }
+
   in_interface {
     line = $0
     sub(/^[[:space:]]+/, "", line)
-    if (line ~ /^[[:alpha:]_][[:alnum:]_]*\(.*\) error$/) {
-      print line
+
+    # Capture comments.
+    if (line ~ /^\/\//) {
+      comment = line
+      sub(/^\/\/[[:space:]]*/, "", comment)
+
+      # Endpoint comment, for example:
+      # (GET /api/v1/auth/api-contracts)
+      if (comment ~ /^\([A-Z]+[[:space:]]/) {
+        endpoint = comment
+      } else if (comment != "") {
+        summary = comment
+      }
+
+      next
+    }
+
+    # Capture interface method signature.
+    if (line ~ /^[[:alpha:]_][[:alnum:]_]*\(.*\)[[:space:]]+error$/) {
+      print summary "	" endpoint "	" line
+      summary = ""
+      endpoint = ""
     }
   }
 ' "$GENERATED_API_PATH")
@@ -268,8 +365,21 @@ if [[ -z "$SIGNATURES" ]]; then
   exit 1
 fi
 
+SQL_ROWS=()
+
+while IFS=$'\t' read -r summary endpoint signature; do
+  operation_id=${signature%%(*}
+  SQL_ROWS+=("${operation_id}"$'\t'"${endpoint}"$'\t'"${summary}")
+done <<<"$SIGNATURES"
+
+timestamp=$(date +%s%3N)
+
+write_api_sql   "$GENERATED_API_SQL_PATH"   "$timestamp"   "${SQL_ROWS[@]}"
+
+echo "create $GENERATED_API_SQL_PATH"
+
 created=0
-while IFS= read -r signature; do
+while IFS=$'\t' read -r summary endpoint signature; do
   operation_id=${signature%%(*}
   raw_parameters=${signature#*(}
   raw_parameters=${raw_parameters%) error}
@@ -295,7 +405,7 @@ while IFS= read -r signature; do
   }
   trap cleanup_tmp EXIT
 
-  write_handler "$handler_tmp" "$operation_id"
+  write_handler "$handler_tmp" "$operation_id" "$summary" "$endpoint"
   write_handler_test "$test_tmp" "$operation_id"
   gofmt -w "$handler_tmp" "$test_tmp"
 
