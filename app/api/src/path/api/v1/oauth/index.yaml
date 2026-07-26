@@ -1,0 +1,19 @@
+post:
+  operationId: GoogleOauthCodeExchange
+  summary: Oauth code exchange
+  description: Exchange authorization code from google auth
+  tags:
+    - OAuth
+  responses:
+    '200':
+      description: "Response success - Get authorization URL"
+      content:
+        application/json:
+          schema:
+            $ref: ../../../../component/schema/GoogleOauthCodeExchangeResponse.yaml
+    '400':
+      description: Bad Request Error
+      content:
+        application/json:
+          schema:
+            $ref: ../../../../component/schema/ErrorBadRequest.yaml

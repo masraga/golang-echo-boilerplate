@@ -1,0 +1,21 @@
+get:
+  operationId: GoogleOAuthCallback
+  summary: Google OAuth callback
+  description: Google OAuth callback that parsing code from client
+  tags: 
+    - OAuth
+  parameters:
+    - $ref: ../../../../../component/parameter/GoogleOAuthParameter.yaml
+  responses:
+    '200':
+      description: "Success response when code already received"
+      content:
+        application/json:
+          schema: 
+            $ref: ../../../../../component/schema/GoogleOAuthCallbackResponse.yaml
+    '400':
+      description: "Bad request response"
+      content:
+        application/json:
+          schema: 
+            $ref: ../../../../../component/schema/ErrorBadRequest.yaml

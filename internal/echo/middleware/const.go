@@ -13,6 +13,16 @@ var (
 		// 		AuthValidationFilterMethodGet,
 		// 	},
 		// },
+		"/api/v1/oauth": {
+			Method: []string{
+				AuthValidationFilterMethodPost,
+			},
+		},
+		"/api/v1/oauth/callback": {
+			Method: []string{
+				AuthValidationFilterMethodGet,
+			},
+		},
 		"/api/v1/auth/register/phone": {
 			Method: []string{
 				AuthValidationFilterMethodPost,
