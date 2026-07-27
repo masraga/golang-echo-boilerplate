@@ -26,7 +26,8 @@ func TestOAuthService_Callback(t *testing.T) {
 	type expected = testutil.Result[oauth.GoogleOauthCallbackOutput]
 
 	type fields struct {
-		OauthProvider oauth.OAuthProviderInterface
+		OauthProvider   oauth.OAuthProviderInterface
+		OauthRepoWriter oauth.OAuthRepositoryWriterInterface
 	}
 
 	type test struct {
@@ -53,6 +54,15 @@ func TestOAuthService_Callback(t *testing.T) {
 				oauthProvider.EXPECT().
 					Callback(gomock.Any(), gomock.Any()).
 					Return(oauth.GoogleOauthCallbackOutput{Token: expectedToken, RefreshToken: expectedRefreshToken}, nil)
+
+				oauthRepoWriter := oauth.NewMockOAuthRepositoryWriterInterface(ctrl)
+				oauthRepoWriter.EXPECT().
+					CreateAccessToken(gomock.Any(), gomock.Any()).
+					Return(oauth.CreateAccessTokenOutput{
+						Id: faker.UUIDHyphenated(),
+					}, nil)
+
+				tt.fields.OauthRepoWriter = oauthRepoWriter
 				tt.fields.OauthProvider = oauthProvider
 			},
 		},
@@ -86,8 +96,9 @@ func TestOAuthService_Callback(t *testing.T) {
 			}
 
 			oauthService := oauth.NewOAuthService(oauth.OAuthServiceOpts{
-				Provider: tt.fields.OauthProvider,
-				Err:      ctxerr.NewCtxErr(ctxerr.CtxErrOpts{Logger: zerolog.Nop()}),
+				Provider:              tt.fields.OauthProvider,
+				OauthRepositoryWriter: tt.fields.OauthRepoWriter,
+				Err:                   ctxerr.NewCtxErr(ctxerr.CtxErrOpts{Logger: zerolog.Nop()}),
 			})
 
 			got, err := oauthService.Callback(tt.args.ctx, tt.args.input)

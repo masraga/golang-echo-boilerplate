@@ -18,4 +18,6 @@ type OAuthRepositoryReaderInterface interface {
 	GetAccessTokenById(ctx context.Context, input GetAccessTokenByIdInput) (output GetAccessTokenByIdOutput, err error)
 }
 
-type OAuthRepositoryWriterInterface interface{}
+type OAuthRepositoryWriterInterface interface {
+	CreateAccessToken(ctx context.Context, input CreateAccessTokenInput) (output CreateAccessTokenOutput, err error)
+}

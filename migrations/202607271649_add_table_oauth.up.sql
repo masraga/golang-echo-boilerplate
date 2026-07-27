@@ -1,6 +1,5 @@
 CREATE TABLE IF NOT EXISTS public.oauth (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
-    user_id uuid NOT NULL REFERENCES public.auth (id),
     username varchar(255),
     email varchar(255),
     refresh_token text NOT NULL,
@@ -12,8 +11,6 @@ CREATE TABLE IF NOT EXISTS public.oauth (
 );
 
 COMMENT ON COLUMN public.oauth.username IS 'Username of authenticate user';
-
-COMMENT ON COLUMN public.oauth.user_id IS 'User ID of authenticate user';
 
 COMMENT ON COLUMN public.oauth.email IS 'Email of authenticate user';
 

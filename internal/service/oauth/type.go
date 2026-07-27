@@ -28,3 +28,13 @@ type GetAccessTokenByIdOutput struct {
 	RefreshToken string
 	ExpiryAtUtc0 *int64
 }
+
+type CreateAccessTokenInput struct {
+	Id           string
+	AccessToken  string
+	RefreshToken string
+}
+
+type CreateAccessTokenOutput struct {
+	Id string
+}
