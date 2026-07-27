@@ -12,3 +12,4 @@ COMMENT ON COLUMN public.auth_access_token.user_id IS 'Auth user id';
 COMMENT ON COLUMN public.auth_access_token.expired_at_utc0 IS 'Expired at in UTC+0 epoch time';
 
 COMMENT ON COLUMN public.auth_access_token.is_active IS 'Flag indicating the data not deleted';
+

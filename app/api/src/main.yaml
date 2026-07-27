@@ -16,6 +16,8 @@ tags:
     description: Endpoints for managing API access contracts
   - name: Auth Roles
     description: Endpoints for managing auth roles and role API access
+  - name: OAuth
+    description: Endpoints for managing OAuth cases
 paths:
   /api/v1/ping:
     $ref: './path/api/v1/ping/index.yaml'
@@ -47,11 +49,17 @@ paths:
     $ref: './path/api/v1/auth/users/__userId__/role/index.yaml'
   /api/v1/auth/users/change-pin:
     $ref: './path/api/v1/auth/users/change-pin/index.yaml'
+  /api/v1/oauth/callback:
+    $ref: "./path/api/v1/oauth/callback/index.yaml"
+  /api/v1/oauth:
+    $ref: "./path/api/v1/oauth/index.yaml"
 
 components:
   parameters:
     UserIdPathParameter:
       $ref: './component/parameter/UserIdPathParameter.yaml'
+    GoogleOAuthParameter:
+      $ref: "./component/parameter/GoogleOAuthParameter.yaml"
   schemas:
     GetPingResponse:
       $ref: './component/schema/GetPingResponse.yaml'
@@ -119,4 +127,8 @@ components:
       $ref: './component/schema/UserChangePinRequest.yaml'
     UserChangePinResponse:
       $ref: './component/schema/UserChangePinResponse.yaml'
+    GoogleOAuthCallbackResponse:
+      $ref: './component/schema/GoogleOAuthCallbackResponse.yaml'
+    GoogleOauthCodeExchangeResponse:
+      $ref: './component/schema/GoogleOauthCodeExchangeResponse.yaml'
     

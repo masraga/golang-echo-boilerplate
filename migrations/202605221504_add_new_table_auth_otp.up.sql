@@ -25,3 +25,4 @@ COMMENT ON COLUMN public.auth_otp.is_active IS 'Flag indicating the data not del
 COMMENT ON COLUMN public.auth_otp.note IS 'Additional note for the OTP record';
 
 COMMENT ON COLUMN public.auth_otp.is_verified IS 'Flag indicating whether the OTP has been verified';
+
