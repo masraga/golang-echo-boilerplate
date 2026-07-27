@@ -19,7 +19,7 @@ type OAuthRepositoryOpts struct {
 	dbtx.DbTxInterface
 	Sql *sqlf.Dialect
 	Db  *sql.DB
-	err *ctxerr.CtxErr
+	Err *ctxerr.CtxErr
 }
 
 func NewOAuthRepository(opts OAuthRepositoryOpts) *OAuthRepository {
@@ -27,6 +27,6 @@ func NewOAuthRepository(opts OAuthRepositoryOpts) *OAuthRepository {
 		DbTxInterface: opts.DbTxInterface,
 		sql:           sqlf.PostgreSQL,
 		db:            opts.Db,
-		err:           opts.err,
+		err:           opts.Err,
 	}
 }

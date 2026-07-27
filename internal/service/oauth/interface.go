@@ -14,6 +14,8 @@ type OAuthProviderInterface interface {
 	Callback(ctx context.Context, input GoogleOauthCallbackInput) (output GoogleOauthCallbackOutput, err error)
 }
 
-type OAuthRepositoryReaderInterface interface{}
+type OAuthRepositoryReaderInterface interface {
+	GetAccessTokenById(ctx context.Context, input GetAccessTokenByIdInput) (output GetAccessTokenByIdOutput, err error)
+}
 
 type OAuthRepositoryWriterInterface interface{}
