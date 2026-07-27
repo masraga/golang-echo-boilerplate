@@ -58,6 +58,7 @@ func InitializeService(ctx context.Context, config *Config) (*server.Server, err
 			"GoogleAuthClientId",
 			"GoogleAuthClientSecret",
 			"GoogleAuthCallbackUrl",
+			"GoogleAuthScopes",
 		),
 		// wire.Struct(new(oauth.OAuthRepositoryOpts), "*"),
 		// oauth.NewOAuthRepository,

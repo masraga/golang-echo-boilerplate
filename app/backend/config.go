@@ -21,6 +21,7 @@ type Config struct {
 	GoogleAuthClientId        gauth.ClientId             `env:"GOOGLE_AUTH_CLIENT_ID"`
 	GoogleAuthClientSecret    gauth.ClientSecret         `env:"GOOGLE_AUTH_CLIENT_SECRET"`
 	GoogleAuthCallbackUrl     gauth.AuthRedirectUrl      `env:"GOOGLE_AUTH_CALLBACK_URL"`
+	GoogleAuthScopes          gauth.Scopes               `env:"GOOGLE_AUTH_SCOPES"`
 }
 
 func LoadConfig() *Config {

@@ -903,7 +903,7 @@ paths:
         - OAuth
       responses:
         '200':
-          description: Response success exchange google auth code
+          description: Response success - Get authorization URL
           content:
             application/json:
               schema:
