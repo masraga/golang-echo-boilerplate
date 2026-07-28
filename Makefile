@@ -85,3 +85,12 @@ $(MIGRATION_NAME):
 	@:
 endif
 endif
+
+TOOLS := \
+	github.com/google/wire/cmd/wire@v0.7.0 \
+	github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.0
+
+install-tools:
+	@for tool in $(TOOLS); do \
+		go install $$tool; \
+	done
