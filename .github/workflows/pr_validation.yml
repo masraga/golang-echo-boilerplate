@@ -25,6 +25,7 @@ jobs:
           --health-timeout=5s
     env:
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+      FCM_SERVICE_ACCOUNT_ID: kerp-api-f5384
 
     steps:
       - name: Checkout repository
@@ -51,7 +52,9 @@ jobs:
         run: npm install -g swagger-cli
       
       - name: Verify
-        run: swagger-cli --version
+        run: |
+          swagger-cli --version
+
       
       - name: Initialize app package
         run: make clean init
