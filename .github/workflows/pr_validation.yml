@@ -19,9 +19,20 @@ jobs:
         with:
             go-version-file: go.mod
             cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      
+      - name: Install swagger-cli
+        run: npm install -g swagger-cli
+      
+      - name: Verify
+        run: swagger-cli --version
       
       - name: Initialize app package
         run: make clean init
-
+      
       - name: Run Unit Test
         run: go test -v ./...
