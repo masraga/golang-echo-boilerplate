@@ -456,3 +456,13 @@ type UserChangePinOutput struct {
 	IsUpdate  bool
 	UpdatedAt int64
 }
+
+type FindAuthWithEmailInput struct {
+	Email string
+}
+
+type FindAuthWithEmailOutput struct {
+	Id      string
+	PhoneNo string
+	Email   string
+}

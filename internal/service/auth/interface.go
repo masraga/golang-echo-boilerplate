@@ -16,6 +16,7 @@ type AuthServiceInterface interface {
 	AuthValidatePin(ctx context.Context, input AuthValidatePinInput) (output AuthValidatePinOutput, err error)
 	ValidateJwtToken(ctx context.Context, input ValidateJwtTokenInput) (output ValidateJwtTokenOutput, err error)
 	UserChangePin(ctx context.Context, input UserChangePinInput) (output UserChangePinOutput, err error)
+	FindAuthWithEmail(ctx context.Context, input FindAuthWithEmailInput) (output FindAuthWithEmailOutput, err error)
 
 	CreateAuthApiContract(ctx context.Context, input CreateAuthApiContractInput) (output CreateAuthApiContractOutput, err error)
 	GetAuthApiContract(ctx context.Context, input GetAuthApiContractInput) (output GetAuthApiContractOutput, err error)
@@ -84,6 +85,7 @@ type AuthRepositoryReaderInterface interface {
 	FindAuth(ctx context.Context, input FindAuthInput) (output FindAuthOutput, err error)
 	FindOTP(ctx context.Context, input FindOTPInput) (output FindOTPOutput, err error)
 	FindAccessToken(ctx context.Context, input FindAccessTokenInput) (output FindAccessTokenOutput, err error)
+	FindAuthWithEmail(ctx context.Context, input FindAuthWithEmailInput) (output FindAuthWithEmailOutput, err error)
 
 	GetAuthApiContract(ctx context.Context, input GetAuthApiContractInput) (output GetAuthApiContractOutput, err error)
 	ListAuthApiContracts(ctx context.Context, input ListAuthApiContractsInput) (output ListAuthApiContractsOutput, err error)

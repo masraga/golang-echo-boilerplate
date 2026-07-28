@@ -1,0 +1,3 @@
+ALTER TABLE IF EXISTS public.auth
+    DROP COLUMN IF EXISTS email;
+
