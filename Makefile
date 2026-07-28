@@ -85,3 +85,6 @@ $(MIGRATION_NAME):
 	@:
 endif
 endif
+
+install-tools
+	@bash ./bin/install_dependecies.sh
