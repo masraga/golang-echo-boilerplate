@@ -51,9 +51,12 @@ jobs:
       - name: Install swagger-cli
         run: npm install -g swagger-cli
       
-      - name: Verify
+      - name: Verify installed tools
         run: |
-          swagger-cli --version
+          wire version || wire help
+          oapi-codegen --version
+          mockgen -version
+          migrate -version
 
       
       - name: Initialize app package
