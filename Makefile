@@ -1,4 +1,4 @@
-.PHONY: api.yaml validate-api api-docs generate-api generate-backend init generate-wire generate-mocks clean generate-vendor update-api-handler test-update-api-handler
+.PHONY: api.yaml validate-api api-docs generate-api generate-backend init generate-wire generate-mocks clean generate-vendor update-api-handler test-update-api-handler install-tools
 
 api.yaml:
 	@swagger-cli bundle app/api/src/main.yaml -o app/api/api.yaml -t yaml
@@ -85,3 +85,6 @@ $(MIGRATION_NAME):
 	@:
 endif
 endif
+
+install_tools:
+	@bash ./bin/install_dependecies.sh

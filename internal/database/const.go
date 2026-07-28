@@ -1,5 +1,5 @@
 package database
 
 var (
-	DATABASE_LOCAL_URL = "postgres://koderpedia:123456@localhost:5433/kerp?sslmode=disable"
+	DATABASE_LOCAL_URL = "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
 )

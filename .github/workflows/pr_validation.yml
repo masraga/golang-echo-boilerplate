@@ -1,0 +1,66 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d postgres"
+          --health-interval=10s
+          --health-timeout=5s
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+      FCM_SERVICE_ACCOUNT_ID: kerp-api-f5384
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup GO
+        uses: actions/setup-go@v6
+        with:
+            go-version-file: go.mod
+            cache: true
+
+      - name: Install tools
+        run: make install_tools
+      
+      - name: Run database migration up
+        run: make migrate_up db=${{ env.DATABASE_URL }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      
+      - name: Install swagger-cli
+        run: npm install -g swagger-cli
+      
+      - name: Verify installed tools
+        run: |
+          wire version || wire help
+          oapi-codegen --version
+          mockgen -version
+          migrate -version
+
+      
+      - name: Initialize app package
+        run: make clean init
+      
+      - name: Run Unit Test
+        run: go test -v ./...
