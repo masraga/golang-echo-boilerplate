@@ -85,18 +85,3 @@ $(MIGRATION_NAME):
 	@:
 endif
 endif
-
-TOOLS := \
-	github.com/google/wire/cmd/wire@v0.7.0 \
-	github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.0 \
-	go.uber.org/mock/mockgen@v0.6.0 \
-
-install-tools:
-	@echo "Installing Go tools..."
-	@for tool in $(TOOLS); do \
-		echo "-> $$tool"; \
-		go install $$tool; \
-	done
-	@echo "-> github.com/golang-migrate/migrate/v4/cmd/migrate"
-	CGO_ENABLED=0 go install -tags 'postgres' \
-		github.com/golang-migrate/migrate/v4/cmd/migrate@v4.19.0
