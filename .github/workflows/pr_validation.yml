@@ -1,0 +1,27 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup GO
+        uses: actions/setup-go@v6
+        with:
+            go-version-file: go.mod
+            cache: true
+      
+      - name: Initialize app package
+        run: make clean init
+
+      - name: Run Unit Test
+        run: go test -v ./...
