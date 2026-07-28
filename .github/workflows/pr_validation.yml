@@ -38,7 +38,7 @@ jobs:
             cache: true
 
       - name: Install tools
-        run: make install-tools
+        run: make install_tools
       
       - name: Run database migration up
         run: make migrate_up db=${{ env.DATABASE_URL }}
