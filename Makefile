@@ -1,4 +1,4 @@
-.PHONY: api.yaml validate-api api-docs generate-api generate-backend init generate-wire generate-mocks clean generate-vendor update-api-handler test-update-api-handler
+.PHONY: api.yaml validate-api api-docs generate-api generate-backend init generate-wire generate-mocks clean generate-vendor update-api-handler test-update-api-handler install-tools
 
 api.yaml:
 	@swagger-cli bundle app/api/src/main.yaml -o app/api/api.yaml -t yaml
@@ -88,9 +88,12 @@ endif
 
 TOOLS := \
 	github.com/google/wire/cmd/wire@v0.7.0 \
-	github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.0
+	github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.0 \
+	go.uber.org/mock/mockgen@v0.6.0
 
 install-tools:
+	@echo "Installing Go tools..."
 	@for tool in $(TOOLS); do \
+		echo "-> $$tool"; \
 		go install $$tool; \
 	done
