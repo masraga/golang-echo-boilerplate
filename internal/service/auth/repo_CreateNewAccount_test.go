@@ -41,7 +41,7 @@ func TestAuthRepository_CreateNewAccount(t *testing.T) {
 			},
 			mock: func(tt *testing.T, mock sqlmock.Sqlmock) {
 				mock.ExpectExec(``).
-					WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
+					WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnError(auth.ErrCreateNewAccount)
 			},
 		},

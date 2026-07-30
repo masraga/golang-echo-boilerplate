@@ -21,6 +21,7 @@ func TestServer_GoogleOauthCodeExchange(t *testing.T) {
 	)
 
 	type args struct {
+		input api.GoogleOauthCodeExchangeRequest
 	}
 
 	type fields struct {
@@ -40,7 +41,13 @@ func TestServer_GoogleOauthCodeExchange(t *testing.T) {
 	tests := []test{
 		{
 			name: "success with 200 response",
-			args: args{},
+			args: args{
+				input: api.GoogleOauthCodeExchangeRequest{
+					Actions: []api.GoogleOauthCodeExchangeRequestActions{
+						api.REGISTERUSER,
+					},
+				},
+			},
 			mock: func(ctx echo.Context, tt *test, ctrl *gomock.Controller) {
 				oauthService := oauth.NewMockOAuthServiceInterface(ctrl)
 				oauthService.EXPECT().
@@ -63,7 +70,7 @@ func TestServer_GoogleOauthCodeExchange(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 			e := echo.New()
-			req := httptest.NewRequest(http.MethodGet, "/", nil)
+			req := httptest.NewRequest(http.MethodPost, "/", nil)
 			rec := httptest.NewRecorder()
 			ctx := e.NewContext(req, rec)
 			if tt.mock != nil {

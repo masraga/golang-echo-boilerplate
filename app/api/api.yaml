@@ -901,6 +901,12 @@ paths:
       description: Exchange authorization code from google auth
       tags:
         - OAuth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleOauthCodeExchangeRequest'
       responses:
         '200':
           description: Response success - Get authorization URL
@@ -1579,6 +1585,20 @@ components:
           type: string
           description: Exchange code that used to regenerate token
           example: eyJhbGciOiJSUzI1NiIsImtpZCI6IjU4OTYyMjUzMjk3OTQzNDZiMDYzOWU2ZjlkN2JkOGJjZTI5NTRmZDIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI4NzAzNzA4NDkzNzQtNDVjNjV2YmNuaWxoODFtY2pvYjA5Ym1jbWc0bjIwaTguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI4NzAzNzA4NDkzNzQtNDVjNjV2YmNuaWxoODFtY2pvYjA5Ym1jbWc0bjIwaTguYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDgzNjcxNDc5MTQzOTg0MDI0OTciLCJlbWFpbCI6Inl1bmlmYWphcnJAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5iZiI6MTc4NDc4OTUxMywibmFtZSI6IllVTkkgRkFKQVIgTEVTVEFSSSBTIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0o5MWZZQ2JydmlMRk8wYWd4X0wxVWstakVkaGZWeDMzTEV5LXJmd0N6VWk5SjB5dz1zOTYtYyIsImdpdmVuX25hbWUiOiJZVU5JIEZBSkFSIiwiZmFtaWx5X25hbWUiOiJMRVNUQVJJIFMiLCJpYXQiOjE3ODQ3ODk4MTMsImV4cCI6MTc4NDc5MzQxMywianRpIjoiNDVjOWIzOTYyY2QxYzU0N2NiZTExM2U3YTM2NTc5MDAzMDBjNGQ3NSJ9.obChesyqqxHhYax7PhcSRUDtO0GOB8rONCZjI6EMHKQnxqjhoShBD_4QaVd4DKSkyG9KBOVq8BkRBe4CUnZDUd0rR37-uqicsbuu98szJWIKPrF6kFs1YI7XwZb66RlOSB_KdJLY9NAnWcBxVfI6I0fzskIr66RbIYAp1XZvU45nEyujZ2ZJz3ajAhCcAFhk3buX4VUojbFfR3VhiKdHAWRTMSCiO3E2lsoklo7ox7rsU3QwrR4ofUrnt-GApi9gT4CgSWmZKiHQ8R-JTWkcrxRRpE6sEDnOreYtIDT6zauHaeaqmE7ueY_7u52osFhfbFtfjI5yGF9YJYO2PUaGVQ
+    GoogleOauthCodeExchangeRequest:
+      type: object
+      required:
+        - actions
+      properties:
+        actions:
+          type: array
+          description: array of string action that could be happen when code is authorized
+          example:
+            - REGISTER_USER
+          items:
+            type: string
+            enum:
+              - REGISTER_USER
     GoogleOauthCodeExchangeResponse:
       type: object
       required:

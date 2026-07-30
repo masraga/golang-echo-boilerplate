@@ -13,6 +13,7 @@ type CreateNewAccountInput struct {
 	Id         string
 	PhoneNo    string
 	FirebaseId *string
+	LoginMode  *LoginMode //set as pointer, if nil set default to PHONE_NUMBER
 }
 
 type CreateNewAccountOutput struct {

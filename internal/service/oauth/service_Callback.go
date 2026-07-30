@@ -28,6 +28,7 @@ func (s *OAuthService) Callback(ctx context.Context, input GoogleOauthCallbackIn
 
 	output.Token = providerOutput.Token
 	output.RefreshToken = providerOutput.RefreshToken
+	output.State = providerOutput.State
 
 	return
 }

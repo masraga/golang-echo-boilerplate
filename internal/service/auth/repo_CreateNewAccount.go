@@ -9,7 +9,8 @@ func (r *AuthRepository) CreateNewAccount(ctx context.Context, input CreateNewAc
 	stmt := r.Sql.InsertInto(TableAuth).
 		Set("id", input.Id).
 		Set("phone_no", input.PhoneNo).
-		Set("firebase_id", input.FirebaseId)
+		Set("firebase_id", input.FirebaseId).
+		Set("login_mode", input.LoginMode)
 
 	_, err = stmt.ExecAndClose(ctx, r.UseTx(ctx))
 	if err != nil {

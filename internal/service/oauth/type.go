@@ -1,6 +1,8 @@
 package oauth
 
+type ExchangeTokenAction string
 type GoogleOauthCodeExchangeInput struct {
+	Actions []ExchangeTokenAction
 }
 
 type GoogleOauthCodeExchangeOutput struct {
@@ -14,6 +16,7 @@ type GoogleOauthCallbackInput struct {
 type GoogleOauthCallbackOutput struct {
 	Token        string
 	RefreshToken string
+	State        string
 }
 
 type GetAccessTokenByIdInput struct {

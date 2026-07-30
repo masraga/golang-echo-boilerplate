@@ -129,6 +129,8 @@ components:
       $ref: './component/schema/UserChangePinResponse.yaml'
     GoogleOAuthCallbackResponse:
       $ref: './component/schema/GoogleOAuthCallbackResponse.yaml'
+    GoogleOauthCodeExchangeRequest:
+      $ref: ./component/schema/GoogleOauthCodeExchangeRequest.yaml
     GoogleOauthCodeExchangeResponse:
       $ref: './component/schema/GoogleOauthCodeExchangeResponse.yaml'
     

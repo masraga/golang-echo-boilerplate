@@ -2,8 +2,9 @@ package gauth
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/masraga/golang-echo-boilerplate/internal/service/oauth"
 	"golang.org/x/oauth2"
 )
@@ -19,7 +20,14 @@ func (s *GAuthService) ExchangeToken(ctx context.Context, input oauth.GoogleOaut
 		err = s.err.Wrap(err)
 		return
 	}
-	state := uuid.New().String()
+
+	stateAction, err := json.Marshal(input.Actions)
+	if err != nil {
+		err = s.err.Wrap(err)
+		return
+	}
+
+	state := fmt.Sprintf("actions=%s", stateAction)
 
 	url := oauthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.SetAuthURLParam("prompt", "consent"))
 	output.Url = url

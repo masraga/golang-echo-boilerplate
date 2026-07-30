@@ -23,3 +23,15 @@ const (
 	MaxPinLen               int       = 6
 	MinPinLen               int       = 6
 )
+
+type LoginMode string
+
+const (
+	LOGIN_MODE_PHONE_NUMBER LoginMode = "PHONE_NUMBER"
+	LOGIN_MODE_GOOGLE       LoginMode = "GOOGLE"
+)
+
+const (
+	DEFAULT_PHONE_NO string = "0"
+	DEFAULT_PIN_CODE string = "123456"
+)
