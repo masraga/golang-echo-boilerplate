@@ -6,6 +6,7 @@ get:
     - OAuth
   parameters:
     - $ref: ../../../../../component/parameter/GoogleOAuthParameter.yaml
+    - $ref: ../../../../../component/parameter/GoogleOAuthCallbackStateParameter.yaml
   responses:
     '200':
       description: "Success response when code already received"

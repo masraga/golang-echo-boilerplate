@@ -10,7 +10,8 @@ import (
 // (GET /api/v1/oauth/callback)
 func (s *Server) GoogleOAuthCallback(ctx echo.Context, params api.GoogleOAuthCallbackParams) error {
 	output, err := s.OAuthService.Callback(ctx.Request().Context(), oauth.GoogleOauthCallbackInput{
-		Code: params.Code,
+		Code:  params.Code,
+		State: params.State,
 	})
 	if err != nil {
 		return returnError(ctx, err)
@@ -19,5 +20,6 @@ func (s *Server) GoogleOAuthCallback(ctx echo.Context, params api.GoogleOAuthCal
 	return returnOk(ctx, api.GoogleOAuthCallbackResponse{
 		Token:        output.Token,
 		RefreshToken: output.RefreshToken,
+		State:        &output.State,
 	})
 }

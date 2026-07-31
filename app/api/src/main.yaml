@@ -60,6 +60,8 @@ components:
       $ref: './component/parameter/UserIdPathParameter.yaml'
     GoogleOAuthParameter:
       $ref: "./component/parameter/GoogleOAuthParameter.yaml"
+    GoogleOAuthCallbackStateParameter:
+      $ref: "./component/parameter/GoogleOAuthCallbackStateParameter.yaml"
   schemas:
     GetPingResponse:
       $ref: './component/schema/GetPingResponse.yaml'

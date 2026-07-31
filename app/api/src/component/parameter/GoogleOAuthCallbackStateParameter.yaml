@@ -1,0 +1,7 @@
+name: state
+required: true
+in: query
+description: query that already received from oauth, that can be modify when generate auth code
+schema:
+  type: string
+  example: "actions=['REGISTER_USER']"

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 )
 
@@ -14,7 +15,9 @@ func (r *AuthRepository) FindAuthWithEmail(ctx context.Context, input FindAuthWi
 		Where("email = ?", input.Email)
 	err = stmt.QueryRowAndClose(ctx, r.Db)
 	if err != nil {
-		err = r.Err.Wrap(errors.Join(err, ErrFindAuthWithEmail))
+		if err != sql.ErrNoRows {
+			err = r.Err.Wrap(errors.Join(err, ErrFindAuthWithEmail))
+		}
 		return
 	}
 	return
