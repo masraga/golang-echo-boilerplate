@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/url"
 
 	"github.com/google/uuid"
@@ -29,8 +28,6 @@ func (s *OAuthService) Callback(ctx context.Context, input GoogleOauthCallbackIn
 		err = s.err.Wrap(err)
 		return
 	}
-
-	fmt.Printf("%+v\n", providerOutput)
 
 	// do something with callback state like register user, etc
 	callbackState, err := s.convertStateToQueryString(input)
