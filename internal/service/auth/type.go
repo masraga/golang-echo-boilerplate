@@ -24,10 +24,11 @@ type CreateNewAccountOutput struct {
 
 type UserTokenClaimInput struct {
 	TokenType
-	UserId        string
-	ExpiredAtUtc0 int64
-	IssuerAtUtc0  int64
-	UserName      string
+	UserId           string
+	ExpiredAtUtc0    int64
+	IssuerAtUtc0     int64
+	UserName         string
+	JwtTokenMetadata CreateJWTTokenMetadata
 }
 
 type UserTokenClaimOutput struct {
@@ -41,8 +42,14 @@ type CreateJWTTokenInput struct {
 	UserId        string
 	Metadata      CreateJWTTokenMetadata
 }
-
 type CreateJWTTokenMetadata struct {
+	OAuthMetadata OAuthMetadata `json:"metadata"`
+}
+
+type OAuthMetadata struct {
+	LoginMode    LoginMode `json:"loginMode"`
+	Token        string    `json:"token"`
+	RefreshToken string    `json:"refreshToken"`
 }
 
 type CreateJWTTokenOutput struct {

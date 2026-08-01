@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/url"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/masraga/golang-echo-boilerplate/internal/service/auth"
@@ -38,38 +39,10 @@ func (s *OAuthService) Callback(ctx context.Context, input GoogleOauthCallbackIn
 	if len(callbackState.Actions) > 0 {
 		for _, act := range callbackState.Actions {
 			if act == ExchangeTokenActionRegisterUser {
-				// since the callback from google is from valid user, so system must be
-				// bypassing to insert new user data based on google token
-				authUser, err := s.authService.FindAuthWithEmail(ctx, auth.FindAuthWithEmailInput{
-					Email: providerOutput.Email,
-				})
-				// return error but no result set. and prevent add user
-				// when user already exists
-				if err != nil {
-					if err == auth.ErrFindAuthWithEmail {
-						return output, err
-					}
-				}
-				if authUser.Email == providerOutput.Email {
-					return providerOutput, nil
-				}
-
-				userId := uuid.NewString()
-				s.oauthRepositoryWriter.BypassCreateNewUser(ctx, BypassCreateNewUserInput{
-					Id:        userId,
-					PhoneNo:   auth.DEFAULT_PHONE_NO,
-					Pin:       auth.DEFAULT_PIN_CODE,
-					Email:     providerOutput.Email, // since email is already provided from provider oauth, so we can pass the output
-					CreatedBy: DefaultCreatedBy,
-					LoginMode: auth.LOGIN_MODE_GOOGLE,
-				})
+				s.registerNewUser(ctx, providerOutput, &output)
 			}
 		}
 	}
-
-	output.Token = providerOutput.Token
-	output.RefreshToken = providerOutput.RefreshToken
-	output.State = providerOutput.State
 
 	return
 }
@@ -84,5 +57,60 @@ func (s *OAuthService) convertStateToQueryString(input GoogleOauthCallbackInput)
 	json.Unmarshal([]byte(urlVal.Get("actions")), &state.Actions)
 
 	output.Actions = state.Actions
+	return
+}
+
+func (s *OAuthService) registerNewUser(ctx context.Context, providerOutput GoogleOauthCallbackOutput, parentOutput *GoogleOauthCallbackOutput) (output GoogleOauthCallbackOutput, err error) {
+	// since the callback from google is from valid user, so system must be
+	// bypassing to insert new user data based on google token. Also, update current access token
+	authUser, err := s.authService.FindAuthWithEmail(ctx, auth.FindAuthWithEmailInput{
+		Email: providerOutput.Email,
+	})
+	// return error but no result set. and prevent add user
+	// when user already exists
+	if err != nil {
+		if err == auth.ErrFindAuthWithEmail {
+			return output, err
+		}
+	}
+	if authUser.Email == providerOutput.Email {
+		parentOutput.Token = providerOutput.Token
+		parentOutput.RefreshToken = providerOutput.RefreshToken
+		return providerOutput, nil
+	}
+
+	userId := uuid.NewString()
+	s.oauthRepositoryWriter.BypassCreateNewUser(ctx, BypassCreateNewUserInput{
+		Id:        userId,
+		PhoneNo:   auth.DEFAULT_PHONE_NO,
+		Pin:       auth.DEFAULT_PIN_CODE,
+		Email:     providerOutput.Email, // since email is already provided from provider oauth, so we can pass the output
+		CreatedBy: DefaultCreatedBy,
+		LoginMode: auth.LOGIN_MODE_GOOGLE,
+	})
+	expiredAtUtc0 := time.Now().Add(time.Duration(auth.JwtTokenExpiredDuration) * time.Minute).UnixMilli()
+
+	//don't block the flow, if any error but direct callback error
+	token, _ := s.authService.CreateToken(ctx, auth.UserTokenClaimInput{
+		TokenType:     auth.TokenTypeJwt,
+		UserId:        userId,
+		ExpiredAtUtc0: expiredAtUtc0,
+		IssuerAtUtc0:  time.Now().UnixMilli(),
+		JwtTokenMetadata: auth.CreateJWTTokenMetadata{
+			OAuthMetadata: auth.OAuthMetadata{
+				LoginMode:    auth.LOGIN_MODE_GOOGLE,
+				Token:        providerOutput.Token,
+				RefreshToken: providerOutput.RefreshToken,
+			},
+		},
+	})
+	storedToken, _ := s.authService.StoreAccessToken(ctx, auth.StoreAccessTokenInput{
+		Token:         token.Token,
+		ExpiredAtUtc0: expiredAtUtc0,
+		UserId:        userId,
+	})
+
+	parentOutput.Token = storedToken.Token
+	parentOutput.RefreshToken = providerOutput.RefreshToken
 	return
 }

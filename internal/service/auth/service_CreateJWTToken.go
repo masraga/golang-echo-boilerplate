@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -21,10 +22,15 @@ func (s *AuthService) CreateJWTToken(ctx context.Context, input CreateJWTTokenIn
 		issuerAtUtc0 = time.Now().UnixMilli()
 	}
 
+	//set metadata to json, so it can be store to jwt
+	var metadata []byte
+	metadata, _ = json.Marshal(input.Metadata)
+
 	claims := jwt.MapClaims{
-		"userId": input.UserId,
-		"exp":    input.ExpiredAtUtc0,
-		"iat":    issuerAtUtc0,
+		"userId":   input.UserId,
+		"exp":      input.ExpiredAtUtc0,
+		"iat":      issuerAtUtc0,
+		"metadata": string(metadata),
 	}
 	newClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := newClaims.SignedString([]byte(s.JwtSecret))

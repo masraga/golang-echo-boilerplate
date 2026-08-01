@@ -8,6 +8,7 @@ func (s *AuthService) CreateToken(ctx context.Context, input UserTokenClaimInput
 			ExpiredAtUtc0: input.ExpiredAtUtc0,
 			IssuerAtUtc0:  input.IssuerAtUtc0,
 			UserId:        input.UserId,
+			Metadata:      input.JwtTokenMetadata,
 		})
 		if err != nil {
 			return UserTokenClaimOutput{}, err
