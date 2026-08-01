@@ -29,9 +29,12 @@ func (s *AuthService) CreateNewAccount(ctx context.Context, input CreateNewAccou
 	}()
 
 	userId := authUser.Id
+	if input.LoginMode == nil {
+		loginPhone := LOGIN_MODE_PHONE_NUMBER
+		input.LoginMode = &loginPhone
+	}
 	if userId == "" {
 		input.Id = uuid.NewString()
-
 		_, err = s.AuthRepositoryWriter.CreateNewAccount(ctx, input)
 		if err != nil {
 			err = s.Err.Wrap(err)

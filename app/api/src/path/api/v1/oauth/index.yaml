@@ -4,6 +4,12 @@ post:
   description: Exchange authorization code from google auth
   tags:
     - OAuth
+  requestBody: 
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../../../component/schema/GoogleOauthCodeExchangeRequest.yaml
   responses:
     '200':
       description: "Response success - Get authorization URL"

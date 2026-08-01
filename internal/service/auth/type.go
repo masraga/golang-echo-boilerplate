@@ -13,6 +13,7 @@ type CreateNewAccountInput struct {
 	Id         string
 	PhoneNo    string
 	FirebaseId *string
+	LoginMode  *LoginMode //set as pointer, if nil set default to PHONE_NUMBER
 }
 
 type CreateNewAccountOutput struct {
@@ -23,10 +24,11 @@ type CreateNewAccountOutput struct {
 
 type UserTokenClaimInput struct {
 	TokenType
-	UserId        string
-	ExpiredAtUtc0 int64
-	IssuerAtUtc0  int64
-	UserName      string
+	UserId           string
+	ExpiredAtUtc0    int64
+	IssuerAtUtc0     int64
+	UserName         string
+	JwtTokenMetadata CreateJWTTokenMetadata
 }
 
 type UserTokenClaimOutput struct {
@@ -40,8 +42,14 @@ type CreateJWTTokenInput struct {
 	UserId        string
 	Metadata      CreateJWTTokenMetadata
 }
-
 type CreateJWTTokenMetadata struct {
+	OAuthMetadata OAuthMetadata `json:"metadata"`
+}
+
+type OAuthMetadata struct {
+	LoginMode    LoginMode `json:"loginMode"`
+	Token        string    `json:"token"`
+	RefreshToken string    `json:"refreshToken"`
 }
 
 type CreateJWTTokenOutput struct {
@@ -455,4 +463,14 @@ type UserChangePinInput struct {
 type UserChangePinOutput struct {
 	IsUpdate  bool
 	UpdatedAt int64
+}
+
+type FindAuthWithEmailInput struct {
+	Email string
+}
+
+type FindAuthWithEmailOutput struct {
+	Id      string
+	PhoneNo string
+	Email   string
 }

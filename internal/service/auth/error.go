@@ -29,6 +29,7 @@ var (
 	ErrAuthTokenInvalid        error = errors.New("error invalid token")
 	ErrAuthTokenExpired        error = errors.New("error token is expired")
 	ErrPinNotDefined           error = errors.New("pin not setup yet")
+	ErrFindAuthWithEmail       error = errors.New("authentication email not found")
 
 	ErrCreateAuthApiContract       error = errors.New("error to create auth api contract")
 	ErrFindAuthApiContractNotFound error = errors.New("error auth api contract data not found")

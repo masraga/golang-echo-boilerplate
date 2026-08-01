@@ -1,6 +1,10 @@
 package oauth
 
+import "github.com/masraga/golang-echo-boilerplate/internal/service/auth"
+
+type ExchangeTokenAction string
 type GoogleOauthCodeExchangeInput struct {
+	Actions []ExchangeTokenAction
 }
 
 type GoogleOauthCodeExchangeOutput struct {
@@ -8,14 +12,24 @@ type GoogleOauthCodeExchangeOutput struct {
 }
 
 type GoogleOauthCallbackInput struct {
-	Code string
+	Code  string
+	State string
 }
 
 type GoogleOauthCallbackOutput struct {
+	IdToken      string // used for get user profile data
+	Email        string `json:"email"`
+	Name         string `json:"name"`
+	Sub          string `json:"sub"`
+	Picture      string `json:"picture"`
 	Token        string
 	RefreshToken string
+	State        string
 }
 
+type GoogleOauthCallbackState struct {
+	Actions []ExchangeTokenAction
+}
 type GetAccessTokenByIdInput struct {
 	AccessToken string //access token id
 }
@@ -36,5 +50,18 @@ type CreateAccessTokenInput struct {
 }
 
 type CreateAccessTokenOutput struct {
+	Id string
+}
+
+type BypassCreateNewUserInput struct {
+	Id        string
+	PhoneNo   string
+	Pin       string
+	Email     string
+	CreatedBy string
+	LoginMode auth.LoginMode
+}
+
+type BypassCreateNewUserOutput struct {
 	Id string
 }

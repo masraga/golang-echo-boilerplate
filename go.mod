@@ -5,6 +5,7 @@ go 1.25.8
 require (
 	firebase.google.com/go/v4 v4.20.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2
+	github.com/coreos/go-oidc/v3 v3.20.0
 	github.com/getkin/kin-openapi v0.138.0
 	github.com/go-faker/faker/v4 v4.7.0
 	github.com/golang-jwt/jwt/v5 v5.3.1

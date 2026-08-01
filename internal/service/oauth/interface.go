@@ -20,4 +20,5 @@ type OAuthRepositoryReaderInterface interface {
 
 type OAuthRepositoryWriterInterface interface {
 	CreateAccessToken(ctx context.Context, input CreateAccessTokenInput) (output CreateAccessTokenOutput, err error)
+	BypassCreateNewUser(ctx context.Context, input BypassCreateNewUserInput) (output BypassCreateNewUserOutput, err error)
 }

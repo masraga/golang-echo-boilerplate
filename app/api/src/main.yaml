@@ -49,9 +49,9 @@ paths:
     $ref: './path/api/v1/auth/users/__userId__/role/index.yaml'
   /api/v1/auth/users/change-pin:
     $ref: './path/api/v1/auth/users/change-pin/index.yaml'
-  /api/v1/oauth/callback:
+  /api/v1/oauth/google/callback:
     $ref: "./path/api/v1/oauth/callback/index.yaml"
-  /api/v1/oauth:
+  /api/v1/oauth/google:
     $ref: "./path/api/v1/oauth/index.yaml"
 
 components:
@@ -60,6 +60,8 @@ components:
       $ref: './component/parameter/UserIdPathParameter.yaml'
     GoogleOAuthParameter:
       $ref: "./component/parameter/GoogleOAuthParameter.yaml"
+    GoogleOAuthCallbackStateParameter:
+      $ref: "./component/parameter/GoogleOAuthCallbackStateParameter.yaml"
   schemas:
     GetPingResponse:
       $ref: './component/schema/GetPingResponse.yaml'
@@ -129,6 +131,8 @@ components:
       $ref: './component/schema/UserChangePinResponse.yaml'
     GoogleOAuthCallbackResponse:
       $ref: './component/schema/GoogleOAuthCallbackResponse.yaml'
+    GoogleOauthCodeExchangeRequest:
+      $ref: ./component/schema/GoogleOauthCodeExchangeRequest.yaml
     GoogleOauthCodeExchangeResponse:
       $ref: './component/schema/GoogleOauthCodeExchangeResponse.yaml'
     

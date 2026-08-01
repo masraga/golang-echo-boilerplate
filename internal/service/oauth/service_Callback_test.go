@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/masraga/golang-echo-boilerplate/internal/ctxerr"
+	"github.com/masraga/golang-echo-boilerplate/internal/service/auth"
 	"github.com/masraga/golang-echo-boilerplate/internal/service/oauth"
 	"github.com/masraga/golang-echo-boilerplate/internal/testutil"
 	"github.com/rs/zerolog"
@@ -16,6 +17,7 @@ func TestOAuthService_Callback(t *testing.T) {
 	var (
 		expectedToken        string = faker.Word()
 		expectedRefreshToken string = faker.Word()
+		// expectedEmail        string = faker.Word()
 	)
 
 	type args struct {
@@ -28,6 +30,7 @@ func TestOAuthService_Callback(t *testing.T) {
 	type fields struct {
 		OauthProvider   oauth.OAuthProviderInterface
 		OauthRepoWriter oauth.OAuthRepositoryWriterInterface
+		AuthService     auth.AuthServiceInterface
 	}
 
 	type test struct {
@@ -42,8 +45,11 @@ func TestOAuthService_Callback(t *testing.T) {
 		{
 			name: "success generate token",
 			args: args{
-				ctx:   context.Background(),
-				input: oauth.GoogleOauthCallbackInput{},
+				ctx: context.Background(),
+				input: oauth.GoogleOauthCallbackInput{
+					Code:  faker.Word(),
+					State: `actions=["REGISTER_USER"]`,
+				},
 			},
 			expected: expected{
 				Err:   nil,
@@ -55,15 +61,40 @@ func TestOAuthService_Callback(t *testing.T) {
 					Callback(gomock.Any(), gomock.Any()).
 					Return(oauth.GoogleOauthCallbackOutput{Token: expectedToken, RefreshToken: expectedRefreshToken}, nil)
 
+				authService := auth.NewMockAuthServiceInterface(ctrl)
+				authService.EXPECT().
+					FindAuthWithEmail(gomock.Any(), gomock.Any()).
+					Return(auth.FindAuthWithEmailOutput{
+						Id:      faker.UUIDHyphenated(),
+						PhoneNo: "081234567890",
+						Email:   faker.Word(),
+					}, nil)
+				authService.EXPECT().
+					CreateToken(gomock.Any(), gomock.Any()).
+					Return(auth.UserTokenClaimOutput{
+						TokenType: auth.TokenTypeJwt,
+						Token:     expectedToken,
+					}, nil)
+				authService.EXPECT().
+					StoreAccessToken(gomock.Any(), gomock.Any()).
+					Return(auth.StoreAccessTokenOutput{
+						Token:  expectedToken,
+						UserId: faker.UUIDHyphenated(),
+					}, nil)
+
 				oauthRepoWriter := oauth.NewMockOAuthRepositoryWriterInterface(ctrl)
 				oauthRepoWriter.EXPECT().
 					CreateAccessToken(gomock.Any(), gomock.Any()).
 					Return(oauth.CreateAccessTokenOutput{
 						Id: faker.UUIDHyphenated(),
 					}, nil)
+				oauthRepoWriter.EXPECT().
+					BypassCreateNewUser(gomock.Any(), gomock.Any()).
+					Return(oauth.BypassCreateNewUserOutput{Id: faker.UUIDHyphenated()}, nil)
 
 				tt.fields.OauthRepoWriter = oauthRepoWriter
 				tt.fields.OauthProvider = oauthProvider
+				tt.fields.AuthService = authService
 			},
 		},
 		{
@@ -97,6 +128,7 @@ func TestOAuthService_Callback(t *testing.T) {
 
 			oauthService := oauth.NewOAuthService(oauth.OAuthServiceOpts{
 				Provider:              tt.fields.OauthProvider,
+				AuthService:           tt.fields.AuthService,
 				OauthRepositoryWriter: tt.fields.OauthRepoWriter,
 				Err:                   ctxerr.NewCtxErr(ctxerr.CtxErrOpts{Logger: zerolog.Nop()}),
 			})
