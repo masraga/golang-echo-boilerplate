@@ -872,7 +872,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorUnauthorized'
-  /api/v1/oauth/callback:
+  /api/v1/oauth/google/callback:
     get:
       operationId: GoogleOAuthCallback
       summary: Google OAuth callback
@@ -895,7 +895,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorBadRequest'
-  /api/v1/oauth:
+  /api/v1/oauth/google:
     post:
       operationId: GoogleOauthCodeExchange
       summary: Oauth code exchange

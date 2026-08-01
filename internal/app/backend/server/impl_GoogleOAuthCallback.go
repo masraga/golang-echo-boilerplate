@@ -7,7 +7,7 @@ import (
 )
 
 // Google OAuth callback
-// (GET /api/v1/oauth/callback)
+// (GET /api/v1/oauth/google/callback)
 func (s *Server) GoogleOAuthCallback(ctx echo.Context, params api.GoogleOAuthCallbackParams) error {
 	output, err := s.OAuthService.Callback(ctx.Request().Context(), oauth.GoogleOauthCallbackInput{
 		Code:  params.Code,

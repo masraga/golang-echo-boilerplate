@@ -7,7 +7,7 @@ import (
 )
 
 // Oauth code exchange
-// (POST /api/v1/oauth)
+// (POST /api/v1/oauth/google)
 func (s *Server) GoogleOauthCodeExchange(ctx echo.Context) error {
 	var req api.GoogleOauthCodeExchangeRequest
 	if err := bindOrReturnBadRequest(ctx, &req); err != nil {
