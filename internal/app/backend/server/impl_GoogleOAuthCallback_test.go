@@ -12,6 +12,7 @@ import (
 	"github.com/masraga/golang-echo-boilerplate/internal/app/backend/server"
 	"github.com/masraga/golang-echo-boilerplate/internal/service/oauth"
 	"github.com/masraga/golang-echo-boilerplate/internal/testutil"
+	"github.com/masraga/golang-echo-boilerplate/internal/util/pointer"
 	"go.uber.org/mock/gomock"
 )
 
@@ -53,6 +54,7 @@ func TestServer_GoogleOAuthCallback(t *testing.T) {
 					Return(oauth.GoogleOauthCallbackOutput{
 						Token:        expectedToken,
 						RefreshToken: expectedRefreshToken,
+						State:        "",
 					}, nil)
 
 				tt.fields.OAuthService = oauthService
@@ -60,6 +62,7 @@ func TestServer_GoogleOAuthCallback(t *testing.T) {
 				result, _ := json.Marshal(api.GoogleOAuthCallbackResponse{
 					RefreshToken: expectedRefreshToken,
 					Token:        expectedToken,
+					State:        pointer.String(""),
 				})
 				tt.expected.Code = http.StatusOK
 				tt.expected.Body = string(result)
