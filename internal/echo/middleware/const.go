@@ -13,12 +13,12 @@ var (
 		// 		AuthValidationFilterMethodGet,
 		// 	},
 		// },
-		"/api/v1/oauth": {
+		"/api/v1/oauth/google": {
 			Method: []string{
 				AuthValidationFilterMethodPost,
 			},
 		},
-		"/api/v1/oauth/callback": {
+		"/api/v1/oauth/google/callback": {
 			Method: []string{
 				AuthValidationFilterMethodGet,
 			},

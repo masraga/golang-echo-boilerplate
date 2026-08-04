@@ -24,7 +24,7 @@ test-update-api-handler:
 
 generate-backend:
 	@mkdir -p ./generated/app
-	@go build -o ./make ./app/backend
+	@go build -o ./generated/app/backend ./app/backend
 
 generate-wire:
 	wire ./...
