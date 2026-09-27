@@ -1,4 +1,4 @@
-.PHONY: api.yaml validate-api api-docs generate-api generate-backend init generate-wire generate-mocks clean generate-vendor update-api-handler test-update-api-handler install-tools
+.PHONY: api.yaml validate-api api-docs generate-api generate-backend init generate-wire generate-mocks clean generate-vendor update-api-handler test-update-api-handler install-tools rename_project
 
 api.yaml:
 	@swagger-cli bundle app/api/src/main.yaml -o app/api/api.yaml -t yaml
@@ -88,3 +88,11 @@ endif
 
 install_tools:
 	@bash ./bin/install_dependecies.sh
+
+rename_project:
+ifndef name
+	$(error name parameter is required. Usage: make rename_project name=github.com/user/new-repo)
+endif
+	go mod edit -module $(name)
+	find . -type f -name "*.go" -exec sed -i '' 's|github.com/masraga/golang-echo-boilerplate|$(name)|g' {} +
+	go mod tidy
