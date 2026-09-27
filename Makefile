@@ -9,6 +9,34 @@ validate-api:
 api-docs:
 	@npx --yes @redocly/cli build-docs app/api/api.yaml -o api-docs.html
 
+external-api.yaml:
+	@for dir in app/externalapi/*/; do \
+		pkg=$$(basename $$dir); \
+		if [ -f "app/externalapi/$$pkg/src/main.yaml" ]; then \
+			echo "Bundling $$pkg"; \
+			npx swagger-cli bundle app/externalapi/$$pkg/src/main.yaml -o app/externalapi/$$pkg/api.yaml -t yaml; \
+			swagger-cli validate app/externalapi/$$pkg/api.yaml; \
+		fi \
+	done
+
+generate-external-api.yaml:
+	@for dir in app/externalapi/*/; do \
+		pkg=$$(basename $$dir); \
+		if [ -f "app/externalapi/$$pkg/src/main.yaml" ]; then \
+			echo "Generating Go client for $$pkg"; \
+			mkdir -p ./generated/externalapi/$$pkg; \
+			oapi-codegen \
+				-generate types,client \
+				-package $$pkg \
+					-response-type-suffix APIResponse \
+				-o ./generated/externalapi/$$pkg/api.gen.go \
+				app/externalapi/$$pkg/api.yaml; \
+		fi \
+	done
+
+generate-external-api-docs:
+	@npx --yes @redocly/cli build-docs app/externalapi/$(pkg)/api.yaml -o $(pkg)-docs.html
+
 generate-api:
 	@mkdir -p ./generated/api
 	@oapi-codegen \
@@ -50,6 +78,7 @@ generate-vendor:
 
 init: api.yaml \
 	generate-api \
+	generate-external-api.yaml \
 	generate-wire \
 	generate-backend \
 	generate-mocks \
